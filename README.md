@@ -20,7 +20,7 @@ The JUCE C++ framework is required in order to build the plug-ins. It can be dow
 3. Click the "Save and open in IDE" button on the top right to open the project. (Projucer will auto generate the appropriate library files)
 <br><br />
 ### Acknowledgements
-These DAFX plugins are being  developed in the context of my Graduate Project Thesis at the   Department of Music Technology and Acoustics of the Hellenic Mediterranean University (HMU).
+These DAFX plugins are being  developed in the context of my Graduate Project Thesis at the   [Department of Music Technology and Acoustics](https://mta.hmu.gr) of [the Hellenic Mediterranean University (HMU)](https://www.hmu.gr).
 <br><br />
 ### Contact
-Manos Labrakis <labrakismanos@outlook.com>
+Manos Labrakis <labrakismanos_@_outlook.com>
