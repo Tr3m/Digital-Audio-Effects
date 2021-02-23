@@ -13,9 +13,15 @@
 IirfilterPluginAudioProcessorEditor::IirfilterPluginAudioProcessorEditor (IirfilterPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
     setSize (400, 300);
+
+    cutoff.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    cutoff.setRange(20.0, 20000, 0);
+    cutoff.setValue(audioProcessor.hp.getCutoff());
+    addAndMakeVisible(&cutoff);
+    cutoff.addListener(this);
+
+    startTimer(50);
 }
 
 IirfilterPluginAudioProcessorEditor::~IirfilterPluginAudioProcessorEditor()
@@ -30,11 +36,25 @@ void IirfilterPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("IIR High-Pass Test", getLocalBounds(), juce::Justification::centred, 1);
+    //g.drawFittedText ("IIR High-Pass Test", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void IirfilterPluginAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    cutoff.setBounds(getLocalBounds());
+}
+
+void IirfilterPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
+{
+    if (slider == &cutoff)
+    {
+        audioProcessor.hp.setCutoff(slider->getValue());
+        //DBG(audioProcessor.hp.getCutoff());
+        
+    }
+}
+
+void IirfilterPluginAudioProcessorEditor::timerCallback()
+{
+    cutoff.setValue(audioProcessor.hp.getCutoff());
 }

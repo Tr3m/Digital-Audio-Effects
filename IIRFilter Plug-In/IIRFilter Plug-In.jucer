@@ -12,8 +12,8 @@
       <FILE id="IIjU6q" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="oHXM8Z" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="t75qLt" name="IIRFilter.cpp" compile="1" resource="0" file="../Effect_Classes/IIRFilter.cpp"/>
-      <FILE id="KEYmvq" name="IIRFilter.h" compile="0" resource="0" file="../Effect_Classes/IIRFilter.h"/>
+      <FILE id="WIoHqi" name="iirFilter.h" compile="0" resource="0" file="../Effect_Classes/iirFilter.h"/>
+      <FILE id="NnT9lm" name="iirFilter.cpp" compile="1" resource="0" file="../Effect_Classes/iirFilter.cpp"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

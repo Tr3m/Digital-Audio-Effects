@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "../../Effect_Classes/IIRFilter.h"
+#include "../../Effect_Classes/iirFilter.h"
 
 //==============================================================================
 /**
@@ -53,11 +53,12 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    
+    iirFilter hp;
 private:
     //==============================================================================
 
-    IIRFilter hp;
+   
         
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IirfilterPluginAudioProcessor)
 };

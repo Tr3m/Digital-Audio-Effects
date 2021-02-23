@@ -19,7 +19,7 @@ IirfilterPluginAudioProcessor::IirfilterPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::mono(), true)
                      #endif
-                       )
+                       ), hp(getSampleRate(), iirFilter::FilterTypes::HPF)
 #endif
 {
 }
@@ -136,8 +136,8 @@ void IirfilterPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-   
-    hp.process(buffer, totalNumInputChannels, totalNumOutputChannels);
+    
+    hp.process(buffer, totalNumInputChannels, totalNumOutputChannels, getSampleRate());
 
 }
 

@@ -7,6 +7,11 @@ The effects implemented are the following:
   * Digital Delay
 * Distortion:
   * Asymmetrical Clipping Distortion
+* IIR Filters
+    * Low-Pass
+    * High-Pass
+    * Band-Pass
+    * Band-Stop
 <br><br/>
 ### Requirements -  Third Party Libraries
 The JUCE C++ framework is required in order to build the plug-ins. It can be downloaded from the
