@@ -15,11 +15,12 @@ IirfilterPluginAudioProcessor::IirfilterPluginAudioProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::mono(), true)
+                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                       #endif
-                       .withOutput ("Output", juce::AudioChannelSet::mono(), true)
+                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), hp(getSampleRate(), iirFilter::FilterTypes::HPF)
+                       ), leftFilter(getSampleRate(), iirFilter::FilterTypes::HPF),
+                          rightFilter(getSampleRate(), iirFilter::FilterTypes::HPF)
 #endif
 {
 }
@@ -93,13 +94,13 @@ void IirfilterPluginAudioProcessor::changeProgramName (int index, const juce::St
 //==============================================================================
 void IirfilterPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    hp.prepare(sampleRate, samplesPerBlock);
+    leftFilter.prepare(sampleRate, samplesPerBlock);
+    rightFilter.prepare(sampleRate, samplesPerBlock);
 }
 
 void IirfilterPluginAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -109,13 +110,12 @@ bool IirfilterPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& l
     juce::ignoreUnused (layouts);
     return true;
   #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
+   
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
+
    #if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -137,7 +137,12 @@ void IirfilterPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
         buffer.clear (i, 0, buffer.getNumSamples());
 
     
-    hp.process(buffer, totalNumInputChannels, totalNumOutputChannels, getSampleRate());
+    //Process Left Channel
+    leftFilter.process(buffer, 0, getSampleRate());
+
+    //Process Right Channel
+   rightFilter.process(buffer, 1, getSampleRate());
+    
 
 }
 
@@ -155,19 +160,16 @@ juce::AudioProcessorEditor* IirfilterPluginAudioProcessor::createEditor()
 //==============================================================================
 void IirfilterPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    
 }
 
 void IirfilterPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+  
 }
 
 //==============================================================================
-// This creates new instances of the plugin..
+
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new IirfilterPluginAudioProcessor();

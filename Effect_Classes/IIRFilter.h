@@ -8,10 +8,11 @@ public:
 
 	iirFilter(double sampleRate);
 	iirFilter(double sampleRate, int type);
+	iirFilter(double sampleRate, int type, float freq);
 
 
 	void prepare(double sampleRate, int samplesPerBlock);
-    void process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels, double sampleRate);
+    void process(juce::AudioBuffer<float>& buffer, int channel, double sampleRate);
 
     //void setParameter(int index, float newValue);
     //float getPameter(int index);

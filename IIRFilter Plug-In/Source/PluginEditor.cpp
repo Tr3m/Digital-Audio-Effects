@@ -17,7 +17,7 @@ IirfilterPluginAudioProcessorEditor::IirfilterPluginAudioProcessorEditor (Iirfil
 
     cutoff.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     cutoff.setRange(20.0, 20000, 0);
-    cutoff.setValue(audioProcessor.hp.getCutoff());
+    cutoff.setValue(audioProcessor.leftFilter.getCutoff());
     addAndMakeVisible(&cutoff);
     cutoff.addListener(this);
 
@@ -48,7 +48,8 @@ void IirfilterPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slide
 {
     if (slider == &cutoff)
     {
-        audioProcessor.hp.setCutoff(slider->getValue());
+        audioProcessor.leftFilter.setCutoff(slider->getValue());
+        audioProcessor.rightFilter.setCutoff(slider->getValue());
         //DBG(audioProcessor.hp.getCutoff());
         
     }
@@ -56,5 +57,6 @@ void IirfilterPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slide
 
 void IirfilterPluginAudioProcessorEditor::timerCallback()
 {
-    cutoff.setValue(audioProcessor.hp.getCutoff());
+    cutoff.setValue(audioProcessor.leftFilter.getCutoff());
+   
 }

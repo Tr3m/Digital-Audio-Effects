@@ -3,7 +3,7 @@
 
 iirFilter::iirFilter(double sampleRate)
 {
-	fc = 400.0f;
+	setCutoff(400.0f);
 	last_SampleRate = sampleRate;
 	filterType = 0;	//Initialize as LPF
 	Q = 0.707;
@@ -13,9 +13,19 @@ iirFilter::iirFilter(double sampleRate)
 
 iirFilter::iirFilter(double sampleRate, int type)
 {
-	fc = 400.0f;
+	setCutoff(400.0f);
 	last_SampleRate = sampleRate;
-	filterType = type;
+	setFilterType(type);
+	Q = 0.707;
+
+	calculateCoeffs(fc, sampleRate);
+}
+
+iirFilter::iirFilter(double sampleRate, int type, float freq)
+{
+	setCutoff(freq);
+	last_SampleRate = sampleRate;
+	setFilterType(type);
 	Q = 0.707;
 
 	calculateCoeffs(fc, sampleRate);
@@ -42,7 +52,7 @@ void iirFilter::calculateCoeffs(float freq, double sampleRate)
 			C = float(tan(m_pi * freq / (float)sampleRate));
 			a0 = 1.0f / (1.0f + r * C + C * C);
 			a1 = -2 * a0;
-			a2 = a1;
+			a2 = a0;
 			b1 = 2.0f * a0 * (C * C - 1.0f);
 			b2 = a0 * (1.0f - r * C + C * C);
 			c0 = 1.0f;
@@ -64,40 +74,44 @@ void iirFilter::prepare(double sampleRate, int samplesPerBlock)
 	last_SampleRate = sampleRate;	
 }
 
-void iirFilter::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels, double sampleRate)
+void iirFilter::process(juce::AudioBuffer<float>& buffer, int channel, double sampleRate)
 {
 	last_SampleRate = sampleRate;
 
 	calculateCoeffs(fc, sampleRate);
 
 	
-	for(int channel = 0; channel < numOutputChannels; ++channel)
-	{
-		auto* channelData = buffer.getWritePointer(channel);
+	
+	auto* channelData = buffer.getWritePointer(channel);
 
 		
 
-		for(int sample = 0; sample < buffer.getNumSamples(); ++sample)
-		{
+	for(int sample = 0; sample < buffer.getNumSamples(); ++sample)
+	{
 			
 
-			float yn = a0 * channelData[sample] + a1 * xn_1 + a2 * xn_2 - b1 * yn_1 - b2 * yn_2;
+		auto yn = a0 * channelData[sample] + a1 * xn_1 + a2 * xn_2 - b1 * yn_1 - b2 * yn_2;
 			
 
-			xn_2 = xn_1;
-			xn_1 = channelData[sample];
+		xn_2 = xn_1;
+		xn_1 = channelData[sample];
 
-			yn_2 = yn_1;
-			yn_1 = yn;
+		yn_2 = yn_1;
+		yn_1 = yn;
 
-			channelData[sample] = yn;
-		}
+		channelData[sample] = yn;
 	}
+	
 }
 
 void iirFilter::setCutoff(float newValue)
 {
-	fc = newValue;
+	if (newValue < 20.0f)
+		fc = 20.0f;
+	else if (newValue > 20000.0f)
+		fc = 20000.0f;
+	else
+		fc = newValue;
 
 	calculateCoeffs(fc, last_SampleRate);
 }
