@@ -1,7 +1,7 @@
-#include "iirFilter.h"
+#include "IIRFilter.h"
 
 
-iirFilter::iirFilter(double sampleRate)
+IIRFilter::IIRFilter(double sampleRate)
 {
 	setCutoff(400.0f);
 	last_SampleRate = sampleRate;
@@ -11,7 +11,7 @@ iirFilter::iirFilter(double sampleRate)
 	calculateCoeffs(fc, sampleRate);
 }
 
-iirFilter::iirFilter(double sampleRate, int type)
+IIRFilter::IIRFilter(double sampleRate, int type)
 {
 	setCutoff(400.0f);
 	last_SampleRate = sampleRate;
@@ -21,7 +21,7 @@ iirFilter::iirFilter(double sampleRate, int type)
 	calculateCoeffs(fc, sampleRate);
 }
 
-iirFilter::iirFilter(double sampleRate, int type, float freq)
+IIRFilter::IIRFilter(double sampleRate, int type, float freq)
 {
 	setCutoff(freq);
 	last_SampleRate = sampleRate;
@@ -31,7 +31,7 @@ iirFilter::iirFilter(double sampleRate, int type, float freq)
 	calculateCoeffs(fc, sampleRate);
 }
 
-void iirFilter::calculateCoeffs(float freq, double sampleRate)
+void IIRFilter::calculateCoeffs(float freq, double sampleRate)
 {
 	switch (filterType)
 	{
@@ -58,6 +58,27 @@ void iirFilter::calculateCoeffs(float freq, double sampleRate)
 			c0 = 1.0f;
 			d0 = 0.0;
 			break;
+
+		case FilterTypes::Parametric :
+			K = tan(m_pi*freq/float(sampleRate));
+			V0 = std::pow(10, notchGain / 20);
+			D0 = 1 + (K/Q)+K*K;
+			e0 = 1 + (K/(V0*Q)) + K*K;
+			alpha = 1 + ((V0*K) / Q) + K*K;
+			beta = 2*(K*K - 1);
+			gamma = 1 - ((V0*K) / Q) + K*K;
+			delta = 1 - (K / Q) + K*K;
+			heta = 1 - (K / V0*Q) + K*K;
+
+			if(notchGain >= 0)
+			{
+				//Calcualte boost coefficients
+
+			}else
+			{
+				//Calculate cut coefficients
+			}
+
 	}
 		
 
@@ -68,13 +89,13 @@ void iirFilter::calculateCoeffs(float freq, double sampleRate)
 	//DBG(log);
 }
 
-void iirFilter::prepare(double sampleRate, int samplesPerBlock)
+void IIRFilter::prepare(double sampleRate, int samplesPerBlock)
 {
 	calculateCoeffs(fc, sampleRate);	
 	last_SampleRate = sampleRate;	
 }
 
-void iirFilter::process(juce::AudioBuffer<float>& buffer, int channel, double sampleRate)
+void IIRFilter::process(juce::AudioBuffer<float>& buffer, int channel, double sampleRate)
 {
 	last_SampleRate = sampleRate;
 
@@ -104,7 +125,7 @@ void iirFilter::process(juce::AudioBuffer<float>& buffer, int channel, double sa
 	
 }
 
-void iirFilter::setCutoff(float newValue)
+void IIRFilter::setCutoff(float newValue)
 {
 	if (newValue < 20.0f)
 		fc = 20.0f;
@@ -116,12 +137,12 @@ void iirFilter::setCutoff(float newValue)
 	calculateCoeffs(fc, last_SampleRate);
 }
 
-float iirFilter::getCutoff()
+float IIRFilter::getCutoff()
 {
 	return fc;
 }
 
-void iirFilter::setFilterType(int type)
+void IIRFilter::setFilterType(int type)
 {
 	if (type < 0)
 		type = 0;
@@ -133,7 +154,7 @@ void iirFilter::setFilterType(int type)
 	calculateCoeffs(fc, last_SampleRate);
 }
 
-void iirFilter::setQ(float newValue)
+void IIRFilter::setQ(float newValue)
 {
 	float this_q = newValue;
 
@@ -147,7 +168,17 @@ void iirFilter::setQ(float newValue)
 	calculateCoeffs(fc, last_SampleRate);
 }
 
-float iirFilter::getQ()
+float IIRFilter::getQ()
 {
 	return Q;
+}
+
+void IIRFilter::setGain(float newValue)
+{
+	notchGain = newValue;
+}
+
+float IIRFilter::getGain()
+{
+	return notchGain;
 }
