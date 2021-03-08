@@ -74,11 +74,28 @@ void IIRFilter::calculateCoeffs(float freq, double sampleRate)
 			{
 				//Calcualte boost coefficients
 
+				a0 = alpha/D0;
+				a1 = beta/D0;
+				a2 = gamma/D0;
+				b1 = beta/D0;
+				b2 = delta/D0;
+				c0 = 1.0f;
+				d0 = 0.0f;
+
 			}else
 			{
 				//Calculate cut coefficients
-			}
 
+				a0 = D0/e0;
+				a1 = beta/e0;
+				a2 = delta/e0;
+				b1 = beta/e0;
+				b2 = heta/e0;
+				c0 = 1.0f;
+				d0 = 0.0f;
+
+			}
+			break;
 	}
 		
 
