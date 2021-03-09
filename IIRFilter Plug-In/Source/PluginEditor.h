@@ -16,6 +16,7 @@
 */
 class IirfilterPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
                                              public juce::Slider::Listener,
+                                             public juce::ComboBox::Listener,
                                              public juce::Timer
 {
 public:
@@ -27,9 +28,12 @@ public:
     void resized() override;
     void sliderValueChanged(juce::Slider* slider);
     void timerCallback();
+    void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
 
 private:
-    juce::Slider cutoff;
+    juce::Slider freqSlider, qSlider, gainSlider;
+    juce::Label freqLabel, qLabel, gainLabel;
+    juce::ComboBox filterSelect;
 
     IirfilterPluginAudioProcessor& audioProcessor;
 

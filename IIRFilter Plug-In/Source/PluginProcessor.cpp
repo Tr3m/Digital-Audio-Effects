@@ -19,8 +19,8 @@ IirfilterPluginAudioProcessor::IirfilterPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), leftFilter(getSampleRate(), iirFilter::FilterTypes::HPF),
-                          rightFilter(getSampleRate(), iirFilter::FilterTypes::HPF)
+                       ), leftFilter(getSampleRate(),IIRFilter::FilterTypes::HPF),
+                          rightFilter(getSampleRate(), IIRFilter::FilterTypes::HPF)
 #endif
 {
 }

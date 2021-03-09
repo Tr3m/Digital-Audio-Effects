@@ -27,11 +27,12 @@ public:
 	void setCutoff(float newValue);
 	void setFilterType(int filterType);
 	void setQ(float newValue);
-	void setGain(float newValue)
+	void setGain(float newValue);
 
 	float getCutoff();
 	float getQ();
 	float getGain();
+	int getFilterType();
     
     //==================================================
 

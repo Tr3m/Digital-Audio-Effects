@@ -199,3 +199,8 @@ float IIRFilter::getGain()
 {
 	return notchGain;
 }
+
+int IIRFilter::getFilterType()
+{
+	return filterType;
+}
