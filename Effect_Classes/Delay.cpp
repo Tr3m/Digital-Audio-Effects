@@ -15,6 +15,20 @@ Delay::Delay()
     //m_SampleRate = sampleRate;
 }
 
+Delay::Delay(float _delayLength, float _feedback, float _wet, float _dry)
+{
+    //TODO: Add bounds check...
+    
+    delayLength = _delayLength;
+    dryMix = _dry;
+    wetMix = _wet;
+    feedback = _feedback;
+    delayBufferLength = 1;
+
+    delayReadPosition = 0;
+    delayWritePosition = 0;
+}
+
 
 float Delay::getParameter(int index)
 {

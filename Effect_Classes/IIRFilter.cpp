@@ -5,10 +5,11 @@ IIRFilter::IIRFilter(double sampleRate)
 {
 	setCutoff(400.0f);
 	last_SampleRate = sampleRate;
-	filterType = 0;	//Initialize as LPF
-	Q = 0.707;
+	filterType = 0;	//Defaults to LPF
+	Q = 1.0;
+	notchGain = 0.0f;
 
-	calculateCoeffs(fc, sampleRate);
+	calculateCoeffs();
 }
 
 IIRFilter::IIRFilter(double sampleRate, int type)
@@ -16,9 +17,10 @@ IIRFilter::IIRFilter(double sampleRate, int type)
 	setCutoff(400.0f);
 	last_SampleRate = sampleRate;
 	setFilterType(type);
-	Q = 0.707;
+	Q = 1.0;
+	notchGain = 0.0f;
 
-	calculateCoeffs(fc, sampleRate);
+	calculateCoeffs();
 }
 
 IIRFilter::IIRFilter(double sampleRate, int type, float freq)
@@ -26,18 +28,19 @@ IIRFilter::IIRFilter(double sampleRate, int type, float freq)
 	setCutoff(freq);
 	last_SampleRate = sampleRate;
 	setFilterType(type);
-	Q = 0.707;
+	Q = 1.0;
+	notchGain = 0.0f;
 
-	calculateCoeffs(fc, sampleRate);
+	calculateCoeffs();
 }
 
-void IIRFilter::calculateCoeffs(float freq, double sampleRate)
+void IIRFilter::calculateCoeffs()
 {
 	switch (filterType)
 	{
 		case FilterTypes::LPF : //2nd Order Butterworth LPF
 			r = std::sqrt(2);
-			C = float(1.0f / tan(m_pi * freq / (float)sampleRate));
+			C = float(1.0f / tan(m_pi * fc / (float)last_SampleRate));
 			a0 = 1.0f / (1.0f + r * C + C * C);
 			a1 = 2 * a0;
 			a2 = a0;
@@ -49,7 +52,7 @@ void IIRFilter::calculateCoeffs(float freq, double sampleRate)
 
 		case FilterTypes::HPF : //2nd Order Butterworth HPF
 			r = std::sqrt(2);
-			C = float(tan(m_pi * freq / (float)sampleRate));
+			C = float(tan(m_pi * fc / (float)last_SampleRate));
 			a0 = 1.0f / (1.0f + r * C + C * C);
 			a1 = -2 * a0;
 			a2 = a0;
@@ -60,7 +63,8 @@ void IIRFilter::calculateCoeffs(float freq, double sampleRate)
 			break;
 
 		case FilterTypes::Parametric :
-			K = tan(m_pi*freq/float(sampleRate));
+			
+			K = tan(m_pi*fc/float(last_SampleRate));
 			V0 = std::pow(10, notchGain / 20);
 			D0 = 1 + (K/Q)+K*K;
 			e0 = 1 + (K/(V0*Q)) + K*K;
@@ -95,7 +99,22 @@ void IIRFilter::calculateCoeffs(float freq, double sampleRate)
 				d0 = 0.0f;
 
 			}
+
+			/*theta_c = (2 * m_pi * fc) / float(last_SampleRate);
+			u = std::pow(10, notchGain / 20);
+			zeta = 4.0 / (1.0 + u);
+			beta = 0.5 * (1.0f - (zeta * tan(theta_c / (2.0 * Q)))) / (1.0f + (zeta * tan(theta_c / (2.0 * Q))));
+			gamma = (0.5 + beta) * cos(theta_c);
+
+			a0 = 0.5 - beta;
+			a1 = 0.0;
+			a2 = beta - 0.5;
+			b1 = -2.0 * gamma;
+			b2 = 2.0 * beta;
+			c0 = u - 1.0f;
+			d0 = 1.0f;*/
 			break;
+		
 	}
 		
 
@@ -108,15 +127,16 @@ void IIRFilter::calculateCoeffs(float freq, double sampleRate)
 
 void IIRFilter::prepare(double sampleRate, int samplesPerBlock)
 {
-	calculateCoeffs(fc, sampleRate);	
-	last_SampleRate = sampleRate;	
+	last_SampleRate = sampleRate;
+	calculateCoeffs();	
+		
 }
 
 void IIRFilter::process(juce::AudioBuffer<float>& buffer, int channel, double sampleRate)
 {
 	last_SampleRate = sampleRate;
 
-	calculateCoeffs(fc, sampleRate);
+	calculateCoeffs();
 
 	
 	
@@ -128,7 +148,7 @@ void IIRFilter::process(juce::AudioBuffer<float>& buffer, int channel, double sa
 	{
 			
 
-		auto yn = a0 * channelData[sample] + a1 * xn_1 + a2 * xn_2 - b1 * yn_1 - b2 * yn_2;
+		auto yn = d0*channelData[sample] + c0*(a0 * channelData[sample] + a1 * xn_1 + a2 * xn_2 - b1 * yn_1 - b2 * yn_2);
 			
 
 		xn_2 = xn_1;
@@ -151,7 +171,7 @@ void IIRFilter::setCutoff(float newValue)
 	else
 		fc = newValue;
 
-	calculateCoeffs(fc, last_SampleRate);
+	calculateCoeffs();
 }
 
 float IIRFilter::getCutoff()
@@ -163,12 +183,17 @@ void IIRFilter::setFilterType(int type)
 {
 	if (type < 0)
 		type = 0;
-	else if (type > 3)
-		type = 3;
+	else if (type > 4)
+		type = 4;
 
 	filterType = type;
 
-	calculateCoeffs(fc, last_SampleRate);
+	calculateCoeffs();
+}
+
+int IIRFilter::getFilterType()
+{
+	return filterType;
 }
 
 void IIRFilter::setQ(float newValue)
@@ -182,7 +207,7 @@ void IIRFilter::setQ(float newValue)
 
 	Q = this_q;
 
-	calculateCoeffs(fc, last_SampleRate);
+	calculateCoeffs();
 }
 
 float IIRFilter::getQ()
@@ -193,6 +218,7 @@ float IIRFilter::getQ()
 void IIRFilter::setGain(float newValue)
 {
 	notchGain = newValue;
+	calculateCoeffs();
 }
 
 float IIRFilter::getGain()
@@ -200,7 +226,3 @@ float IIRFilter::getGain()
 	return notchGain;
 }
 
-int IIRFilter::getFilterType()
-{
-	return filterType;
-}

@@ -40,14 +40,14 @@ public:
 	{
 		LPF = 0,	//Low Pass Fitler
 		HPF,		//High Pass Filter
-		Parametric
+		Parametric,
 	};
 
 	//==================================================
 
 private:
 
-	void calculateCoeffs(float freq, double sampleRate);
+	void calculateCoeffs();
 
 
 	float a0, a1, a2, b1, b2, c0, d0, r, C;
@@ -56,8 +56,10 @@ private:
 
 	float m_pi = 3.14159265358979323846;
 
-	//Paremetric Filter Variables
+	//Paremetric EQ Filter Variables
 	float K, V0, e0, D0, alpha, beta, gamma, delta, heta;
+
+	float theta_c, u, zeta;
 
 	float xn_1 = 0, xn_2 = 0, yn_1 = 0, yn_2 = 0;
 

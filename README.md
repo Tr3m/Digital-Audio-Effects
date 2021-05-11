@@ -5,6 +5,7 @@ This repository is a collection of digital real-time audio effect algorithms imp
 The effects implemented are the following:
 * Time-Based:
   * Digital Delay
+  * Digital Reverb
 * Distortion:
   * Asymmetrical Clipping Distortion
 * IIR Filters

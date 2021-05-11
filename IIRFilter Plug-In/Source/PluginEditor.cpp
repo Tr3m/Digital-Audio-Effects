@@ -37,7 +37,7 @@ IirfilterPluginAudioProcessorEditor::IirfilterPluginAudioProcessorEditor (Iirfil
 
     qSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     qSlider.setRange(0.2, 10.0, .001);
-    addAndMakeVisible(&qSlider);
+    //addAndMakeVisible(&qSlider);
     qSlider.addListener(this);
     qLabel.setText("Q", juce::dontSendNotification);
     qLabel.setJustificationType(juce::Justification::topLeft);
@@ -114,11 +114,11 @@ void IirfilterPluginAudioProcessorEditor::timerCallback()
    if (filterSelect.getSelectedId() == 3)
    {
        gainSlider.setVisible(true);
-       qSlider.setVisible(true);
+       //qSlider.setVisible(true);
    }
    else
    {
        gainSlider.setVisible(false);
-       qSlider.setVisible(false);
+       //qSlider.setVisible(false);
    }
 }

@@ -1,11 +1,13 @@
 #pragma once
-#include "../Delay Plug-In/JuceLibraryCode/JuceHeader.h"
+//#include "../Delay Plug-In/JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
 
 class Delay
 {
 public:
 
 	Delay();
+    Delay(float _delayLength, float _feedback, float _wet, float _dry);
 
 	
     float getParameter(int index);
