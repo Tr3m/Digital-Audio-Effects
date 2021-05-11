@@ -22,32 +22,7 @@ ReverbPluginAudioProcessor::ReverbPluginAudioProcessor()
                        )
 #endif
 {
-    /*float len = 0.073;
-    float g = 0.4;
-
-    comb1.setParameter(Delay::Parameters::feedbackParam, g);
-    comb2.setParameter(Delay::Parameters::feedbackParam, g - 0.0131);
-    comb3.setParameter(Delay::Parameters::feedbackParam, g - 0.0274);
-    comb4.setParameter(Delay::Parameters::feedbackParam, g - 0.031);
-
-    comb1.setParameter(Delay::Parameters::delayLengthParam, len);
-    comb2.setParameter(Delay::Parameters::delayLengthParam, len - 0.0011);
-    comb3.setParameter(Delay::Parameters::delayLengthParam, len + 0.0019);
-    comb4.setParameter(Delay::Parameters::delayLengthParam, len - 0.0007);
-
-    comb1.setParameter(Delay::Parameters::dryMixParam, 0.0);
-    comb1.setParameter(Delay::Parameters::wetMixParam, 1.0);
-
-    comb2.setParameter(Delay::Parameters::dryMixParam, 0.0);
-    comb2.setParameter(Delay::Parameters::wetMixParam, 1.0);
-
-    comb3.setParameter(Delay::Parameters::dryMixParam, 0.0);
-    comb3.setParameter(Delay::Parameters::wetMixParam, 1.0);
-
-    comb4.setParameter(Delay::Parameters::dryMixParam, 0.0);
-    comb4.setParameter(Delay::Parameters::wetMixParam, 1.0);*/
     
-
 }
 
 ReverbPluginAudioProcessor::~ReverbPluginAudioProcessor()
@@ -119,12 +94,7 @@ void ReverbPluginAudioProcessor::changeProgramName (int index, const juce::Strin
 //==============================================================================
 void ReverbPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    /*comb1.prepare(sampleRate, samplesPerBlock);
-    comb2.prepare(sampleRate, samplesPerBlock);
-    comb3.prepare(sampleRate, samplesPerBlock);
-    comb4.prepare(sampleRate, samplesPerBlock);*/
-
-    rev1.prepare(sampleRate, samplesPerBlock);
+       rev1.prepare(sampleRate, samplesPerBlock);
 }
 
 void ReverbPluginAudioProcessor::releaseResources()
@@ -163,69 +133,15 @@ void ReverbPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    /*juce::AudioBuffer<float> buff_1(2, buffer.getNumSamples());
-    juce::AudioBuffer<float> buff_2(2, buffer.getNumSamples());
-    juce::AudioBuffer<float> buff_3(2, buffer.getNumSamples());
-    juce::AudioBuffer<float> buff_4(2, buffer.getNumSamples());*/
-
-  
+ 
     
-
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
 
     rev1.process(buffer, totalNumInputChannels, totalNumOutputChannels);
 
-   /*
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        buff_1.copyFrom(channel, 0, buffer.getWritePointer(channel), buffer.getNumSamples());
-        buff_2.copyFrom(channel, 0, buffer.getWritePointer(channel), buffer.getNumSamples());
-        buff_3.copyFrom(channel, 0, buffer.getWritePointer(channel), buffer.getNumSamples());
-        buff_4.copyFrom(channel, 0, buffer.getWritePointer(channel), buffer.getNumSamples());
-        
-    }
-   
-    
   
-    
-    comb1.process(buff_1, totalNumInputChannels, totalNumOutputChannels);
-    comb2.process(buff_2, totalNumInputChannels, totalNumOutputChannels);
-    comb3.process(buff_3, totalNumInputChannels, totalNumOutputChannels);
-    comb4.process(buff_4, totalNumInputChannels, totalNumOutputChannels);
-
-   
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData1 = buff_2.getWritePointer(channel);
-        auto* channelData2 = buff_4.getWritePointer(channel);
-       
-
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-        {
-            channelData1[sample] = -1 * channelData1[sample];
-            channelData2[sample] = -1 * channelData2[sample];
-          
-        }
-    }
-
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        buffer.copyFrom(channel, 0, buff_1.getWritePointer(channel), buffer.getNumSamples());
-        //buffer.applyGain(0.5f);
-
-        buffer.addFrom(channel, 0, buff_2.getWritePointer(channel), buffer.getNumSamples());
-        //buffer.applyGain(0.5f);
-        
-        buffer.addFrom(channel, 0, buff_3.getWritePointer(channel), buffer.getNumSamples());
-        //buffer.applyGain(0.5f);
-
-        buffer.addFrom(channel, 0, buff_4.getWritePointer(channel), buffer.getNumSamples());
-        //buffer.applyGain(0.5f);
-    }*/
 }
 
 //==============================================================================
