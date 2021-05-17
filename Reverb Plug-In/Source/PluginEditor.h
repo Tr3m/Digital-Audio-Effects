@@ -14,7 +14,9 @@
 //==============================================================================
 /**
 */
-class ReverbPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
+class ReverbPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
+                                          public juce::Slider::Listener,
+                                          public juce::Timer
 {
 public:
     ReverbPluginAudioProcessorEditor (ReverbPluginAudioProcessor&);
@@ -23,10 +25,13 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    void sliderValueChanged(juce::Slider* slider);
+    void timerCallback();
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
+    juce::Slider length, feedback, wet, dry;
+    juce::Label lengthLabel, feedbackLabel, wetLabel, dryLabel;
+
     ReverbPluginAudioProcessor& audioProcessor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbPluginAudioProcessorEditor)

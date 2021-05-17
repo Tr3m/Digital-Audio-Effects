@@ -54,12 +54,10 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    Reverb rev1;
+
 private:
     //==============================================================================
-
-    //Delay comb1, comb2, comb3, comb4;
-
-    Reverb rev1;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbPluginAudioProcessor)
 };

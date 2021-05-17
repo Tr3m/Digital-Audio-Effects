@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="Mjn8eb" name="Reverb Plug-In" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              jucerVersion="5.4.5">
   <MAINGROUP id="qorhOv" name="Reverb Plug-In">
     <GROUP id="{50F9EA18-13A3-E37B-B227-DEBFCAB7AAD8}" name="Source">
       <FILE id="zzhaLu" name="PluginProcessor.cpp" compile="1" resource="0"

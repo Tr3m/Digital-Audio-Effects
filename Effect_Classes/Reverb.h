@@ -9,23 +9,34 @@ class Reverb
 
 		float getParameter(int index);
 	    void setParameter(int index, float newValue);
-
-	    //TODO: Need to add a reverb time calculator function.
-	   
+   
 
 	    void prepare(double sampleRate, int samplesPerBlock);
 	    void process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels);
 
-	    //TODO: Add Parameters Enum
+		enum Parameters
+		{
+			length = 0,
+			feedback,
+			wetMix,
+			dryMix
+		};
 
     //=======================================================================
 
 	private:
 
-		//TODO: Maybe do these in an array or something...
+		void updateReverbParameters();
+
+		float len = 0.09; //Length
+		float g = 0.8;	//Feedback
+		float dry = 0.5;
+		float wet = 0.5;
+
+		//TODO: Maybe do these in an array...
 
 		Delay comb1, comb2, comb3, comb4; //TODO: Test the new Delay contructor and use it here if it works properly...
 
-		//juce::AudioBuffer<float> buff_1, buff_2, buff_3, buff_4;
+		
 	    
 };

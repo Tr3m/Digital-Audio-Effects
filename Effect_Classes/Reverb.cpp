@@ -2,11 +2,7 @@
 
 Reverb::Reverb()
 {
-	//Comb filter Feedback and Time initialization. This needs some work...
-
-    float len = 0.073;
-    float g = 0.4;
-
+	
     comb1.setParameter(Delay::Parameters::feedbackParam, g);
     comb2.setParameter(Delay::Parameters::feedbackParam, g - 0.0131);
     comb3.setParameter(Delay::Parameters::feedbackParam, g - 0.0274);
@@ -32,12 +28,54 @@ Reverb::Reverb()
 
 void Reverb::setParameter(int index, float newValue)
 {
+    switch (index)
+    {
+    case Parameters::length:
+        len = newValue;
+        break;
+    case Parameters::feedback:
+        g = newValue;
+        if (g > 1)
+            g = 1;
+        if (g < 0.1)
+            g = 0.1;
+        break;
+    case Parameters::wetMix:
+        wet = newValue;
+        if (wet > 1.0f)
+            wet = 1.0f;
+        if (wet < 0)
+            wet = 0;
+        break;
+    case Parameters::dryMix:
+        dry = newValue;
+        if (dry > 1.0f)
+            dry = 1.0f;
+        if (dry < 0)
+            dry = 0;
+        break;
+    }
 
+    updateReverbParameters();
 }
 
 float Reverb::getParameter(int index)
 {
-	return 0.0f; //Placeholder...
+    switch (index)
+    {
+    case Parameters::length:
+        return len;
+        break;
+    case Parameters::feedback:
+        return g;
+        break;
+    case Parameters::wetMix:
+        return wet;
+        break;
+    case Parameters::dryMix:
+        return dry;
+        break;
+    }
 }
 
 void Reverb::prepare(double sampleRate, int samplesPerBlock)
@@ -49,7 +87,7 @@ void Reverb::prepare(double sampleRate, int samplesPerBlock)
 }
 
 void Reverb::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels)
-{
+{   
 
     juce::AudioBuffer<float> buff_1(2, buffer.getNumSamples());
     juce::AudioBuffer<float> buff_2(2, buffer.getNumSamples());
@@ -68,9 +106,9 @@ void Reverb::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int
         
     }
    
-    
+       
   
-    //Comb filter parallel processing
+    //Comb filter processing
 
     comb1.process(buff_1, numInputChannels, numOutputChannels);
     comb2.process(buff_2, numInputChannels, numOutputChannels);
@@ -80,21 +118,60 @@ void Reverb::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int
 
    
     
-    //Sum the filter outputs
-    //TODO:: Need to add WET/DRY controls...
+    //Sum the filter outputs.
 
     for (int channel = 0; channel < numInputChannels; ++channel)
     {
-        buffer.copyFrom(channel, 0, buff_1.getWritePointer(channel), buffer.getNumSamples());
-        //buffer.applyGain(0.5f);
+        buff_1.addFrom(channel, 0, buff_1.getWritePointer(channel), buffer.getNumSamples());
+        buff_1.applyGain(0.9f);
 
-        buffer.addFrom(channel, 0, buff_2.getWritePointer(channel), buffer.getNumSamples());
-        buffer.applyGain(0.5f);
+        buff_1.addFrom(channel, 0, buff_2.getWritePointer(channel), buffer.getNumSamples());
+        buff_1.applyGain(0.8f);
         
-        buffer.addFrom(channel, 0, buff_3.getWritePointer(channel), buffer.getNumSamples());
-        buffer.applyGain(0.5f);
+        buff_1.addFrom(channel, 0, buff_3.getWritePointer(channel), buffer.getNumSamples());
+        buff_1.applyGain(0.5f);
 
-        buffer.addFrom(channel, 0, buff_4.getWritePointer(channel), buffer.getNumSamples());
-        buffer.applyGain(0.5f);
+        buff_1.addFrom(channel, 0, buff_4.getWritePointer(channel), buffer.getNumSamples());
+        buff_1.applyGain(0.5f);
     }
+
+    //Phase inverse for filters 2 and 4
+
+    for (int channel = 0; channel < numInputChannels; ++channel)
+    {
+        auto* channelData1 = buff_2.getWritePointer(channel);
+        auto* channelData2 = buff_4.getWritePointer(channel);
+
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+        {
+            channelData1[sample] = -channelData1[sample];
+            channelData2[sample] = -channelData2[sample];
+        }
+    }
+
+    //WET/DRY Control
+
+    for (int channel = 0; channel < numInputChannels; ++channel)
+    {
+        auto* dryData = buffer.getWritePointer(channel);
+        auto* WetData = buff_1.getWritePointer(channel);
+
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+        {
+            dryData[sample] = dry * dryData[sample] + wet * WetData[sample];
+        }
+    }
+}
+
+void Reverb::updateReverbParameters()
+{
+    comb1.setParameter(Delay::Parameters::feedbackParam, g);
+    comb2.setParameter(Delay::Parameters::feedbackParam, g - 0.0131);
+    comb3.setParameter(Delay::Parameters::feedbackParam, g - 0.0274);
+    comb4.setParameter(Delay::Parameters::feedbackParam, g - 0.031);
+
+    comb1.setParameter(Delay::Parameters::delayLengthParam, len);
+    comb2.setParameter(Delay::Parameters::delayLengthParam, len - 0.0011);
+    comb3.setParameter(Delay::Parameters::delayLengthParam, len + 0.0019);
+    comb4.setParameter(Delay::Parameters::delayLengthParam, len - 0.0007);
 }
