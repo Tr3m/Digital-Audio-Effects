@@ -13,7 +13,7 @@
 ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {    
-    setSize (400, 300);
+    setSize (400, 360);
 
     length.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     length.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
@@ -58,6 +58,17 @@ ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPlugin
     dryLabel.setText("Dry", juce::dontSendNotification);
     dryLabel.setJustificationType(juce::Justification::topLeft);
     dryLabel.attachToComponent(&dry, false);
+
+    filter.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    filter.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    filter.setRange(500.0f, 20000.0f, 10);
+    addAndMakeVisible(&filter);
+    filter.addListener(this);
+    filter.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::Filter));
+    //==
+    filterLabel.setText("Filter", juce::dontSendNotification);
+    filterLabel.setJustificationType(juce::Justification::topLeft);
+    filterLabel.attachToComponent(&filter, false);
 }
 
 ReverbPluginAudioProcessorEditor::~ReverbPluginAudioProcessorEditor()
@@ -81,6 +92,7 @@ void ReverbPluginAudioProcessorEditor::resized()
     feedback.setBounds(10, 140, getWidth(), 30);
     wet.setBounds(10, 200, getWidth(), 30);
     dry.setBounds(10, 260, getWidth(), 30);
+    filter.setBounds(10, 320, getWidth(), 30);
 }
 
 void ReverbPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
@@ -93,6 +105,8 @@ void ReverbPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
         audioProcessor.rev1.setParameter(Reverb::Parameters::wetMix, slider->getValue());
     else if (slider == &dry)
         audioProcessor.rev1.setParameter(Reverb::Parameters::dryMix, slider->getValue());
+    else if (slider == &filter)
+        audioProcessor.rev1.setParameter(Reverb::Parameters::Filter, slider->getValue());
 }
 
 void ReverbPluginAudioProcessorEditor::timerCallback()

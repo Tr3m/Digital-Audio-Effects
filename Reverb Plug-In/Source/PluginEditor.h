@@ -29,8 +29,8 @@ public:
     void timerCallback();
 
 private:
-    juce::Slider length, feedback, wet, dry;
-    juce::Label lengthLabel, feedbackLabel, wetLabel, dryLabel;
+    juce::Slider length, feedback, wet, dry, filter;
+    juce::Label lengthLabel, feedbackLabel, wetLabel, dryLabel, filterLabel;
 
     ReverbPluginAudioProcessor& audioProcessor;
 

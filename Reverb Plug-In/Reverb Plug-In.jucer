@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="Mjn8eb" name="Reverb Plug-In" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              jucerVersion="5.4.5">
+              pluginManufacturer="Manos Labrakis">
   <MAINGROUP id="qorhOv" name="Reverb Plug-In">
     <GROUP id="{50F9EA18-13A3-E37B-B227-DEBFCAB7AAD8}" name="Source">
       <FILE id="zzhaLu" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -16,6 +16,8 @@
       <FILE id="NDhxIF" name="Delay.cpp" compile="1" resource="0" file="../Effect_Classes/Delay.cpp"/>
       <FILE id="DTV2y5" name="Reverb.cpp" compile="1" resource="0" file="../Effect_Classes/Reverb.cpp"/>
       <FILE id="y1FlNg" name="Reverb.h" compile="0" resource="0" file="../Effect_Classes/Reverb.h"/>
+      <FILE id="WhcGcc" name="iirFilter.cpp" compile="1" resource="0" file="../Effect_Classes/iirFilter.cpp"/>
+      <FILE id="DXmisG" name="iirFilter.h" compile="0" resource="0" file="../Effect_Classes/iirFilter.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

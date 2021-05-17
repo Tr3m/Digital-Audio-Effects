@@ -2,7 +2,7 @@
 
 Reverb::Reverb()
 {
-	
+    
     comb1.setParameter(Delay::Parameters::feedbackParam, g);
     comb2.setParameter(Delay::Parameters::feedbackParam, g - 0.0131);
     comb3.setParameter(Delay::Parameters::feedbackParam, g - 0.0274);
@@ -54,7 +54,16 @@ void Reverb::setParameter(int index, float newValue)
         if (dry < 0)
             dry = 0;
         break;
+    case Parameters::Filter:
+        if (newValue > 20000.0)
+            newValue = 20000.0;
+        if (newValue < 500.0)
+            newValue = 500.0;
+        filterLeft.setCutoff(newValue);
+        filterRight.setCutoff(newValue);
+        break;
     }
+    
 
     updateReverbParameters();
 }
@@ -75,15 +84,23 @@ float Reverb::getParameter(int index)
     case Parameters::dryMix:
         return dry;
         break;
+    case Parameters::Filter:
+        return filterValue;
+        break;
     }
 }
 
 void Reverb::prepare(double sampleRate, int samplesPerBlock)
 {
+    m_SampleRate = sampleRate;
+
 	comb1.prepare(sampleRate, samplesPerBlock);
     comb2.prepare(sampleRate, samplesPerBlock);
     comb3.prepare(sampleRate, samplesPerBlock);
     comb4.prepare(sampleRate, samplesPerBlock);
+
+    filterLeft.prepare(sampleRate, samplesPerBlock);
+    filterRight.prepare(sampleRate, samplesPerBlock);
 }
 
 void Reverb::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels)
@@ -116,9 +133,21 @@ void Reverb::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int
     comb4.process(buff_4, numInputChannels, numOutputChannels);
    
 
-   
+    //Phase inverse for comb filters 2 and 4
+
+    for (int channel = 0; channel < numInputChannels; ++channel)
+    {
+        auto* channelData1 = buff_2.getWritePointer(channel);
+        auto* channelData2 = buff_4.getWritePointer(channel);
+
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+        {
+            channelData1[sample] = -channelData1[sample];
+            channelData2[sample] = -channelData2[sample];
+        }
+    }
     
-    //Sum the filter outputs.
+    //Sum the comb filter outputs.
 
     for (int channel = 0; channel < numInputChannels; ++channel)
     {
@@ -135,19 +164,9 @@ void Reverb::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int
         buff_1.applyGain(0.5f);
     }
 
-    //Phase inverse for filters 2 and 4
-
-    for (int channel = 0; channel < numInputChannels; ++channel)
-    {
-        auto* channelData1 = buff_2.getWritePointer(channel);
-        auto* channelData2 = buff_4.getWritePointer(channel);
-
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-        {
-            channelData1[sample] = -channelData1[sample];
-            channelData2[sample] = -channelData2[sample];
-        }
-    }
+    //Filter Process
+    filterLeft.process(buff_1, 0, m_SampleRate);
+    filterRight.process(buff_1, 1, m_SampleRate);
 
     //WET/DRY Control
 

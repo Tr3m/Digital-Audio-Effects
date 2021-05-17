@@ -1,5 +1,5 @@
 #pragma once
-#include "../IIRFilter Plug-In/JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
 
 class IIRFilter
 {
