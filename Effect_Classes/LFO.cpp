@@ -1,22 +1,22 @@
 #include "LFO.h"
+#include <JuceHeader.h>
 
 LFO::LFO()
 {	
-	initial_Frequency = 20.0f
+	
 	setWaveformType(WaveformTypes::Triangle);
 }
 
-LFO::LFO(double _Frequency, int _WaveformType)
+LFO::LFO(int _WaveformType)
 {
-	initial_Frequency = _Frequency;
+	
 	setWaveformType(_WaveformType);
 }
 
 void LFO::prepare(double _SampleRate)
 {
 	setSampleRate(_SampleRate);
-	setFrequency(initial_Frequency);
-
+	
 	modCounter = 0.0;
 	modCounter90 = 0.25;
 }
@@ -96,10 +96,10 @@ double LFO::getOutputSample(int phaseType)
 		case PhaseTypes::Inverted:
 			return outInverted;
 			break;
-		case PhaseTypes::outQuadPhase:
+		case PhaseTypes::QuadPhase:
 			return outQuadPhase;
 			break;
-		case PhaseTypes::outQuadPhaseInverted:
+		case PhaseTypes::QuadPhase_Inverted:
 			return outQuadPhaseInverted;
 			break;
 		default:
@@ -150,7 +150,7 @@ double LFO::getSampleRate()
 	return sampleRate;
 }
 
-double unipolarToBipolar(double value)
+double LFO::unipolarToBipolar(double value)
 {
 	return 2.0*value - 1.0;
 }
@@ -189,8 +189,8 @@ void LFO::moduloAdvanceAndWrap(double& _ModCounter, double _PhaseInc)
 
 double LFO::parabolicSine(double angle)
 {
-	const double B = 4.0 / kPi;
-	const double C = -4.0 / (kPi* kPi);
+	const double B = 4.0 / m_pi;
+	const double C = -4.0 / (m_pi* m_pi);
 	const double P = 0.225;
 
 	double y = B * angle + C * angle * fabs(angle);

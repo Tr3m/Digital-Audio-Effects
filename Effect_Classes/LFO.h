@@ -35,7 +35,7 @@ public:
 		Normal = 0,
 		Inverted,
 		QuadPhase,
-		QuadPhade_Inverted
+		QuadPhase_Inverted
 	};
 
 
@@ -65,4 +65,4 @@ private:
 
 	double m_pi = 3.14159265358979323846;
 
-}
+};

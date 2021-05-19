@@ -6,6 +6,10 @@ The effects implemented are the following:
 * Time-Based:
   * Digital Delay
   * Digital Reverb
+* Modulation Effects:
+  * Flanger
+  * Chorus
+  * Vibrado
 * Distortion:
   * Asymmetrical Clipping Distortion
 * IIR Filters
