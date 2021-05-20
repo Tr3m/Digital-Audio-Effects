@@ -16,6 +16,7 @@ public:
 
     void prepare(double sampleRate, int samplesPerBlock);
     void process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels);
+    float processSample(float sample, int channel);
 
     //=======================================================================
 

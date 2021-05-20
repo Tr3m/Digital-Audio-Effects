@@ -117,3 +117,32 @@ void Delay::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int 
     delayWritePosition = dpw;
 
 }
+
+
+//Need to create two instances of the class to use this function (One for each buffer channel).
+float Delay::processSample(float sample, int channel)
+{
+    float* delayData = delayBuffer.getWritePointer(juce::jmin(channel, delayBuffer.getNumChannels() - 1));
+
+    int dpr, dpw;
+
+    dpr = delayReadPosition;
+    dpw = delayWritePosition;
+
+    const float in = sample;
+    float out = 0.0;
+
+    out = (dryMix*in + wetMix*delayData[dpr]);
+
+    delayData[dpw] = in + (delayData[dpr] * feedback);
+
+    if (++dpr >= delayBufferLength)
+        dpr = 0;
+    if (++dpw >= delayBufferLength)
+        dpw = 0;
+
+    delayReadPosition = dpr;
+    delayWritePosition = dpw;
+
+    return out;
+}
