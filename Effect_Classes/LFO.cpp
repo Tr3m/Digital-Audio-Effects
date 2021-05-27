@@ -5,12 +5,14 @@ LFO::LFO()
 {	
 	
 	setWaveformType(WaveformTypes::Triangle);
+	frequency = 0.33;
 }
 
 LFO::LFO(int _WaveformType)
 {
 	
 	setWaveformType(_WaveformType);
+	frequency = 0.33;
 }
 
 void LFO::prepare(double _SampleRate)
@@ -19,6 +21,7 @@ void LFO::prepare(double _SampleRate)
 	
 	modCounter = 0.0;
 	modCounter90 = 0.25;
+	setFrequency(frequency);
 }
 
 void LFO::generateOutputSample()
@@ -27,7 +30,7 @@ void LFO::generateOutputSample()
 
 	modCounter90 = modCounter;
 
-	moduloAdvanceAndWrap(modCounter, 0.25);
+	moduloAdvanceAndWrap(modCounter90, 0.25);
 
 	outNormal = 0.0;
 	outInverted = 0.0;

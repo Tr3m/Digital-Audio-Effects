@@ -27,16 +27,17 @@ public:
 private:
 	double doUnipolarModulationFromMin(double unipolarModulatorValue, double minValue, double maxValue);
 	double bipolarToUnipolar(double value);
+	
 
-	Delay delayLine;
+	Delay delayLine_L, delayLine_R;
 	LFO lfo;
 
-	double minDelay = 0.01;
-	double maxDelay = 0.07;
+	double minDelay = 0.0001;
+	double maxDelay = 0.007;
 
 	//User Parameters
-	double rate{0.7}; //In Hz
-	double depth{50.0}; //Depth %
+	double rate{0.33}; //In Hz
+	double depth{65.0}; //Depth %
 	double wet{0.5}, dry{0.5};
 
 };

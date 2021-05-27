@@ -14,7 +14,8 @@
 //==============================================================================
 /**
 */
-class FlangerPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
+class FlangerPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
+                                           public juce::Slider::Listener
 {
 public:
     FlangerPluginAudioProcessorEditor (FlangerPluginAudioProcessor&);
@@ -23,10 +24,13 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    void sliderValueChanged(juce::Slider* slider);
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
+    
+    juce::Slider rateSlider, depthSlider, wetSlider, drySlider;
+    juce::Label rateLabel, depthLabel, wetLabel, dryLabel;
+
     FlangerPluginAudioProcessor& audioProcessor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerPluginAudioProcessorEditor)

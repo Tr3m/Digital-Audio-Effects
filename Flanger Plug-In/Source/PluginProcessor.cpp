@@ -94,6 +94,7 @@ void FlangerPluginAudioProcessor::changeProgramName (int index, const juce::Stri
 void FlangerPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     flanger.prepare(sampleRate, samplesPerBlock);
+   
 }
 
 void FlangerPluginAudioProcessor::releaseResources()
@@ -137,6 +138,7 @@ void FlangerPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 
     
     flanger.process(buffer, totalNumInputChannels, totalNumOutputChannels);
+ ;
     
 }
 
@@ -154,15 +156,12 @@ juce::AudioProcessorEditor* FlangerPluginAudioProcessor::createEditor()
 //==============================================================================
 void FlangerPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    
 }
 
 void FlangerPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+   
 }
 
 //==============================================================================
