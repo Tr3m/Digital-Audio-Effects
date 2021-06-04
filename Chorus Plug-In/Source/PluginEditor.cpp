@@ -14,54 +14,49 @@ ChorusPluginAudioProcessorEditor::ChorusPluginAudioProcessorEditor (ChorusPlugin
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     
-    setSize(400, 340);
+    setSize(370, 470);
 
     //Rate Slider
-    rateSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    rateSlider.setSliderStyle(juce::Slider::Rotary);
+    rateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     rateSlider.setTextValueSuffix(" Hz");
     rateSlider.setRange(0.1f, 10.0f, 0.1f);
     addAndMakeVisible(&rateSlider);
     rateSlider.addListener(this);
     rateSlider.setValue(audioProcessor.chorus.getParameter(Chorus::Parameters::Rate));
-    //==
-    rateLabel.setText("Rate", juce::dontSendNotification);
-    rateLabel.setJustificationType(juce::Justification::topLeft);
-    rateLabel.attachToComponent(&rateSlider, false);
+    rateSlider.setLookAndFeel(&graphics);
+   
 
     //Depth Slider
-    depthSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    depthSlider.setSliderStyle(juce::Slider::Rotary);
+    depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     depthSlider.setTextValueSuffix(" %");
     depthSlider.setRange(0.1f, 100.0f, 0.1f);
     addAndMakeVisible(&depthSlider);
     depthSlider.addListener(this);
     depthSlider.setValue(audioProcessor.chorus.getParameter(Chorus::Parameters::Depth));
-    //==
-    depthLabel.setText("Depth", juce::dontSendNotification);
-    depthLabel.setJustificationType(juce::Justification::topLeft);
-    depthLabel.attachToComponent(&depthSlider, false);
+    depthSlider.setLookAndFeel(&graphics);
+    
 
     //Wet Slider
-    wetSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    wetSlider.setSliderStyle(juce::Slider::Rotary);
+    wetSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     wetSlider.setRange(0.0f, 1.0f, 0.1f);
     addAndMakeVisible(&wetSlider);
     wetSlider.addListener(this);
     wetSlider.setValue(audioProcessor.chorus.getParameter(Chorus::Parameters::WetMix));
-    //==
-    wetLabel.setText("Wet", juce::dontSendNotification);
-    wetLabel.setJustificationType(juce::Justification::topLeft);
-    wetLabel.attachToComponent(&wetSlider, false);
+    wetSlider.setLookAndFeel(&graphics);
+ 
 
     //Dry Slider
-    drySlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    drySlider.setSliderStyle(juce::Slider::Rotary);
+    drySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     drySlider.setRange(0.0f, 1.0f, 0.1f);
     addAndMakeVisible(&drySlider);
     drySlider.addListener(this);
     drySlider.setValue(audioProcessor.chorus.getParameter(Chorus::Parameters::DryMix));
-    //==
-    dryLabel.setText("Dry", juce::dontSendNotification);
-    dryLabel.setJustificationType(juce::Justification::topLeft);
-    dryLabel.attachToComponent(&drySlider, false);
-
+    drySlider.setLookAndFeel(&graphics);
+    
 
 }
 
@@ -73,19 +68,15 @@ ChorusPluginAudioProcessorEditor::~ChorusPluginAudioProcessorEditor()
 void ChorusPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
   
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour(juce::Colours::white);
-    g.setFont(25.0f);
-    g.drawFittedText("Chorus Plug-In", 5, 10, getWidth(), 30, juce::Justification::centred, 1);
+    g.drawImageAt(graphics.getBackground(), 0, 0);
 }
 
 void ChorusPluginAudioProcessorEditor::resized()
 {
-    rateSlider.setBounds(10, 80, getWidth() - 5, 30);
-    depthSlider.setBounds(10, 140, getWidth() - 5, 30);
-    wetSlider.setBounds(10, 200, getWidth() - 5, 30);
-    drySlider.setBounds(10, 260, getWidth() - 5, 30);
+    rateSlider.setBounds(44, 91, 124, 124);
+    depthSlider.setBounds(198, 91, 124, 124);
+    wetSlider.setBounds(44, 252, 124, 124);
+    drySlider.setBounds(198, 252, 124, 124);
 }
 
 void ChorusPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)

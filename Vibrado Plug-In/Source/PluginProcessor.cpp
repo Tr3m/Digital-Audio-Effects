@@ -22,6 +22,7 @@ VibradoPluginAudioProcessor::VibradoPluginAudioProcessor()
                        )
 #endif
 {
+    vibrado.setLFOType(Vibrado::LFO_Types::Triangle);
 }
 
 VibradoPluginAudioProcessor::~VibradoPluginAudioProcessor()

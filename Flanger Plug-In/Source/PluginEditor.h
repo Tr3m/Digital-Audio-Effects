@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "../../Effect_Classes/GUIGraphics.h"
 
 //==============================================================================
 /**
@@ -29,7 +30,8 @@ public:
 private:
     
     juce::Slider rateSlider, depthSlider, wetSlider, drySlider;
-    juce::Label rateLabel, depthLabel, wetLabel, dryLabel;
+    
+    GUIGraphics graphics{ GUIGraphics::EffectTypes::Flanger };
 
     FlangerPluginAudioProcessor& audioProcessor;
 

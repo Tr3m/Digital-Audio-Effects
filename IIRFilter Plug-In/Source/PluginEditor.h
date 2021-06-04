@@ -10,14 +10,13 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "../../Effect_Classes/GUIGraphics.h"
 
 //==============================================================================
 /**
 */
 class IirfilterPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                             public juce::Slider::Listener,
-                                             public juce::ComboBox::Listener,
-                                             public juce::Timer
+                                             public juce::Slider::Listener
 {
 public:
     IirfilterPluginAudioProcessorEditor (IirfilterPluginAudioProcessor&);
@@ -27,15 +26,19 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     void sliderValueChanged(juce::Slider* slider);
-    void timerCallback();
-    void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
+
+
 
 private:
     juce::Slider freqSlider, qSlider, gainSlider;
     juce::Label freqLabel, qLabel, gainLabel;
-    juce::ComboBox filterSelect;
+    juce::TextButton lpButton, hpButton, parButton;
+
+    juce::TooltipWindow tooltipWindow{ this, 200 };
 
     IirfilterPluginAudioProcessor& audioProcessor;
+
+    GUIGraphics graphics{ GUIGraphics::EffectTypes::Filter };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IirfilterPluginAudioProcessorEditor)
 };

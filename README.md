@@ -16,8 +16,12 @@ The effects implemented are the following:
     * 2nd Order Butterworth Low-Pass Filter
     * 2nd Order Butterworth High-Pass Filter
     * Parametric EQ
+* Dynamic Effects:
+  * Compressor
+  * Limiter
 * Utility Classes:
   * LFO (Low Frequency Oscillator)
+  * Envelope Follower
 
 <br><br/>
 ### Requirements -  Third Party Libraries

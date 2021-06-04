@@ -14,52 +14,37 @@ DelayPluginAudioProcessorEditor::DelayPluginAudioProcessorEditor (DelayPluginAud
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     
-    setSize (370, 471);
+    setSize (370, 470);
 
     delayLengthSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     delayLengthSlider.addListener(this);
     delayLengthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 65, 25);
     delayLengthSlider.setRange(0.01, 2.0, 0.01);
     addAndMakeVisible(&delayLengthSlider);
+    delayLengthSlider.setLookAndFeel(&graphics);
 
     feedbackSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     feedbackSlider.addListener(this);
     feedbackSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 65, 25);
     feedbackSlider.setRange(0.0, 0.995, 0.005);
     addAndMakeVisible(&feedbackSlider);
+    feedbackSlider.setLookAndFeel(&graphics);
 
     dryMixSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     dryMixSlider.addListener(this);
     dryMixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 65, 25);
     dryMixSlider.setRange(0.0, 1.0, 0.01);
     addAndMakeVisible(&dryMixSlider);
+    dryMixSlider.setLookAndFeel(&graphics);
 
     wetMixSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     wetMixSlider.addListener(this);
     wetMixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 65, 25);
     wetMixSlider.setRange(0.0, 1.0, 0.01);
     addAndMakeVisible(&wetMixSlider);
+    wetMixSlider.setLookAndFeel(&graphics);
 
-    delayLengthLabel.attachToComponent(&delayLengthSlider, false);
-    delayLengthLabel.setJustificationType(juce::Justification::centred);
-    delayLengthLabel.setFont(juce::Font(11.0f));
-    delayLengthLabel.setText("Delay Length", juce::dontSendNotification);
-
-    feedbackLabel.attachToComponent(&feedbackSlider, false);
-    feedbackLabel.setJustificationType(juce::Justification::centred);
-    feedbackLabel.setFont(juce::Font(11.0f));
-    feedbackLabel.setText("Feedback", juce::dontSendNotification);
-
-    dryMixLabel.attachToComponent(&dryMixSlider, false);
-    dryMixLabel.setJustificationType(juce::Justification::centred);
-    dryMixLabel.setFont(juce::Font(11.0f));
-    dryMixLabel.setText("Dry", juce::dontSendNotification);
-
-    wetMixLabel.attachToComponent(&wetMixSlider, false);
-    wetMixLabel.setJustificationType(juce::Justification::centred);
-    wetMixLabel.setFont(juce::Font(11.0f));
-    wetMixLabel.setText("Wet", juce::dontSendNotification);
-
+  
     startTimer(50);
 }
 
@@ -70,20 +55,15 @@ DelayPluginAudioProcessorEditor::~DelayPluginAudioProcessorEditor()
 //==============================================================================
 void DelayPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (30.0f);
-    g.drawFittedText ("Digital Delay",10,10,getWidth(), 40, juce::Justification::centred, 1);
+    g.drawImageAt(graphics.getBackground(), 0, 0);
 }
 
 void DelayPluginAudioProcessorEditor::resized()
 {
-    delayLengthSlider.setBounds(20, 90, 140, 140);
-    feedbackSlider.setBounds(200, 90, 140, 140);
-    dryMixSlider.setBounds(20, 270, 140, 140);
-    wetMixSlider.setBounds(200, 270, 140, 140);
+    delayLengthSlider.setBounds(44, 91, 124, 124);
+    feedbackSlider.setBounds(198, 91, 124, 124);
+    dryMixSlider.setBounds(44, 252, 124, 124);
+    wetMixSlider.setBounds(198, 252, 124, 124);
 }
 
 void DelayPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)

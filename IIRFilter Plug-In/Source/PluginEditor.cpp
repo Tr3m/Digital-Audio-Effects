@@ -13,29 +13,31 @@
 IirfilterPluginAudioProcessorEditor::IirfilterPluginAudioProcessorEditor (IirfilterPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    setSize (400, 300);
+    setSize (370, 470);
 
-    freqSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    
+
+    freqSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    freqSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 65, 25);
     freqSlider.setRange(20.0, 20000.0, 10);
     freqSlider.setTextValueSuffix(" Hz");
     freqSlider.setValue(audioProcessor.leftFilter.getCutoff());
     addAndMakeVisible(&freqSlider);
     freqSlider.addListener(this);
-    freqLabel.setText("Frequency", juce::dontSendNotification);
-    freqLabel.setJustificationType(juce::Justification::topLeft);
-    freqLabel.attachToComponent(&freqSlider, false);
+    freqSlider.setLookAndFeel(&graphics);  
 
 
-    gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    gainSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    gainSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 65, 25);
     gainSlider.setRange(-12.0, 12.0, 1);
     gainSlider.setTextValueSuffix(" dB");
+    gainSlider.setValue(audioProcessor.leftFilter.getGain());
     addAndMakeVisible(&gainSlider);
     gainSlider.addListener(this);
-    gainLabel.setText("Gain", juce::dontSendNotification);
-    gainLabel.setJustificationType(juce::Justification::topLeft);
-    gainLabel.attachToComponent(&gainSlider, false);
+    gainSlider.setLookAndFeel(&graphics);
+    
 
-    qSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    qSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     qSlider.setRange(0.2, 10.0, .001);
     //addAndMakeVisible(&qSlider);
     qSlider.addListener(this);
@@ -43,18 +45,52 @@ IirfilterPluginAudioProcessorEditor::IirfilterPluginAudioProcessorEditor (Iirfil
     qLabel.setJustificationType(juce::Justification::topLeft);
     qLabel.attachToComponent(&qSlider, false);
 
-    filterSelect.setJustificationType(juce::Justification::centred);
-    //filterSelect.setColour(juce::ComboBox::backgroundColourId, juce::Colours::darkgrey);
-    //filterSelect.setColour(juce::ComboBox::outlineColourId, juce::Colours::grey.withAlpha(1.0f));
-    filterSelect.setAlpha(0.9f);
-    filterSelect.addItem("Low-Pass Filter", 1);
-    filterSelect.addItem("High-Pass Filter", 2);
-    filterSelect.addItem("Parametric EQ", 3);
-    addAndMakeVisible(&filterSelect);
-    filterSelect.addListener(this);
-    filterSelect.setSelectedId(audioProcessor.leftFilter.getFilterType() + 1);
+    if (audioProcessor.leftFilter.getFilterType() != IIRFilter::FilterTypes::Parametric)
+    {
+        gainSlider.setEnabled(false);
+        gainSlider.setAlpha(0.5);
+    }
+        
 
-    startTimer(50);
+    addAndMakeVisible(&hpButton);
+    hpButton.setBounds(80, 97, 50, 30);
+    hpButton.setTooltip("High-Pass");
+    hpButton.setAlpha(0);
+    hpButton.onClick = [this] {
+        audioProcessor.leftFilter.setFilterType(IIRFilter::FilterTypes::HPF);
+        audioProcessor.rightFilter.setFilterType(IIRFilter::FilterTypes::HPF);
+        gainSlider.setEnabled(false);
+        gainSlider.setAlpha(0.5);
+        gainSlider.setValue(0);
+        repaint();
+    };
+
+    addAndMakeVisible(&lpButton);
+    lpButton.setBounds(80, 137, 50, 30);
+    lpButton.setTooltip("Low-Pass");
+    lpButton.setAlpha(0);
+    lpButton.onClick = [this] {
+        audioProcessor.leftFilter.setFilterType(IIRFilter::FilterTypes::LPF);
+        audioProcessor.rightFilter.setFilterType(IIRFilter::FilterTypes::LPF);
+        gainSlider.setEnabled(false);
+        gainSlider.setAlpha(0.5);
+        gainSlider.setValue(0);
+        repaint();
+    };
+
+    addAndMakeVisible(&parButton);
+    parButton.setBounds(80, 172, 50, 30);
+    parButton.setTooltip("Parametric");
+    parButton.setAlpha(0);
+    parButton.onClick = [this] {
+        audioProcessor.leftFilter.setFilterType(IIRFilter::FilterTypes::Parametric);
+        audioProcessor.rightFilter.setFilterType(IIRFilter::FilterTypes::Parametric);
+        gainSlider.setEnabled(true);
+        gainSlider.setAlpha(1);
+        repaint();
+    };
+
+
 }
 
 IirfilterPluginAudioProcessorEditor::~IirfilterPluginAudioProcessorEditor()
@@ -64,20 +100,26 @@ IirfilterPluginAudioProcessorEditor::~IirfilterPluginAudioProcessorEditor()
 //==============================================================================
 void IirfilterPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (25.0f);
-    g.drawFittedText ("IIR Filters", 5, 10, getWidth(), 30, juce::Justification::centred, 1);
+    switch (audioProcessor.leftFilter.getFilterType())
+    {
+    case IIRFilter::FilterTypes::HPF:
+        g.drawImageAt(graphics.getFilterBackground(GUIGraphics::FilterStates::HighPass), 0, 0);
+        break;
+    case IIRFilter::FilterTypes::LPF:
+        g.drawImageAt(graphics.getFilterBackground(GUIGraphics::FilterStates::LowPass), 0, 0);
+        break;
+    case IIRFilter::FilterTypes::Parametric:
+        g.drawImageAt(graphics.getFilterBackground(GUIGraphics::FilterStates::Parametric), 0, 0);
+        break;
+    }
 }
 
 void IirfilterPluginAudioProcessorEditor::resized()
 {
-    freqSlider.setBounds(10, 120, getWidth(), 30);
-    gainSlider.setBounds(10, 180, getWidth(), 30);
-    qSlider.setBounds(10, 240, getWidth(), 30);
-    filterSelect.setBounds(145, 60, getWidth() / 3, 30);
+    freqSlider.setBounds(198, 91, 124, 124);
+    gainSlider.setBounds(44, 252, 124, 124);
+    //qSlider.setBounds(10, 240, getWidth(), 30);
+    //filterSelect.setBounds(145, 60, getWidth() / 3, 30);
 }
 
 void IirfilterPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
@@ -99,26 +141,4 @@ void IirfilterPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slide
     }
 }
 
-void IirfilterPluginAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
-{
-    audioProcessor.leftFilter.setFilterType(comboBoxThatHasChanged->getSelectedId() - 1);
-    audioProcessor.rightFilter.setFilterType(comboBoxThatHasChanged->getSelectedId() - 1);
-}
 
-void IirfilterPluginAudioProcessorEditor::timerCallback()
-{
-   freqSlider.setValue(audioProcessor.leftFilter.getCutoff());
-   gainSlider.setValue(audioProcessor.leftFilter.getGain());
-   qSlider.setValue(audioProcessor.leftFilter.getQ());
-
-   if (filterSelect.getSelectedId() == 3)
-   {
-       gainSlider.setVisible(true);
-       //qSlider.setVisible(true);
-   }
-   else
-   {
-       gainSlider.setVisible(false);
-       //qSlider.setVisible(false);
-   }
-}

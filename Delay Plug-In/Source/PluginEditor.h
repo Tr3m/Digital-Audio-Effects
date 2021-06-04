@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "../../Effect_Classes//GUIGraphics.h"
 
 
 //==============================================================================
@@ -31,8 +32,9 @@ public:
 
 private:
 
-    juce::Label delayLengthLabel, feedbackLabel, dryMixLabel, wetMixLabel;
     juce::Slider delayLengthSlider, feedbackSlider, dryMixSlider, wetMixSlider;
+    
+    GUIGraphics graphics{ GUIGraphics::EffectTypes::Delay };
 
     DelayPluginAudioProcessor& audioProcessor;
 

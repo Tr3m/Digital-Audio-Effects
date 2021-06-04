@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "../../Effect_Classes/GUIGraphics.h"
 
 //==============================================================================
 /**
@@ -31,6 +32,8 @@ public:
 private:
     juce::Slider length, feedback, wet, dry, filter;
     juce::Label lengthLabel, feedbackLabel, wetLabel, dryLabel, filterLabel;
+
+    GUIGraphics graphics{ GUIGraphics::EffectTypes::Reverb };
 
     ReverbPluginAudioProcessor& audioProcessor;
 

@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "../../Effect_Classes/GUIGraphics.h"
 
 //==============================================================================
 /**
@@ -30,8 +31,9 @@ public:
 
 private:
     
-    juce::Slider gainSlider, levelSlider;
-    juce::Label gainLabel, levelLabel;
+    juce::Slider gainSlider, levelSlider, filterSlider;
+
+    GUIGraphics graphics{ GUIGraphics::EffectTypes::Distortion };
 
     DistortionPluginAudioProcessor& audioProcessor;
 

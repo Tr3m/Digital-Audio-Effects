@@ -1,5 +1,6 @@
 #pragma once
-#include "../Distortion Plug-In/JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
+#include "iirFilter.h"
 
 class Distortion
 {
@@ -19,16 +20,21 @@ public:
     static enum Parameters
     {
     	gainParam = 0,
-    	levelParam
+    	levelParam,
+		filterParam
     };
 
 
 private:
 
 	float m_Gain, m_Level;
+	float m_FilterCutoff = 20000.0;
 
+	double m_SampleRate;
 
 	juce::dsp::Gain <float> preGain, clipGain, level;
+	IIRFilter filterLeft{44100, IIRFilter::FilterTypes::LPF, m_FilterCutoff };
+	IIRFilter filterRight{44100, IIRFilter::FilterTypes::LPF, m_FilterCutoff };
 
 
 	float k{ 1.5 }; //input gain

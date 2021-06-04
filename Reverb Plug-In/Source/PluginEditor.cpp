@@ -13,62 +13,53 @@
 ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {    
-    setSize (400, 360);
+    setSize (370, 470);
 
-    length.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    length.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     length.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
     length.setRange(0.001f, 0.1f, 0.001);
     addAndMakeVisible(&length);
     length.addListener(this);
     length.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::length));
-    //==
-    lengthLabel.setText("Length", juce::dontSendNotification);
-    lengthLabel.setJustificationType(juce::Justification::topLeft);
-    lengthLabel.attachToComponent(&length, false);
+    length.setLookAndFeel(&graphics);
+  
 
-    feedback.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    feedback.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     feedback.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
     feedback.setRange(0, 1, 0.001);
     addAndMakeVisible(&feedback);
     feedback.addListener(this);
     feedback.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::feedback));
-    //==
-    feedbackLabel.setText("Feedback", juce::dontSendNotification);
-    feedbackLabel.setJustificationType(juce::Justification::topLeft);
-    feedbackLabel.attachToComponent(&feedback, false);
+    feedback.setLookAndFeel(&graphics);
 
-    wet.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+
+
+    wet.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     wet.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
     wet.setRange(0, 1, 0.01);
     addAndMakeVisible(&wet);
     wet.addListener(this);
     wet.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::wetMix));
-    //==
-    wetLabel.setText("Wet", juce::dontSendNotification);
-    wetLabel.setJustificationType(juce::Justification::topLeft);
-    wetLabel.attachToComponent(&wet, false);
+    wet.setLookAndFeel(&graphics);
 
-    dry.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+
+    dry.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     dry.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
     dry.setRange(0, 1, 0.01);
     addAndMakeVisible(&dry);
     dry.addListener(this);
     dry.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::dryMix));
-    //==
-    dryLabel.setText("Dry", juce::dontSendNotification);
-    dryLabel.setJustificationType(juce::Justification::topLeft);
-    dryLabel.attachToComponent(&dry, false);
+    dry.setLookAndFeel(&graphics);
+  
 
-    filter.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    filter.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     filter.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
     filter.setRange(500.0f, 20000.0f, 10);
     addAndMakeVisible(&filter);
     filter.addListener(this);
     filter.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::Filter));
-    //==
-    filterLabel.setText("Filter", juce::dontSendNotification);
-    filterLabel.setJustificationType(juce::Justification::topLeft);
-    filterLabel.attachToComponent(&filter, false);
+    filter.setLookAndFeel(&graphics);
+   
 }
 
 ReverbPluginAudioProcessorEditor::~ReverbPluginAudioProcessorEditor()
@@ -78,21 +69,18 @@ ReverbPluginAudioProcessorEditor::~ReverbPluginAudioProcessorEditor()
 //==============================================================================
 void ReverbPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (25.0f);
-    g.drawFittedText("Reverb Plug-In", 5, 10, getWidth(), 30, juce::Justification::centred, 1);
+    g.drawImageAt(graphics.getBackground(), 0, 0);
 }
 
 void ReverbPluginAudioProcessorEditor::resized()
 {
-    length.setBounds(10, 80, getWidth(), 30);
-    feedback.setBounds(10, 140, getWidth(), 30);
-    wet.setBounds(10, 200, getWidth(), 30);
-    dry.setBounds(10, 260, getWidth(), 30);
-    filter.setBounds(10, 320, getWidth(), 30);
+    int smallSlider = 100;
+
+    length.setBounds(44, 91, 124, 124);
+    feedback.setBounds(198, 91, 124, 124);
+    wet.setBounds(20, 266, smallSlider, smallSlider);
+    dry.setBounds(132, 266, smallSlider, smallSlider);
+    filter.setBounds(243, 266, smallSlider, smallSlider);
 }
 
 void ReverbPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)

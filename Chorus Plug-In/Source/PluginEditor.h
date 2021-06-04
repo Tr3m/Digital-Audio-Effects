@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "../../Effect_Classes/GUIGraphics.h"
 
 //==============================================================================
 /**
@@ -29,9 +30,11 @@ public:
 private:
 
     juce::Slider rateSlider, depthSlider, wetSlider, drySlider;
-    juce::Label rateLabel, depthLabel, wetLabel, dryLabel;
+    
 
     ChorusPluginAudioProcessor& audioProcessor;
+
+    GUIGraphics graphics{ GUIGraphics::EffectTypes::Chorus };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusPluginAudioProcessorEditor)
 };

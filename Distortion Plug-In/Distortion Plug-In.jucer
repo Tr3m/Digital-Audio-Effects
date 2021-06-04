@@ -2,7 +2,8 @@
 
 <JUCERPROJECT id="PyH00A" name="Distortion Plug-In" projectType="audioplug"
               useAppConfig="0" addUsingNamespaceToJuceHeader="0" displaySplashScreen="1"
-              jucerFormatVersion="1" pluginFormats="buildVST3" pluginManufacturer="Manos Labrakis">
+              jucerFormatVersion="1" pluginManufacturer="Manos Labrakis (Thesis)"
+              pluginFormats="buildStandalone,buildVST3">
   <MAINGROUP id="hAl5cJ" name="Distortion Plug-In">
     <GROUP id="{BB8353F1-F0F2-288D-A027-953DD1960CFB}" name="Source">
       <FILE id="ZooqSx" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -14,6 +15,51 @@
       <FILE id="DwMhAI" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="eOxiv2" name="Distortion.cpp" compile="1" resource="0" file="../Effect_Classes/Distortion.cpp"/>
       <FILE id="WL6IWa" name="Distortion.h" compile="0" resource="0" file="../Effect_Classes/Distortion.h"/>
+      <FILE id="YjzRoA" name="iirFilter.cpp" compile="1" resource="0" file="../Effect_Classes/iirFilter.cpp"/>
+      <FILE id="JoWxa4" name="iirFilter.h" compile="0" resource="0" file="../Effect_Classes/iirFilter.h"/>
+      <FILE id="zExOwA" name="GUIGraphics.h" compile="0" resource="0" file="../Effect_Classes/GUIGraphics.h"/>
+      <FILE id="w3AOJG" name="GUIGraphics.cpp" compile="1" resource="0" file="../Effect_Classes/GUIGraphics.cpp"/>
+    </GROUP>
+    <GROUP id="{C6334E85-26FB-0E1A-F6CD-7C2BA24C67F9}" name="Graphics">
+      <GROUP id="{88555DE8-99CF-ADE9-E581-2D6BAFA473FE}" name="Backgrounds">
+        <FILE id="v48GQ2" name="distortion_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/distortion_background.png"/>
+        <FILE id="TavhhO" name="chorus_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/chorus_background.png"/>
+        <FILE id="AFYyUk" name="delay_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/delay_background.png"/>
+        <FILE id="kt3EkV" name="filter_highpass.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/filter_highpass.png"/>
+        <FILE id="RksItB" name="filter_lowpass.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/filter_lowpass.png"/>
+        <FILE id="TKn23L" name="filter_parametric.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/filter_parametric.png"/>
+        <FILE id="YGj9pI" name="flanger_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/flanger_background.png"/>
+        <FILE id="OH4Dvk" name="reverb_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/reverb_background.png"/>
+        <FILE id="HOYHsV" name="vibrado_saw.png" compile="0" resource="1" file="../Graphics/Backgrounds/vibrado_saw.png"/>
+        <FILE id="AaJa90" name="vibrado_sine.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/vibrado_sine.png"/>
+        <FILE id="fzdPKi" name="vibrado_triangle.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/vibrado_triangle.png"/>
+      </GROUP>
+      <GROUP id="{B858D74E-4641-5956-BC89-B898B39DD415}" name="Knobs">
+        <FILE id="tp08XF" name="chorus_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/chorus_Knob.png"/>
+        <FILE id="ZyQ3JE" name="compressor_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/compressor_Knob.png"/>
+        <FILE id="bIXrfM" name="delay_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/delay_Knob.png"/>
+        <FILE id="Al7k7n" name="distortion_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/distortion_Knob.png"/>
+        <FILE id="WoyyfL" name="filter_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/filter_Knob.png"/>
+        <FILE id="oFz9Gw" name="flanger_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/flanger_Knob.png"/>
+        <FILE id="hPWWdd" name="limiter_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/limiter_Knob.png"/>
+        <FILE id="dZP7zE" name="reverb_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/reverb_Knob.png"/>
+        <FILE id="A5mARv" name="vibrado_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/vibrado_Knob.png"/>
+      </GROUP>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
@@ -57,6 +103,6 @@
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <LIVE_SETTINGS>
-    <WINDOWS/>
+    <WINDOWS buildEnabled="1"/>
   </LIVE_SETTINGS>
 </JUCERPROJECT>
