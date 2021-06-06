@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="uEJ9Jw" name="Vibrado Plug-In" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              pluginManufacturer="Manos Labrakis (Thesis)">
+  <MAINGROUP id="Ckzqjj" name="Vibrado Plug-In">
+    <GROUP id="{000DB3C7-CF6C-E3A5-EAD0-99EDBCB7CF27}" name="Source">
+      <FILE id="EOi5A6" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="QkMPmP" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="SVh0xO" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="YiQDdY" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="F61xJ1" name="Vibrado.cpp" compile="1" resource="0" file="../Effect_Classes/Vibrado.cpp"/>
+      <FILE id="Ne92RN" name="Vibrado.h" compile="0" resource="0" file="../Effect_Classes/Vibrado.h"/>
+      <FILE id="PGmNTk" name="Delay.cpp" compile="1" resource="0" file="../Effect_Classes/Delay.cpp"/>
+      <FILE id="gjqwVA" name="Delay.h" compile="0" resource="0" file="../Effect_Classes/Delay.h"/>
+      <FILE id="MZMiRS" name="LFO.cpp" compile="1" resource="0" file="../Effect_Classes/LFO.cpp"/>
+      <FILE id="MCcSoq" name="LFO.h" compile="0" resource="0" file="../Effect_Classes/LFO.h"/>
+      <FILE id="KhPPp2" name="GUIGraphics.cpp" compile="1" resource="0" file="../Effect_Classes/GUIGraphics.cpp"/>
+      <FILE id="DIOd4E" name="GUIGraphics.h" compile="0" resource="0" file="../Effect_Classes/GUIGraphics.h"/>
+    </GROUP>
+    <GROUP id="{F83120EC-F5B7-7E22-4C1E-30839ABE148C}" name="Graphics">
+      <GROUP id="{C78898B8-A35C-58C5-7BE3-748EAD1BFB08}" name="Backgrounds">
+        <FILE id="t4CUP3" name="chorus_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/chorus_background.png"/>
+        <FILE id="PPJazO" name="compressor_hard.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/compressor_hard.png"/>
+        <FILE id="zC2VbF" name="compressor_soft.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/compressor_soft.png"/>
+        <FILE id="lKSWl6" name="delay_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/delay_background.png"/>
+        <FILE id="miJNXa" name="distortion_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/distortion_background.png"/>
+        <FILE id="MBRd08" name="filter_highpass.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/filter_highpass.png"/>
+        <FILE id="atF0to" name="filter_lowpass.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/filter_lowpass.png"/>
+        <FILE id="lpsfAg" name="filter_parametric.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/filter_parametric.png"/>
+        <FILE id="Cgzx7Q" name="flanger_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/flanger_background.png"/>
+        <FILE id="G2hkIv" name="limiter_hard.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/limiter_hard.png"/>
+        <FILE id="BgtZiG" name="limiter_soft.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/limiter_soft.png"/>
+        <FILE id="i2WvBE" name="reverb_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/reverb_background.png"/>
+        <FILE id="ZgJmFn" name="vibrado_saw.png" compile="0" resource="1" file="../Graphics/Backgrounds/vibrado_saw.png"/>
+        <FILE id="TzWbt3" name="vibrado_sine.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/vibrado_sine.png"/>
+        <FILE id="Rwa7eL" name="vibrado_triangle.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/vibrado_triangle.png"/>
+      </GROUP>
+      <GROUP id="{57E79DE8-4A8A-FD7E-FA05-36DF81010C68}" name="Knobs">
+        <FILE id="Vjp6Bi" name="chorus_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/chorus_Knob.png"/>
+        <FILE id="R6Gfdb" name="compressor_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/compressor_Knob.png"/>
+        <FILE id="mo2Isz" name="delay_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/delay_Knob.png"/>
+        <FILE id="KHyZ5w" name="distortion_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/distortion_Knob.png"/>
+        <FILE id="GvySk7" name="filter_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/filter_Knob.png"/>
+        <FILE id="MOWtsi" name="flanger_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/flanger_Knob.png"/>
+        <FILE id="GXVVaA" name="limiter_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/limiter_Knob.png"/>
+        <FILE id="GelGZX" name="reverb_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/reverb_Knob.png"/>
+        <FILE id="O6iQt8" name="vibrado_Knob.png" compile="0" resource="1"
+              file="../Graphics/Knobs/vibrado_Knob.png"/>
+      </GROUP>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <VS2019 targetFolder="Builds/VisualStudio2019">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Vibrado Plug-In"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Vibrado Plug-In"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2019>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <WINDOWS/>
+  </LIVE_SETTINGS>
+</JUCERPROJECT>

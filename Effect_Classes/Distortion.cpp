@@ -3,12 +3,13 @@
 Distortion::Distortion()
 {
 	m_Gain = 0.0f;
-	m_Level = 0.0f;
+	m_Level = -20.0f;
 	
 
 	preGain.setGainDecibels(m_Gain);
 	clipGain.setGainDecibels(40.0f);
 	level.setGainDecibels(m_Level);
+	
 
 }
 
@@ -28,6 +29,11 @@ void Distortion::prepare(double sampleRate, int samplesPerBlock, int numOutputCh
 
 	level.reset();
 	level.prepare(spec);
+
+	filterLeft.prepare(sampleRate, samplesPerBlock);
+	filterRight.prepare(sampleRate, samplesPerBlock);
+
+	m_SampleRate = sampleRate;
 
 }
 
@@ -65,6 +71,10 @@ void Distortion::process(juce::AudioBuffer<float>& buffer, int numInputChannels,
 
 	}
 
+	//Filter Control
+	filterLeft.process(buffer, 0, m_SampleRate);
+	filterRight.process(buffer, 1, m_SampleRate);
+
 	//Level Control
 	level.process(juce::dsp::ProcessContextReplacing<float>(block));
 
@@ -81,6 +91,10 @@ void Distortion::setParameter(int index, float newValue)
 		case levelParam:
 			m_Level = newValue;
 			break;
+		case filterParam:
+			filterLeft.setCutoff(newValue);
+			filterRight.setCutoff(newValue);
+			break;
 	}
 }
 
@@ -93,6 +107,9 @@ float Distortion::getParameter(int index)
 			break;
 		case levelParam:
 			return m_Level;
+			break;
+		case filterParam:
+			return m_FilterCutoff;
 			break;
 	}
 }
