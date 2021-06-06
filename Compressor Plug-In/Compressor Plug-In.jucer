@@ -1,68 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="SOr1eW" name="IIRFilter Plug-In" projectType="audioplug"
+<JUCERPROJECT id="JK4Jin" name="Compressor Plug-In" projectType="audioplug"
               useAppConfig="0" addUsingNamespaceToJuceHeader="0" displaySplashScreen="1"
               jucerFormatVersion="1" pluginManufacturer="Manos Labrakis (Thesis)">
-  <MAINGROUP id="LUojcd" name="IIRFilter Plug-In">
-    <GROUP id="{09A2B578-3A3C-5AE5-1445-73E6F8A5A9C3}" name="Source">
-      <FILE id="nB5rYO" name="PluginProcessor.cpp" compile="1" resource="0"
+  <MAINGROUP id="uARPvt" name="Compressor Plug-In">
+    <GROUP id="{FCD40E49-BCA5-0A76-3645-84AF7A8E965F}" name="Source">
+      <FILE id="BU8VrE" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
-      <FILE id="jYzj5l" name="PluginProcessor.h" compile="0" resource="0"
+      <FILE id="bxwEB3" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="IIjU6q" name="PluginEditor.cpp" compile="1" resource="0"
+      <FILE id="duQyrO" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="oHXM8Z" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="WIoHqi" name="iirFilter.h" compile="0" resource="0" file="../Effect_Classes/iirFilter.h"/>
-      <FILE id="NnT9lm" name="iirFilter.cpp" compile="1" resource="0" file="../Effect_Classes/iirFilter.cpp"/>
-      <FILE id="Oz3uRH" name="GUIGraphics.cpp" compile="1" resource="0" file="../Effect_Classes/GUIGraphics.cpp"/>
-      <FILE id="h93nbl" name="GUIGraphics.h" compile="0" resource="0" file="../Effect_Classes/GUIGraphics.h"/>
+      <FILE id="zYuwLQ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="obHHdM" name="EnvelopeDetector.cpp" compile="1" resource="0"
+            file="../Effect_Classes/EnvelopeDetector.cpp"/>
+      <FILE id="yFehtA" name="EnvelopeDetector.h" compile="0" resource="0"
+            file="../Effect_Classes/EnvelopeDetector.h"/>
+      <FILE id="pH1FmZ" name="Compressor.cpp" compile="1" resource="0" file="../Effect_Classes/Compressor.cpp"/>
+      <FILE id="Nmujkk" name="Compressor.h" compile="0" resource="0" file="../Effect_Classes/Compressor.h"/>
+      <FILE id="vkAeWt" name="GUIGraphics.h" compile="0" resource="0" file="../Effect_Classes/GUIGraphics.h"/>
+      <FILE id="eU5aKg" name="GUIGraphics.cpp" compile="1" resource="0" file="../Effect_Classes/GUIGraphics.cpp"/>
     </GROUP>
-    <GROUP id="{FC131FA6-E911-EA1C-8FE7-63ED428CEC4B}" name="Graphics">
-      <GROUP id="{8160CF95-1C5D-90F9-433C-E6E4D5AE3C31}" name="Backgrounds">
-        <FILE id="AIWFyt" name="chorus_background.png" compile="0" resource="1"
+    <GROUP id="{8D2F9AA2-1546-6F21-A7B9-2FFA9C0AE82C}" name="Graphics">
+      <GROUP id="{F6F806DF-CFD7-7358-C675-753D0B00C95E}" name="Backgrounds">
+        <FILE id="cpeFVk" name="chorus_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/chorus_background.png"/>
-        <FILE id="kQXSBw" name="compressor_hard.png" compile="0" resource="1"
+        <FILE id="cBvNwc" name="compressor_hard.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/compressor_hard.png"/>
-        <FILE id="q1jO8h" name="compressor_soft.png" compile="0" resource="1"
+        <FILE id="dUFIQB" name="compressor_soft.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/compressor_soft.png"/>
-        <FILE id="ClCkRf" name="delay_background.png" compile="0" resource="1"
+        <FILE id="JzGHpo" name="delay_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/delay_background.png"/>
-        <FILE id="zvldT2" name="distortion_background.png" compile="0" resource="1"
+        <FILE id="ieodVG" name="distortion_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/distortion_background.png"/>
-        <FILE id="Oeyc2L" name="filter_highpass.png" compile="0" resource="1"
+        <FILE id="oWpHjq" name="filter_highpass.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/filter_highpass.png"/>
-        <FILE id="ltNCyu" name="filter_lowpass.png" compile="0" resource="1"
+        <FILE id="uBWVZx" name="filter_lowpass.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/filter_lowpass.png"/>
-        <FILE id="NF3evP" name="filter_parametric.png" compile="0" resource="1"
+        <FILE id="MyhqQN" name="filter_parametric.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/filter_parametric.png"/>
-        <FILE id="ipDhQa" name="flanger_background.png" compile="0" resource="1"
+        <FILE id="QBvS90" name="flanger_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/flanger_background.png"/>
-        <FILE id="WMq19J" name="limiter_hard.png" compile="0" resource="1"
+        <FILE id="W7yMv5" name="limiter_hard.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/limiter_hard.png"/>
-        <FILE id="jVKOwo" name="limiter_soft.png" compile="0" resource="1"
+        <FILE id="YX1hKH" name="limiter_soft.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/limiter_soft.png"/>
-        <FILE id="sTgKw7" name="reverb_background.png" compile="0" resource="1"
+        <FILE id="H3u4U4" name="reverb_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/reverb_background.png"/>
-        <FILE id="KY4fJd" name="vibrado_saw.png" compile="0" resource="1" file="../Graphics/Backgrounds/vibrado_saw.png"/>
-        <FILE id="XPg9oI" name="vibrado_sine.png" compile="0" resource="1"
+        <FILE id="P663su" name="vibrado_saw.png" compile="0" resource="1" file="../Graphics/Backgrounds/vibrado_saw.png"/>
+        <FILE id="S4KlV5" name="vibrado_sine.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/vibrado_sine.png"/>
-        <FILE id="JMq3HN" name="vibrado_triangle.png" compile="0" resource="1"
+        <FILE id="alEl1H" name="vibrado_triangle.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/vibrado_triangle.png"/>
       </GROUP>
-      <GROUP id="{7A6B1C66-00B2-3240-92E9-45F2D83A1432}" name="Knobs">
-        <FILE id="tef1B1" name="chorus_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/chorus_Knob.png"/>
-        <FILE id="S62dWY" name="compressor_Knob.png" compile="0" resource="1"
+      <GROUP id="{4BE87A57-1B31-56ED-DBC9-9C148DBCEE59}" name="Knobs">
+        <FILE id="b59mjS" name="chorus_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/chorus_Knob.png"/>
+        <FILE id="yaVZVB" name="compressor_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/compressor_Knob.png"/>
-        <FILE id="frksVD" name="delay_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/delay_Knob.png"/>
-        <FILE id="pgxbzG" name="distortion_Knob.png" compile="0" resource="1"
+        <FILE id="DP9qpu" name="delay_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/delay_Knob.png"/>
+        <FILE id="sfnkn6" name="distortion_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/distortion_Knob.png"/>
-        <FILE id="VxckMc" name="filter_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/filter_Knob.png"/>
-        <FILE id="UfhHqg" name="flanger_Knob.png" compile="0" resource="1"
+        <FILE id="BPfoJd" name="filter_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/filter_Knob.png"/>
+        <FILE id="HqPtTf" name="flanger_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/flanger_Knob.png"/>
-        <FILE id="yAX6Ps" name="limiter_Knob.png" compile="0" resource="1"
+        <FILE id="nYNnSl" name="limiter_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/limiter_Knob.png"/>
-        <FILE id="vAz0NJ" name="reverb_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/reverb_Knob.png"/>
-        <FILE id="I6hmqy" name="vibrado_Knob.png" compile="0" resource="1"
+        <FILE id="OsXGBT" name="reverb_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/reverb_Knob.png"/>
+        <FILE id="eEBEWu" name="vibrado_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/vibrado_Knob.png"/>
       </GROUP>
     </GROUP>
@@ -71,8 +75,8 @@
   <EXPORTFORMATS>
     <VS2019 targetFolder="Builds/VisualStudio2019">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="IIRFilter Plug-In"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="IIRFilter Plug-In"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Compressor Plug-In"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Compressor Plug-In"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../../../../../JUCE/modules"/>

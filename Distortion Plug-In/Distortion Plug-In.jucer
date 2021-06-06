@@ -22,42 +22,50 @@
     </GROUP>
     <GROUP id="{C6334E85-26FB-0E1A-F6CD-7C2BA24C67F9}" name="Graphics">
       <GROUP id="{88555DE8-99CF-ADE9-E581-2D6BAFA473FE}" name="Backgrounds">
-        <FILE id="v48GQ2" name="distortion_background.png" compile="0" resource="1"
-              file="../Graphics/Backgrounds/distortion_background.png"/>
-        <FILE id="TavhhO" name="chorus_background.png" compile="0" resource="1"
+        <FILE id="H0aHgi" name="chorus_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/chorus_background.png"/>
-        <FILE id="AFYyUk" name="delay_background.png" compile="0" resource="1"
+        <FILE id="WSe9ji" name="compressor_hard.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/compressor_hard.png"/>
+        <FILE id="xD4Rxx" name="compressor_soft.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/compressor_soft.png"/>
+        <FILE id="rmyKk3" name="delay_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/delay_background.png"/>
-        <FILE id="kt3EkV" name="filter_highpass.png" compile="0" resource="1"
+        <FILE id="bwBPm4" name="distortion_background.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/distortion_background.png"/>
+        <FILE id="Sys7wG" name="filter_highpass.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/filter_highpass.png"/>
-        <FILE id="RksItB" name="filter_lowpass.png" compile="0" resource="1"
+        <FILE id="n7OWGS" name="filter_lowpass.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/filter_lowpass.png"/>
-        <FILE id="TKn23L" name="filter_parametric.png" compile="0" resource="1"
+        <FILE id="poNOFo" name="filter_parametric.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/filter_parametric.png"/>
-        <FILE id="YGj9pI" name="flanger_background.png" compile="0" resource="1"
+        <FILE id="ozZlN6" name="flanger_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/flanger_background.png"/>
-        <FILE id="OH4Dvk" name="reverb_background.png" compile="0" resource="1"
+        <FILE id="jrPA5Q" name="limiter_hard.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/limiter_hard.png"/>
+        <FILE id="CMWeLi" name="limiter_soft.png" compile="0" resource="1"
+              file="../Graphics/Backgrounds/limiter_soft.png"/>
+        <FILE id="pquQ8n" name="reverb_background.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/reverb_background.png"/>
-        <FILE id="HOYHsV" name="vibrado_saw.png" compile="0" resource="1" file="../Graphics/Backgrounds/vibrado_saw.png"/>
-        <FILE id="AaJa90" name="vibrado_sine.png" compile="0" resource="1"
+        <FILE id="lfFaaR" name="vibrado_saw.png" compile="0" resource="1" file="../Graphics/Backgrounds/vibrado_saw.png"/>
+        <FILE id="go7ZJQ" name="vibrado_sine.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/vibrado_sine.png"/>
-        <FILE id="fzdPKi" name="vibrado_triangle.png" compile="0" resource="1"
+        <FILE id="V8h2Wh" name="vibrado_triangle.png" compile="0" resource="1"
               file="../Graphics/Backgrounds/vibrado_triangle.png"/>
       </GROUP>
       <GROUP id="{B858D74E-4641-5956-BC89-B898B39DD415}" name="Knobs">
-        <FILE id="tp08XF" name="chorus_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/chorus_Knob.png"/>
-        <FILE id="ZyQ3JE" name="compressor_Knob.png" compile="0" resource="1"
+        <FILE id="Cx8rsC" name="chorus_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/chorus_Knob.png"/>
+        <FILE id="Y9TEtG" name="compressor_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/compressor_Knob.png"/>
-        <FILE id="bIXrfM" name="delay_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/delay_Knob.png"/>
-        <FILE id="Al7k7n" name="distortion_Knob.png" compile="0" resource="1"
+        <FILE id="uhyXcD" name="delay_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/delay_Knob.png"/>
+        <FILE id="cOJ08F" name="distortion_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/distortion_Knob.png"/>
-        <FILE id="WoyyfL" name="filter_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/filter_Knob.png"/>
-        <FILE id="oFz9Gw" name="flanger_Knob.png" compile="0" resource="1"
+        <FILE id="Std3Pv" name="filter_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/filter_Knob.png"/>
+        <FILE id="reYx7C" name="flanger_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/flanger_Knob.png"/>
-        <FILE id="hPWWdd" name="limiter_Knob.png" compile="0" resource="1"
+        <FILE id="xpnOSo" name="limiter_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/limiter_Knob.png"/>
-        <FILE id="dZP7zE" name="reverb_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/reverb_Knob.png"/>
-        <FILE id="A5mARv" name="vibrado_Knob.png" compile="0" resource="1"
+        <FILE id="Bym6Y9" name="reverb_Knob.png" compile="0" resource="1" file="../Graphics/Knobs/reverb_Knob.png"/>
+        <FILE id="XnN1Ho" name="vibrado_Knob.png" compile="0" resource="1"
               file="../Graphics/Knobs/vibrado_Knob.png"/>
       </GROUP>
     </GROUP>

@@ -19,6 +19,7 @@ DelayPluginAudioProcessorEditor::DelayPluginAudioProcessorEditor (DelayPluginAud
     delayLengthSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     delayLengthSlider.addListener(this);
     delayLengthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 65, 25);
+    delayLengthSlider.setTextValueSuffix(" s");
     delayLengthSlider.setRange(0.01, 2.0, 0.01);
     addAndMakeVisible(&delayLengthSlider);
     delayLengthSlider.setLookAndFeel(&graphics);
@@ -26,7 +27,7 @@ DelayPluginAudioProcessorEditor::DelayPluginAudioProcessorEditor (DelayPluginAud
     feedbackSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     feedbackSlider.addListener(this);
     feedbackSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 65, 25);
-    feedbackSlider.setRange(0.0, 0.995, 0.005);
+    feedbackSlider.setRange(0.0, 0.995, 0.01);
     addAndMakeVisible(&feedbackSlider);
     feedbackSlider.setLookAndFeel(&graphics);
 

@@ -1,6 +1,6 @@
 # Overview
 This repository is a collection of digital real-time audio effect algorithms implemented in C++. Each effect class is also demonstrated as an audio plug-in (Built using the JUCE Framework).
-<br></br>
+
 ### Effects Implemented
 The effects implemented are the following:
 * Time-Based:
@@ -21,8 +21,9 @@ The effects implemented are the following:
   * Limiter
 * Utility Classes:
   * LFO (Low Frequency Oscillator)
-  * Envelope Follower
+  * Envelope Detector
 
+![repo_cover-3x3x3](https://user-images.githubusercontent.com/58518865/120931273-81193000-c6f9-11eb-9cb6-d860558a1776.png)
 <br><br/>
 ### Requirements -  Third Party Libraries
 The JUCE C++ framework is required in order to build the plug-ins. It can be downloaded from the
@@ -34,6 +35,7 @@ The JUCE C++ framework is required in order to build the plug-ins. It can be dow
 2. In the exporters tab, add the exporter of your choice based on your OS.
 
 3. Click the "Save and open in IDE" button on the top right to open the project. (Projucer will auto generate the appropriate library files)
+
 <br><br />
 ### Acknowledgements
 These DAFX plugins are being  developed in the context of my Graduate Project Thesis at the   [Department of Music Technology and Acoustics](https://mta.hmu.gr) of [the Hellenic Mediterranean University (HMU)](https://www.hmu.gr).

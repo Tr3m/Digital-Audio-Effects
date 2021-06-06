@@ -107,12 +107,7 @@ juce::Image GUIGraphics::getBackground()
     case EffectTypes::Chorus:
         backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::chorus_background_png, BinaryData::chorus_background_pngSize);
         break;
-    case EffectTypes::Compressor:
-        //TODO: Compressor Background
-        break;
-    case EffectTypes::Limiter:
-        //TODO: Limiter Background
-        break;
+  
     }
 
     return backgroundImage;
@@ -150,5 +145,25 @@ juce::Image GUIGraphics::getVibradoBackground(int vibradoState)
         break;
     }
     
+    return backgroundImage;
+}
+
+juce::Image GUIGraphics::getCompressorBackground(int compressorState)
+{
+    if (compressorState == CompressorStates::SoftKnee)
+        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::compressor_soft_png, BinaryData::compressor_soft_pngSize);
+    else if (compressorState == CompressorStates::HardKnee)
+        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::compressor_hard_png, BinaryData::compressor_hard_pngSize);
+
+    return backgroundImage;
+}
+
+juce::Image GUIGraphics::getLimiterBackground(int limiterState)
+{
+    if (limiterState == LimiterStates::SoftKneeLimiter)
+        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::limiter_soft_png, BinaryData::compressor_soft_pngSize);
+    else if (limiterState == LimiterStates::HardKneeLimiter)
+        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::limiter_hard_png, BinaryData::compressor_hard_pngSize);
+
     return backgroundImage;
 }

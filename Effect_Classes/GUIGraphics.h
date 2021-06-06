@@ -12,6 +12,8 @@ public:
     juce::Image getBackground();
     juce::Image getFilterBackground(int filterState);
     juce::Image getVibradoBackground(int vibradoState);
+    juce::Image getCompressorBackground(int compressorState);
+    juce::Image getLimiterBackground(int LimiterState);
 
     enum EffectTypes
     {
@@ -40,6 +42,17 @@ public:
         Saw
     };
 
+    enum CompressorStates
+    {
+        SoftKnee = 0,
+        HardKnee
+    };
+
+    enum LimiterStates
+    {
+        SoftKneeLimiter = 0,
+        HardKneeLimiter
+    };
 private:
 
     juce::Image knobImage, backgroundImage;
