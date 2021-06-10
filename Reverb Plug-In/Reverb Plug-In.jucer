@@ -12,14 +12,17 @@
       <FILE id="CqiPan" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="QF3mgB" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="R0HQwp" name="Delay.h" compile="0" resource="0" file="../Effect_Classes/Delay.h"/>
-      <FILE id="NDhxIF" name="Delay.cpp" compile="1" resource="0" file="../Effect_Classes/Delay.cpp"/>
       <FILE id="DTV2y5" name="Reverb.cpp" compile="1" resource="0" file="../Effect_Classes/Reverb.cpp"/>
       <FILE id="y1FlNg" name="Reverb.h" compile="0" resource="0" file="../Effect_Classes/Reverb.h"/>
       <FILE id="WhcGcc" name="iirFilter.cpp" compile="1" resource="0" file="../Effect_Classes/iirFilter.cpp"/>
       <FILE id="DXmisG" name="iirFilter.h" compile="0" resource="0" file="../Effect_Classes/iirFilter.h"/>
       <FILE id="fH2FMR" name="GUIGraphics.cpp" compile="1" resource="0" file="../Effect_Classes/GUIGraphics.cpp"/>
       <FILE id="E0ErsK" name="GUIGraphics.h" compile="0" resource="0" file="../Effect_Classes/GUIGraphics.h"/>
+      <FILE id="Hsv5Qi" name="AllPassFilter.h" compile="0" resource="0" file="../Effect_Classes/AllPassFilter.h"/>
+      <FILE id="zViEuP" name="AllPassFilter.cpp" compile="1" resource="0"
+            file="../Effect_Classes/AllPassFilter.cpp"/>
+      <FILE id="DkJZPe" name="CombFilter.h" compile="0" resource="0" file="../Effect_Classes/CombFilter.h"/>
+      <FILE id="TVlCNB" name="CombFilter.cpp" compile="1" resource="0" file="../Effect_Classes/CombFilter.cpp"/>
     </GROUP>
     <GROUP id="{CA5227EC-A4FA-81A4-7A61-D3DC16AAD9FF}" name="Graphics">
       <GROUP id="{84046577-6576-4F38-3E86-77E1AB34CE2F}" name="Backgrounds">

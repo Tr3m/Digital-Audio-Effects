@@ -20,8 +20,11 @@ The effects implemented are the following:
   * Compressor
   * Limiter
 * Utility Classes:
+  * Comb Filter
+  * All-Pass Filter
   * LFO (Low Frequency Oscillator)
   * Envelope Detector
+
 
 ![repo_cover-3x3x3](https://user-images.githubusercontent.com/58518865/120931273-81193000-c6f9-11eb-9cb6-d860558a1776.png)
 <br><br/>
