@@ -1,5 +1,5 @@
 # Overview
-This repository is a collection of digital real-time audio effect algorithms implemented in C++. Each effect class is also demonstrated as an audio plug-in (Built using the JUCE Framework).
+This repository is a collection of real-time audio effect algorithms implemented in C++. Each effect class is also demonstrated as an audio plug-in (Built using the JUCE Framework).
 
 ### Effects Implemented
 The effects implemented are the following:
