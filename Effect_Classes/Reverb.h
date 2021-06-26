@@ -1,6 +1,9 @@
 #include <JuceHeader.h>
 #include "Delay.h"
 #include "iirFilter.h"
+#include "../../Effect_Classes/AllPassFilter.h"
+#include "../../Effect_Classes/CombFilter.h"
+
 
 class Reverb
 {
@@ -40,10 +43,12 @@ class Reverb
 
 		//TODO: Maybe do these in an array...
 
-		Delay comb1, comb2, comb3, comb4; //TODO: Test the new Delay contructor and use it here if it works properly...
+		CombFilter comb1, comb2, comb3, comb4; 
 		IIRFilter filterLeft{ 44100, IIRFilter::FilterTypes::LPF, filterValue };
 		IIRFilter filterRight{ 44100, IIRFilter::FilterTypes::LPF, filterValue };
 
-		
+		AllPassFilter allpass1{ 0.005, 0.7};
+		AllPassFilter allpass2{ 0.00168, 0.7};
+		AllPassFilter allpass3{ 0.00048, 0.7};
 	    
 };
