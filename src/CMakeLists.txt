@@ -1,0 +1,32 @@
+target_sources(${PROJECT_NAME}
+    PRIVATE
+        GUIGraphics.cpp
+        GUIGraphics.h
+        Delay.cpp
+        Delay.h
+        IIRFilter.cpp
+        IIRFilter.h
+        EnvelopeDetector.cpp 
+        EnvelopeDetector.h
+        Compressor.cpp
+        Compressor.h
+        Limiter.cpp
+        Limiter.h
+        LFO.cpp
+        LFO.h
+        Chorus.cpp
+        Chorus.h
+        Vibrado.cpp
+        Vibrado.h
+        Flanger.cpp
+        Flanger.h
+        AllPassFilter.cpp
+        AllPassFilter.h
+        CombFilter.cpp
+        CombFilter.h
+        Reverb.cpp
+        Reverb.h
+        Distortion.cpp
+        Distortion.h
+)
+
