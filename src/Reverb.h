@@ -2,8 +2,8 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "Delay.h"
 #include "IIRFilter.h"
-#include "AllPassFilter.h"
-#include "CombFilter.h"
+#include <utils/AllPassFilter.h>
+#include <utils/CombFilter.h>
 
 
 class Reverb

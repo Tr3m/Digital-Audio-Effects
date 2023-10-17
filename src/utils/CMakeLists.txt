@@ -1,0 +1,11 @@
+target_sources(${PROJECT_NAME}
+    PRIVATE
+        AllPassFilter.cpp
+        AllPassFilter.h
+        CombFilter.cpp
+        CombFilter.h
+        EnvelopeDetector.cpp
+        EnvelopeDetector.h
+        LFO.cpp
+        LFO.h    
+)

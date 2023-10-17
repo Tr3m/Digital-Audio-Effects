@@ -1,6 +1,6 @@
 #pragma once
 #include "Delay.h"
-#include "LFO.h"
+#include <utils/LFO.h>
 
 class Chorus
 {
