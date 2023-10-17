@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "PluginProcessor.h"
@@ -15,9 +7,7 @@
 //==============================================================================
 /**
 */
-class DelayPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                         public juce::Slider::Listener,
-                                         public juce::Timer
+class DelayPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     DelayPluginAudioProcessorEditor (DelayPluginAudioProcessor&);
@@ -26,12 +16,11 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void sliderValueChanged(juce::Slider* slider);
-    void timerCallback();
 
 private:
 
-    juce::Slider delayLengthSlider, feedbackSlider, dryMixSlider, wetMixSlider;
+    std::unique_ptr<juce::Slider> delayLengthSlider, feedbackSlider, dryMixSlider, wetMixSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> delayLengthSliderAtt, feedbackSliderAtt, dryMixSliderAtt, wetMixSliderAtt;
     
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Delay };
 

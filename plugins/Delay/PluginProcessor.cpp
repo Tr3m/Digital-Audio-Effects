@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -15,11 +7,11 @@ DelayPluginAudioProcessor::DelayPluginAudioProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+                       .withInput  ("Input",  juce::AudioChannelSet::mono(), true)
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts(*this, nullptr, "Params", createParameters())
                         
 #endif
 {
@@ -93,7 +85,7 @@ void DelayPluginAudioProcessor::changeProgramName (int index, const juce::String
 //==============================================================================
 void DelayPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    delay.prepare(sampleRate, samplesPerBlock);
+  delay.prepare(sampleRate);
 }
 
 void DelayPluginAudioProcessor::releaseResources()
@@ -126,15 +118,39 @@ bool DelayPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layou
 
 void DelayPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+  updateParameters();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+  for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
+    buffer.clear (i, 0, buffer.getNumSamples());
 
-    
-    delay.process(buffer, totalNumInputChannels, totalNumOutputChannels);
+  auto* channelDataLeft = buffer.getWritePointer (0);
+  auto* channelDataRight = buffer.getWritePointer (1);
+
+  delay.process(channelDataLeft, 0, buffer.getNumSamples());
+
+  // Do dual mono
+  for(int sample = 0; sample < buffer.getNumSamples(); ++sample)
+    channelDataRight[sample] = channelDataLeft[sample];
+
+}
+
+void DelayPluginAudioProcessor::updateParameters()
+{
+  delay.setDelayTime(*apvts.getRawParameterValue("DELAY_TIME_ID"));
+  delay.setFeedback(*apvts.getRawParameterValue("FEEDBACK_ID"));
+  delay.setMix(*apvts.getRawParameterValue("WET_ID"));
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout DelayPluginAudioProcessor::createParameters()
+{
+  std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAY_TIME_ID", "DELAY_TIME", 95.0f, 1000.0, 500.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACK_ID", "FEEDBACK", 0.0f, 0.95, 0.7));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("WET_ID", "WET", 0.0f, 1.0, 0.4));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRY_ID", "DRY", 0.0f, 1.0, 0.4));
+
+  return { parameters.begin(), parameters.end() };
 }
 
 //==============================================================================
@@ -151,12 +167,18 @@ juce::AudioProcessorEditor* DelayPluginAudioProcessor::createEditor()
 //==============================================================================
 void DelayPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    
+  auto state = apvts.copyState();
+  std::unique_ptr<juce::XmlElement> xml(state.createXml());
+  copyXmlToBinary(*xml, destData);    
 }
 
 void DelayPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    
+  std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+  if (xmlState.get() != nullptr)
+    if (xmlState->hasTagName(apvts.state.getType()))
+      apvts.replaceState(juce::ValueTree::fromXml(*xmlState));    
 }
 
 //==============================================================================

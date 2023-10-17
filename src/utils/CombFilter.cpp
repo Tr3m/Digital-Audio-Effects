@@ -1,128 +1,64 @@
 #include "CombFilter.h"
 
-CombFilter::CombFilter()
+template <typename SampleType>
+CombFilter<SampleType>::CombFilter()
 {
-    // set default values
-    delayLength = 0.5;
-    feedback = 0.35;
-    delayBufferLength = 1;
 
-    delayReadPosition = 0;
-    delayWritePosition = 0;
+};
 
-    //m_SampleRate = sampleRate;
-}
-
-CombFilter::CombFilter(float _delayLength, float _feedback)
+template <typename SampleType>
+CombFilter<SampleType>::~CombFilter()
 {
-    //TODO: Add bounds check...
 
-    delayLength = _delayLength;
-    feedback = _feedback;
-    delayBufferLength = 1;
+};
 
-    delayReadPosition = 0;
-    delayWritePosition = 0;
-}
-
-
-void CombFilter::setDelayLength(float newValue)
+template <typename SampleType>
+void CombFilter<SampleType>::prepare(SampleType sampleRate)
 {
-    //TODO: Add bounds check
-    delayLength = newValue;
-    delayReadPosition = (int)(delayWritePosition - (delayLength * m_SampleRate) + delayBufferLength) % delayBufferLength;
-}
+    this->sampleRate = sampleRate;
+    circularBuffer.prepare(sampleRate);
+    circularBuffer.setSize(2*sampleRate);
+    circularBuffer.setDelayInMs(delayTime);
 
-float CombFilter::getDelayLength()
+};
+
+template <typename SampleType>
+void CombFilter<SampleType>::setDelayMs(SampleType delayInMs)
 {
-    return delayLength;
-}
+    circularBuffer.setDelayInMs(delayInMs);
+};
 
-void CombFilter::setFeedback(float newValue)
+template <typename SampleType>
+void CombFilter<SampleType>::setDelaySamples(SampleType delayInSamples)
 {
-    feedback = newValue;
-}
+    circularBuffer.setDelayInSamples(delayInSamples);
+};
 
-float CombFilter::getFeedback()
+template <typename SampleType>
+void CombFilter<SampleType>::setFeedback(SampleType newFeedback)
 {
-    return feedback;
-}
+    newFeedback >= FEEDBACK_LIMIT ? newFeedback = FEEDBACK_LIMIT : newFeedback = newFeedback;
+    newFeedback <= 0.0 ? newFeedback = 0.0 : newFeedback = newFeedback;
 
-void CombFilter::prepare(double sampleRate, int samplesPerBlock)
+    this->feedback = newFeedback;
+};
+
+template <typename SampleType>
+SampleType CombFilter<SampleType>::processSample(SampleType input)
 {
-    m_SampleRate = sampleRate;
+    SampleType in = input + feedback*lastOutput;
+    SampleType out = circularBuffer.processSample(in);
+    lastOutput = out;
 
-    delayBufferLength = (int)2.0 * sampleRate;
-    if (delayBufferLength < 1)
-        delayBufferLength = 1;
+    return out;        
+};
 
-    delayBuffer.setSize(2, delayBufferLength);
-    delayBuffer.clear();
-
-    delayReadPosition = (int)(delayWritePosition - (delayLength * sampleRate) + delayBufferLength) % delayBufferLength;
-}
-
-void CombFilter::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels)
+template <typename SampleType>
+void CombFilter<SampleType>::process(SampleType* channelData, int startSample, int endSample)
 {
-    const int numSamples = buffer.getNumSamples();
+    for(int sample = startSample; sample < endSample; ++sample)
+        channelData[sample] = processSample(channelData[sample]);
+};
 
-    int dpr, dpw;
-
-    for (int channel = 0; channel < numInputChannels; ++channel) {
-        float* channelData = buffer.getWritePointer(channel);
-        float* delayData = delayBuffer.getWritePointer(juce::jmin(channel, delayBuffer.getNumChannels() - 1));
-
-        dpr = delayReadPosition;
-        dpw = delayWritePosition;
-
-        for (int i = 0; i < numSamples; ++i) {
-            const float in = channelData[i];
-            float out = 0.0;
-
-
-            out =  delayData[dpr];
-
-            delayData[dpw] = in + (delayData[dpr] * feedback);
-
-            if (++dpr >= delayBufferLength)
-                dpr = 0;
-            if (++dpw >= delayBufferLength)
-                dpw = 0;
-
-            channelData[i] = out;
-        }
-    }
-
-    delayReadPosition = dpr;
-    delayWritePosition = dpw;
-
-}
-
-
-//Need to create two instances of the class to use this function (One for each buffer channel).
-float CombFilter::processSample(float sample, int channel)
-{
-    float* delayData = delayBuffer.getWritePointer(juce::jmin(channel, delayBuffer.getNumChannels() - 1));
-
-    int dpr, dpw;
-
-    dpr = delayReadPosition;
-    dpw = delayWritePosition;
-
-    const float in = sample;
-    float out = 0.0;
-
-    out = (in + delayData[dpr]);
-
-    delayData[dpw] = in + (delayData[dpr] * feedback);
-
-    if (++dpr >= delayBufferLength)
-        dpr = 0;
-    if (++dpw >= delayBufferLength)
-        dpw = 0;
-
-    delayReadPosition = dpr;
-    delayWritePosition = dpw;
-
-    return out;
-}
+template class CombFilter<float>;
+template class CombFilter<double>;

@@ -1,5 +1,7 @@
 target_sources(${PROJECT_NAME}
     PRIVATE
+        CircularBuffer.cpp
+        CircularBuffer.h
         AllPassFilter.cpp
         AllPassFilter.h
         CombFilter.cpp
@@ -7,5 +9,6 @@ target_sources(${PROJECT_NAME}
         EnvelopeDetector.cpp
         EnvelopeDetector.h
         LFO.cpp
-        LFO.h    
+        LFO.h
+        FirstOrderSmoother.h    
 )

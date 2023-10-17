@@ -4,22 +4,22 @@ target_sources(${PROJECT_NAME}
         GUIGraphics.h
         Delay.cpp
         Delay.h
-        IIRFilter.cpp
-        IIRFilter.h
-        Compressor.cpp
-        Compressor.h
-        Limiter.cpp
-        Limiter.h
-        Chorus.cpp
-        Chorus.h
-        Vibrado.cpp
-        Vibrado.h
-        Flanger.cpp
-        Flanger.h
-        Reverb.cpp
-        Reverb.h
-        Distortion.cpp
-        Distortion.h
+        #IIRFilter.cpp
+        #IIRFilter.h
+        #Compressor.cpp
+        #Compressor.h
+        #Limiter.cpp
+        #Limiter.h
+        #Chorus.cpp
+        #Chorus.h
+        #Vibrado.cpp
+        #Vibrado.h
+        #Flanger.cpp
+        #Flanger.h
+        #Reverb.cpp
+        #Reverb.h
+        #Distortion.cpp
+        #Distortion.h
 )
 
 add_subdirectory(utils)
