@@ -1,30 +1,83 @@
 #pragma once
-#include "Delay.h"
+#include <utils/LinearInterpolationCircularBuffer.h>
 #include <utils/LFO.h>
+#include <utils/extras/GainUtilities.h>
 
+/**
+ * Basic Vibrado Effect
+ * 
+ */
+template <typename SampleType>
 class Vibrado
 {
 public:
-
+    
+	/**
+	 * @brief Constructor
+	 * 
+	 */
     Vibrado();
 
-    void prepare(double sampleRate, int samplesPerBlock);
-    void process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels);
+	/**
+	 * @brief Destructor
+	 * 
+	 */
+    ~Vibrado();
 
-    //Setters and Getters
-    void setParameter(int index, float newValue);
-    float getParameter(int index);
+	/**
+	 * @brief Prepares object for playback
+	 * 
+	 * @param sampleRate Current sampling rate
+	 */
+	void prepare(SampleType sampleRate);
 
+	/**
+	 * @brief Processes a single sample
+	 * 
+	 * @param input Input sample
+	 */
+	SampleType processSample(SampleType input);
+
+	/**
+	 * @brief Processes a memory block that holds audio samples
+	 * 
+	 * @param data Memory block start pointer 
+	 * @param startSample Sample index to start processing from
+	 * @param endSample Number of samples to process
+	 */
+	void process(SampleType* data, int startSample, int endSample);
+	/**
+	 * @brief Sets chorus modulation rate
+	 * 
+	 * @param newRate New rate value
+	 */
+	void setRate(SampleType newRate);
+
+	/**
+	 * @brief Sets chorus modulation depth
+	 * 
+	 * @param newDepth New depth value
+	 */
+	void setDepth(SampleType newDepth);
+
+	/**
+	 * @brief Sets output level
+	 * 
+	 * @param level_dB New level value in decibels 
+	 */
+	void setLevel(SampleType level_dB);
+
+    /**
+     * @brief Sets LFO wave shape
+     * 
+     * @param type LFO type index
+     */
     void setLFOType(int type);
-    int getLFOType();
 
-    enum Parameters
-    {
-        Rate = 0,
-        Depth,
-        Level,
-        LFO_Type
-    };
+    /**
+     * @brief Returns LFO type index
+     */
+    int getLFOType();
 
     enum LFO_Types
     {
@@ -35,20 +88,20 @@ public:
 
 private:
 
-    double doUnipolarModulationFromMin(double unipolarModulatorValue, double minValue, double maxValue);
-    double bipolarToUnipolar(double value);
-    float decibelToLinear(float dbValue);
+	SampleType doUnipolarModulationFromMin(SampleType unipolarModulatorValue, SampleType minValue, SampleType maxValue);
+	SampleType bipolarToUnipolar(SampleType value);
 
-    Delay delayLine_L, delayLine_R;
-    LFO lfo;
+private:
 
-    //Min and max delay times (in seconds)
-    double minDelay{ 0.0001 }; 
-    double maxDelay{ 0.007 }; 
+    SampleType sampleRate;
 
-    //User Parameters
-    float rate{ 2.0 }; //Hz
-    float depth{ 70.0 }; //%
-    float level_dB{ 0.0 };
-    int lfoType{ LFO_Types::Sine };
+	LinearInterpolationCircularBuffer<SampleType> delayLine;
+	LFO lfo;
+
+	// Min and Max delay times in ms
+	SampleType minDelay {0.1};
+	SampleType maxDelay {7.0};
+
+	SampleType rate {2.0}, depth {0.5}, level {0.0};
+    int lfoType {LFO_Types::Sine};
 };

@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "PluginProcessor.h"
@@ -14,8 +6,7 @@
 //==============================================================================
 /**
 */
-class VibradoPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                           public juce::Slider::Listener                                        
+class VibradoPluginAudioProcessorEditor  : public juce::AudioProcessorEditor                                      
 {
 public:
     VibradoPluginAudioProcessorEditor (VibradoPluginAudioProcessor&);
@@ -23,13 +14,13 @@ public:
 
     //==============================================================================
     void paint (juce::Graphics&) override;
-    void resized() override;
-    void sliderValueChanged(juce::Slider* slider);
-    
+    void resized() override;    
 
 private:
    
-    juce::Slider rateSlider, depthSlider, levelSlider;
+    std::unique_ptr<juce::Slider> rateSlider, depthSlider, levelSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> rateSliderAtt, depthSliderAtt, levelSliderAtt;
+
     juce::TextButton sineButton, triangleButton, sawButton;
 
     VibradoPluginAudioProcessor& audioProcessor;

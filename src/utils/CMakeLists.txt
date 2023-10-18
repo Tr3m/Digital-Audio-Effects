@@ -13,5 +13,6 @@ target_sources(${PROJECT_NAME}
         LFO.cpp
         LFO.h
         FirstOrderSmoother.h
-        extras/AudioChannelUtilities.h    
+        extras/AudioChannelUtilities.h
+        extras/GainUtilities.h 
 )

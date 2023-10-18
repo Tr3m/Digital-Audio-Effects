@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -15,14 +7,13 @@ VibradoPluginAudioProcessor::VibradoPluginAudioProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+                       .withInput  ("Input",  juce::AudioChannelSet::mono(), true)
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts(*this, nullptr, "Params", createParameters())
 #endif
 {
-    vibrado.setLFOType(Vibrado::LFO_Types::Triangle);
 }
 
 VibradoPluginAudioProcessor::~VibradoPluginAudioProcessor()
@@ -94,7 +85,7 @@ void VibradoPluginAudioProcessor::changeProgramName (int index, const juce::Stri
 //==============================================================================
 void VibradoPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    vibrado.prepare(sampleRate, samplesPerBlock);
+    vibrado.prepare(sampleRate);
 }
 
 void VibradoPluginAudioProcessor::releaseResources()
@@ -128,17 +119,46 @@ bool VibradoPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& lay
 
 void VibradoPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    updateParameters();
 
-   
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    
-    vibrado.process(buffer, totalNumInputChannels, totalNumOutputChannels);
+    auto* channelDataLeft = buffer.getWritePointer (0);
+    auto* channelDataRight = buffer.getWritePointer (1);
 
+    vibrado.process(channelDataLeft, 0, buffer.getNumSamples());
+
+    // Do dual mono
+    AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
+}
+
+void VibradoPluginAudioProcessor::updateParameters()
+{
+  vibrado.setRate(*apvts.getRawParameterValue("RATE_ID"));
+  vibrado.setDepth((*apvts.getRawParameterValue("DEPTH_ID")) / 100.0);
+  vibrado.setLevel(*apvts.getRawParameterValue("LEVEL_ID"));
+}
+
+void VibradoPluginAudioProcessor::setLfoType(int lfoTypeIndex)
+{
+    vibrado.setLFOType(lfoTypeIndex);
+}
+
+int VibradoPluginAudioProcessor::getLfoType()
+{
+    return vibrado.getLFOType();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout VibradoPluginAudioProcessor::createParameters()
+{
+  std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("RATE_ID", "RATE", 0.0f, 10.0, 0.3));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DEPTH_ID", "DEPTH", 0.0f, 100.0, 50.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -20.0f, 20.0, 0.0));
+
+  return { parameters.begin(), parameters.end() };
 }
 
 //==============================================================================
@@ -155,15 +175,18 @@ juce::AudioProcessorEditor* VibradoPluginAudioProcessor::createEditor()
 //==============================================================================
 void VibradoPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    auto state = apvts.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void VibradoPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName(apvts.state.getType()))
+            apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
 }
 
 //==============================================================================

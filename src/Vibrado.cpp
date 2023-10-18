@@ -1,142 +1,100 @@
 #include "Vibrado.h"
 
-Vibrado::Vibrado()
+template <typename SampleType>
+Vibrado<SampleType>::Vibrado()
 {
-	delayLine_L.setParameter(Delay::Parameters::wetMixParam, 1.0);
-	delayLine_L.setParameter(Delay::Parameters::dryMixParam, 0.0);
-	delayLine_L.setParameter(Delay::Parameters::feedbackParam, 0.0f);
-	delayLine_L.setParameter(Delay::Parameters::delayLengthParam, 0.007);
 
-	delayLine_R.setParameter(Delay::Parameters::wetMixParam, 1.0);
-	delayLine_R.setParameter(Delay::Parameters::dryMixParam, 0.0);
-	delayLine_R.setParameter(Delay::Parameters::feedbackParam, 0.0f);
-	delayLine_R.setParameter(Delay::Parameters::delayLengthParam, 0.007);
-
-	lfo.setWaveformType(lfoType);
-	lfo.setFrequency(rate);
 }
 
-void Vibrado::prepare(double sampleRate, int samplesPerBlock)
+template <typename SampleType>
+Vibrado<SampleType>::~Vibrado()
 {
-	delayLine_L.prepare(sampleRate, samplesPerBlock);
-	delayLine_R.prepare(sampleRate, samplesPerBlock);
+
+}
+
+template <typename SampleType>
+void Vibrado<SampleType>::prepare(SampleType sampleRate)
+{
+	this->sampleRate = sampleRate;
+
+	delayLine.prepare(sampleRate);
+	delayLine.setSize(int(sampleRate / 2));
+
 	lfo.prepare(sampleRate);
+	lfo.setWaveformType(lfoType);
 }
 
-void Vibrado::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels)
+template <typename SampleType>
+SampleType Vibrado<SampleType>::processSample(SampleType input)
 {
-	double modDepth = depth / 100.0f;
-	double modMin = minDelay;
-	double modMax = minDelay + maxDelay;
+	SampleType modMin = minDelay;
+	SampleType modMax = minDelay + maxDelay;
 
+	SampleType out = input;                
 
+	SampleType newDelTime = (doUnipolarModulationFromMin(bipolarToUnipolar(depth * lfo.getNextOutputSample(LFO::LFOPhase::Normal)), modMin, modMax));
 
-	auto* channelDataLeft = buffer.getWritePointer(0);
-	auto* channelDataRight = buffer.getWritePointer(1);
+	delayLine.pushSample(out);        
+	delayLine.setDelayInSamples(newDelTime * sampleRate / 1000.0);
+	out = delayLine.popSample();
 
-	for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-	{
-		lfo.generateOutputSample();
-
-		double newDelayTime = doUnipolarModulationFromMin(bipolarToUnipolar(modDepth * lfo.getOutputSample(LFO::PhaseTypes::Normal)), modMin, modMax);
-
-
-		channelDataLeft[sample] = delayLine_L.processSample(channelDataLeft[sample], 0) * decibelToLinear(level_dB);
-		delayLine_L.setParameter(Delay::Parameters::delayLengthParam, newDelayTime);
-
-		channelDataRight[sample] = delayLine_R.processSample(channelDataRight[sample], 0) * decibelToLinear(level_dB);
-		delayLine_R.setParameter(Delay::Parameters::delayLengthParam, newDelayTime);
-	}
-
-	
+	return out * GainUtilities<SampleType>::decibelsToGain(this->level);
 }
 
-void Vibrado::setParameter(int index, float newValue)
+template <typename SampleType>
+void Vibrado<SampleType>::process(SampleType* data, int startSample, int endSample)
 {
-	switch (index)
-	{
-	case Parameters::Rate:
-		rate = newValue;
-
-		//Bounds Check
-		if (rate < 0.1)
-			rate = 0.1;
-		if (rate > 10.0)
-			rate = 10.0;
-
-		lfo.setFrequency(rate);
-
-		break;
-
-	case Parameters::Depth:
-		depth = newValue;
-
-		//Bounds Check
-		if (depth > 100.0)
-			depth = 100.0;
-		if (depth < 0.0)
-			depth = 0.0;
-
-		break;
-
-	case Parameters::Level:
-		level_dB = newValue;
-		
-		float level_dBBounds = 12.0;
-
-		//Bounds Check
-		if (level_dB > level_dBBounds)
-			level_dB = level_dBBounds;
-		if (level_dB < -level_dBBounds)
-			level_dB = -level_dBBounds;
-
-		break;
-
-	}
+	for(int sample = startSample; sample < endSample; ++sample)
+		data[sample] = processSample(data[sample]);
 }
 
-float Vibrado::getParameter(int index)
+template <typename SampleType>
+void Vibrado<SampleType>::setRate(SampleType newRate)
 {
-	switch (index)
-	{
-	case Parameters::Rate:
-		return rate;
-		break;
-	case Parameters::Depth:
-		return depth;
-		break;
-	case Parameters::Level:
-		return level_dB;
-		break;
-	}
+	this->rate = newRate;
+	lfo.setFrequency(this->rate);
 }
 
-void Vibrado::setLFOType(int type)
+template <typename SampleType>
+void Vibrado<SampleType>::setDepth(SampleType newDepth)
+{
+	this->depth = newDepth;
+}
+
+template <typename SampleType>
+void Vibrado<SampleType>::setLevel(SampleType level_dB)
+{
+	this->level = level_dB;
+}
+
+template <typename SampleType>
+void Vibrado<SampleType>::setLFOType(int type)
 {
 	switch (type)
 	{
 	case LFO_Types::Triangle:
 		lfoType = LFO_Types::Triangle;
-		lfo.setWaveformType(LFO::WaveformTypes::Triangle);
+		lfo.setWaveformType(LFO::Waveforms::Triangle);
 		break;
 	case LFO_Types::Sine:
 		lfoType = LFO_Types::Sine;
-		lfo.setWaveformType(LFO::WaveformTypes::Sine);
+		lfo.setWaveformType(LFO::Waveforms::Sine);
 		break;
 	case LFO_Types::Saw:
 		lfoType = LFO_Types::Saw;
-		lfo.setWaveformType(LFO::WaveformTypes::Saw);
+		lfo.setWaveformType(LFO::Waveforms::Saw);
 		break;
 	}
-
 }
 
-int Vibrado::getLFOType()
+template <typename SampleType>
+int Vibrado<SampleType>::getLFOType()
 {
 	return lfoType;
 }
 
-double Vibrado::doUnipolarModulationFromMin(double unipolarModulatorValue, double minValue, double maxValue)
+template <typename SampleType>
+SampleType Vibrado<SampleType>::doUnipolarModulationFromMin(SampleType unipolarModulatorValue, SampleType minValue, SampleType maxValue)
 {
 	// --- UNIPOLAR bound
 	unipolarModulatorValue = fmin(unipolarModulatorValue, 1.0f);
@@ -146,13 +104,11 @@ double Vibrado::doUnipolarModulationFromMin(double unipolarModulatorValue, doubl
 	return unipolarModulatorValue * (maxValue - minValue) + minValue;
 }
 
-double Vibrado::bipolarToUnipolar(double value)
+template <typename SampleType>
+SampleType Vibrado<SampleType>::bipolarToUnipolar(SampleType value)
 {
 	return 0.5 * value + 0.5;
 }
 
-float Vibrado::decibelToLinear(float dbValue)
-{
-	return powf(10.0, dbValue / 20.0);
-}
-
+template class Vibrado<float>;
+template class Vibrado<double>;
