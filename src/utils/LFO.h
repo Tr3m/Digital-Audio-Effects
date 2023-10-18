@@ -1,68 +1,126 @@
 #pragma once 
+#include <iostream>
+#include <cmath>
 
+#define PI 3.14159265358979323846
+
+/**
+ * Low Frequency Oscillator Class
+ * 
+ */
 class LFO
 {
 public:
 
+	/**
+	 * @brief Contructor
+	 * 
+	 */
 	LFO();
-	LFO(int _WaveformType);
+	
+	/**
+	 * @brief Constructor
+	 * 
+	 * Sets waveform type during object declaration
+	 * 
+	 * @param waveformType Waveform type index
+	 */
+	LFO(int waveformType);
 
-	void prepare(double _SampleRate);
-	void generateOutputSample();
-	double getOutputSample(int phaseType);
+	/**
+	 * @brief Prepares object for processing
+	 * 
+	 * @param sampleRate Current sample rate
+	 */
+	void prepare(double sampleRate);
 
-	//Setters and Getters
-	void setWaveformType(int _WaveformType);
+	/**
+	 * @brief Generates and returns the next oscillator sample
+	 * 
+	 * @param phaseType Oscillator phase
+	 */
+	double getNextOutputSample(int phaseType);
+
+	/**
+	 * @brief Sets oscillator waveform type
+	 * 
+	 * @param waveformType Waveform type index
+	 */
+	void setWaveformType(int waveformType);
+
+	/**
+	 * @brief Returns waveform type index
+	 */
 	int getWaveformType();
 
-	void setFrequency(double _Frequency);
+	/**
+	 * @brief Sets oscillation rate
+	 * 
+	 * @param freq New Rate
+	 */
+	void setFrequency(double freq);
+
+	/**
+	 * @brief Returns oscillation rate
+	 */
 	double getFrequency();
 
-	void setSampleRate(double _SampleRate);
+	/**
+	 * @brief Sets the Sample Rate
+	 * 
+	 * @param sampleRate New sample rate
+	 */
+	void setSampleRate(double sampleRate);
+
+	/**
+	 * @brief Returns the current sample rate the object is operating on
+	 */
 	double getSampleRate();
 
+	/**
+	 * @brief Converts unipolar oscilation type to bipolar
+	 * 
+	 * @param value Value to convert
+	 */
 	double unipolarToBipolar(double value);
 
-	enum WaveformTypes
+	enum Waveforms
 	{
 		Triangle = 0,
 		Sine,
 		Saw
 	};
 
-	enum PhaseTypes
+	enum LFOPhase
 	{
 		Normal = 0,
 		Inverted,
 		QuadPhase,
-		QuadPhase_Inverted
+		QuadPhaseInverted
 	};
 
 
 private:
+    void generateNextOutputSample();
 
-	//Advabce the mod counter
-	void moduloAdvance(double& _ModCounter, double _PhaseInc);
+	// Advabce the mod counter
+	void moduloAdvance(double& modCounter, double phaceInc);
 
-	//Check the mod counter and wrap
-	void moduloWrap(double& _ModCounter, double _PhaseInc);
-	//Advance the mod counter and wrap
-	void moduloAdvanceAndWrap(double& _ModCounter, double _PhaseInc);
+	// Check the mod counter and wrap
+	void moduloWrap(double& modCounter, double phaceInc);
+	// Advance the mod counter and wrap
+	void moduloAdvanceAndWrap(double& modCounter, double phaceInc);
 
-	//Parabolic Sine Calculation Function (Angle ragnes from -pi to pi)
+	// Parabolic Sine Calculation Function (Angle ragnes from -pi to pi)
 	double parabolicSine(double angle);
 
-	//Oscillator Parameters
+	// Oscillator Parameters
 	double modCounter, modCounter90, phaseInc;
-	double initial_SampleRate;
 
-	//User Parameters
-	double frequency, sampleRate;
-	int waveformType;
 
-	//Output Values
+	double frequency {1.0}, sampleRate;
+	int waveformType {Waveforms::Sine};
+
+	// Output Values
 	double outNormal, outInverted, outQuadPhase, outQuadPhaseInverted;
-
-	double m_pi = 3.14159265358979323846;
-
 };

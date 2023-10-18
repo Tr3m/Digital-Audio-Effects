@@ -4,13 +4,13 @@ template <typename SampleType>
 CombFilter<SampleType>::CombFilter()
 {
 
-};
+}
 
 template <typename SampleType>
 CombFilter<SampleType>::~CombFilter()
 {
 
-};
+}
 
 template <typename SampleType>
 void CombFilter<SampleType>::prepare(SampleType sampleRate)
@@ -20,19 +20,19 @@ void CombFilter<SampleType>::prepare(SampleType sampleRate)
     circularBuffer.setSize(2*sampleRate);
     circularBuffer.setDelayInMs(delayTime);
 
-};
+}
 
 template <typename SampleType>
 void CombFilter<SampleType>::setDelayMs(SampleType delayInMs)
 {
     circularBuffer.setDelayInMs(delayInMs);
-};
+}
 
 template <typename SampleType>
 void CombFilter<SampleType>::setDelaySamples(SampleType delayInSamples)
 {
     circularBuffer.setDelayInSamples(delayInSamples);
-};
+}
 
 template <typename SampleType>
 void CombFilter<SampleType>::setFeedback(SampleType newFeedback)
@@ -41,7 +41,7 @@ void CombFilter<SampleType>::setFeedback(SampleType newFeedback)
     newFeedback <= 0.0 ? newFeedback = 0.0 : newFeedback = newFeedback;
 
     this->feedback = newFeedback;
-};
+}
 
 template <typename SampleType>
 SampleType CombFilter<SampleType>::processSample(SampleType input)
@@ -51,14 +51,14 @@ SampleType CombFilter<SampleType>::processSample(SampleType input)
     lastOutput = out;
 
     return out;        
-};
+}
 
 template <typename SampleType>
 void CombFilter<SampleType>::process(SampleType* channelData, int startSample, int endSample)
 {
     for(int sample = startSample; sample < endSample; ++sample)
         channelData[sample] = processSample(channelData[sample]);
-};
+}
 
 template class CombFilter<float>;
 template class CombFilter<double>;

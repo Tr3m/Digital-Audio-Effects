@@ -1,41 +1,86 @@
 #pragma once
-#include "Delay.h"
+#include <utils/LinearInterpolationCircularBuffer.h>
 #include <utils/LFO.h>
 
+/**
+ * Basic Chorus Effect
+ * 
+ */
+template <typename SampleType>
 class Chorus
 {
 public:
 
+	/**
+	 * @brief Constructor
+	 * 
+	 */
 	Chorus();
 
-	void prepare(double sampleRate, int samplesPerBlock);
-    void process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels);
+	/**
+	 * @brief Destructor
+	 * 
+	 */
+	~Chorus();
 
-    //Setters and Getters
-    void setParameter(int index, float newValue);
-    float getParameter(int index);
+	/**
+	 * @brief Prepares object for playback
+	 * 
+	 * @param sampleRate Current sampling rate
+	 */
+	void prepare(SampleType sampleRate);
 
-    enum Parameters
-    {
-    	Rate = 0,
-    	Depth,
-    	WetMix,
-    	DryMix
-    };
+	/**
+	 * @brief Processes a single sample
+	 * 
+	 * @param input Input sample
+	 */
+	SampleType processSample(SampleType input);
+
+	/**
+	 * @brief Processes a memory block that holds audio samples
+	 * 
+	 * @param data Memory block start pointer 
+	 * @param startSample Sample index to start processing from
+	 * @param endSample Number of samples to process
+	 */
+	void process(SampleType* data, int startSample, int endSample);
+	/**
+	 * @brief Sets chorus modulation rate
+	 * 
+	 * @param newRate New rate value
+	 */
+	void setRate(SampleType newRate);
+
+	/**
+	 * @brief Sets chorus modulation depth
+	 * 
+	 * @param newDepth New depth value
+	 */
+	void setDepth(SampleType newDepth);
+
+	/**
+	 * @brief Sets chorus wet/dry mix
+	 * 
+	 * @param newMix New wet/dry mix value
+	 */
+	void setMix(SampleType newMix);
 
 private:
 
-	double doBipolarModulation(double bipolarModulatorValue, double minValue, double maxValue);
+	SampleType doUnipolarModulationFromMin(SampleType unipolarModulatorValue, SampleType minValue, SampleType maxValue);
+	SampleType bipolarToUnipolar(SampleType value);
 
-	Delay delayLine_L, delayLine_R;
+private:
+
+	SampleType sampleRate;
+
+	LinearInterpolationCircularBuffer<SampleType> delayLine;
 	LFO lfo;
 
-	float minDelay{0.01};
-	float maxDelay{0.03};
+	// Min and Max delay times in ms
+	SampleType minDelay {1.0};
+	SampleType maxDelay {7.0};
 
-	//User Parameters
-	double rate{0.33}; //In Hz
-	double depth{60.0}; //Depth %
-	double wet{0.5}, dry{0.5};
-
+	SampleType rate{0.33}, depth{0.15}, mix{0.5}; 
 };

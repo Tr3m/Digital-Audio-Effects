@@ -1,139 +1,89 @@
 #include "Chorus.h"
 
-Chorus::Chorus()
+template <typename SampleType>
+Chorus<SampleType>::Chorus()
 {
-	delayLine_L.setParameter(Delay::Parameters::wetMixParam, wet);
-	delayLine_L.setParameter(Delay::Parameters::dryMixParam, dry);
-	delayLine_L.setParameter(Delay::Parameters::feedbackParam, 0.0f);
-	delayLine_L.setParameter(Delay::Parameters::delayLengthParam, 0.01);
 
-	delayLine_R.setParameter(Delay::Parameters::wetMixParam, wet);
-	delayLine_R.setParameter(Delay::Parameters::dryMixParam, dry);
-	delayLine_R.setParameter(Delay::Parameters::feedbackParam, 0.0f);
-	delayLine_R.setParameter(Delay::Parameters::delayLengthParam, 0.01);
-
-	lfo.setWaveformType(LFO::WaveformTypes::Sine);
-	lfo.setFrequency(rate);
 }
 
-void Chorus::prepare(double sampleRate, int samplesPerBlock)
+template <typename SampleType>
+Chorus<SampleType>::~Chorus()
 {
-	delayLine_L.prepare(sampleRate, samplesPerBlock);
-	delayLine_R.prepare(sampleRate, samplesPerBlock);
+
+}
+
+template <typename SampleType>
+void Chorus<SampleType>::prepare(SampleType sampleRate)
+{
+	this->sampleRate = sampleRate;
+
+	delayLine.prepare(sampleRate);
+	delayLine.setSize(int(sampleRate / 2));
+	
 	lfo.prepare(sampleRate);
+	lfo.setWaveformType(0);
 }
 
-void Chorus::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels)
+template <typename SampleType>
+SampleType Chorus<SampleType>::processSample(SampleType input)
 {
-	double modDepth = depth / 100.0f;
-	double modMin = minDelay;
-	double modMax = minDelay + maxDelay;
+	SampleType modMin = minDelay;
+	SampleType modMax = minDelay + maxDelay;
+	
+	SampleType in = input;
+	SampleType out = in;                
 
+	SampleType newDelTime = (doUnipolarModulationFromMin(bipolarToUnipolar(depth * lfo.getNextOutputSample(LFO::LFOPhase::Normal)), modMin, modMax));
 
+	delayLine.pushSample(out);        
+	delayLine.setDelayInSamples(newDelTime * sampleRate / 1000.0);
+	out = delayLine.popSample();
 
-	auto* channelDataLeft = buffer.getWritePointer(0);
-	auto* channelDataRight = buffer.getWritePointer(1);
-
-	for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-	{
-		lfo.generateOutputSample();
-		
-		float newDelayTime = doBipolarModulation(depth * lfo.getOutputSample(LFO::PhaseTypes::Normal), modMin, modMax);
-
-		channelDataLeft[sample] = delayLine_L.processSample(channelDataLeft[sample], 0);
-		delayLine_L.setParameter(Delay::Parameters::delayLengthParam, newDelayTime);
-
-		channelDataRight[sample] = delayLine_R.processSample(channelDataRight[sample], 0);
-		delayLine_R.setParameter(Delay::Parameters::delayLengthParam, newDelayTime);
-	}
+	return (1.0 - mix) * in + mix * out;
 }
 
-void Chorus::setParameter(int index, float newValue)
+template <typename SampleType>
+void Chorus<SampleType>::process(SampleType* data, int startSample, int endSample)
 {
-	switch (index)
-	{
-	case Parameters::Rate:
-		rate = newValue;
-
-		//Bounds Check
-		if (rate < 0.1)
-			rate = 0.1;
-		if (rate > 10.0)
-			rate = 10.0;
-
-		lfo.setFrequency(rate);
-
-		break;
-
-	case Parameters::Depth:
-		depth = newValue;
-
-		//Bounds Check
-		if (depth < 0.0)
-			depth = 0.0;
-		if (depth > 100.0)
-			depth = 100;
-
-		break;
-
-	case Parameters::WetMix:
-		wet = newValue;
-
-		//Bounds Check
-		if (wet > 1.0)
-			wet = 1.0;
-		if (wet < 0.0)
-			wet = 0.0;
-
-		delayLine_L.setParameter(Delay::Parameters::wetMixParam, wet);
-		delayLine_R.setParameter(Delay::Parameters::wetMixParam, wet);
-
-		break;
-
-	case Parameters::DryMix:
-		dry = newValue;
-
-		//Bounds Check
-		if (dry > 1.0)
-			dry = 1.0;
-		if (dry < 0.0)
-			dry = 0.0;
-
-		delayLine_L.setParameter(Delay::Parameters::dryMixParam, dry);
-		delayLine_R.setParameter(Delay::Parameters::dryMixParam, dry);
-
-		break;
-	}
+	for(int sample = startSample; sample < endSample; ++sample)
+		data[sample] = processSample(data[sample]);
 }
 
-float Chorus::getParameter(int index)
+template <typename SampleType>
+void Chorus<SampleType>::setRate(SampleType newRate)
 {
-	switch (index)
-	{
-	case Parameters::Rate:
-		return rate;
-		break;
-	case Parameters::Depth:
-		return depth;
-		break;
-	case Parameters::WetMix:
-		return wet;
-		break;
-	case Parameters::DryMix:
-		return dry;
-		break;
-	}
+	this->rate = newRate;
+	lfo.setFrequency(this->rate);
 }
 
-double Chorus::doBipolarModulation(double bipolarModulatorValue, double minValue, double maxValue)
+template <typename SampleType>
+void Chorus<SampleType>::setDepth(SampleType newDepth)
 {
-	// BIPOLAR bound
-	bipolarModulatorValue = fmin(bipolarModulatorValue, -1.0f);
-	bipolarModulatorValue = fmax(bipolarModulatorValue, 1.0f);
-
-	// Calculate range and midpoint
-	double halfRange = (maxValue - minValue) / 2.0;
-	double midpoint = halfRange + minValue;
-
-	return bipolarModulatorValue * (halfRange)+midpoint;
+	this->depth = newDepth;
 }
+
+template <typename SampleType>
+void Chorus<SampleType>::setMix(SampleType newMix)
+{
+	this->mix = newMix;
+}
+
+template <typename SampleType>
+SampleType Chorus<SampleType>::doUnipolarModulationFromMin(SampleType unipolarModulatorValue, SampleType minValue, SampleType maxValue)
+{
+	// --- UNIPOLAR bound
+	unipolarModulatorValue = fmin(unipolarModulatorValue, 1.0f);
+	unipolarModulatorValue = fmax(unipolarModulatorValue, 0.0f);
+
+	// --- modulate from minimum value upwards
+	return unipolarModulatorValue * (maxValue - minValue) + minValue;
+}
+
+template <typename SampleType>
+SampleType Chorus<SampleType>::bipolarToUnipolar(SampleType value)
+{
+	return 0.5 * value + 0.5;
+}
+
+template class Chorus<float>;
+template class Chorus<double>;

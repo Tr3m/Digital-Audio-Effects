@@ -10,8 +10,8 @@ target_sources(${PROJECT_NAME}
         #Compressor.h
         #Limiter.cpp
         #Limiter.h
-        #Chorus.cpp
-        #Chorus.h
+        Chorus.cpp
+        Chorus.h
         #Vibrado.cpp
         #Vibrado.h
         #Flanger.cpp

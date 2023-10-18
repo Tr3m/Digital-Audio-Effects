@@ -4,13 +4,13 @@ template <typename SampleType>
 Delay<SampleType>::Delay()
 {
 
-};
+}
 
 template <typename SampleType>
 Delay<SampleType>::~Delay()
 {
 
-};
+}
 
 template <typename SampleType>
 void Delay<SampleType>::prepare(SampleType sampleRate)
@@ -20,19 +20,19 @@ void Delay<SampleType>::prepare(SampleType sampleRate)
     combFilter.setDelayMs(delayTime);
     combFilter.setFeedback(feedback);
     smoother.prepare(850.0, sampleRate);
-};
+}
 
 template <typename SampleType>
 void Delay<SampleType>::setDelayTime(SampleType delayInMs)
 {
     this->delayTime = delayInMs;
-};
+}
 
 template <typename SampleType>
 void Delay<SampleType>::setFeedback(SampleType newFeedback)
 {
     combFilter.setFeedback(newFeedback);
-};
+}
 
 template <typename SampleType>
 void Delay<SampleType>::setMix(SampleType newMix)
@@ -55,7 +55,7 @@ void Delay<SampleType>::process(SampleType* channelData, int startSample, int en
         SampleType output = (1.0 - mix)*channelData[sample] + mix*processed;
         channelData[sample] = output;
     }
-};
+}
 
 
 template class Delay<float>;

@@ -2,6 +2,8 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         CircularBuffer.cpp
         CircularBuffer.h
+        LinearInterpolationCircularBuffer.cpp
+        LinearInterpolationCircularBuffer.h
         AllPassFilter.cpp
         AllPassFilter.h
         CombFilter.cpp
@@ -10,5 +12,6 @@ target_sources(${PROJECT_NAME}
         EnvelopeDetector.h
         LFO.cpp
         LFO.h
-        FirstOrderSmoother.h    
+        FirstOrderSmoother.h
+        extras/AudioChannelUtilities.h    
 )

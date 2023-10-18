@@ -1,67 +1,66 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
 //==============================================================================
 ChorusPluginAudioProcessorEditor::ChorusPluginAudioProcessorEditor (ChorusPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
-{
-    
+{ 
     setSize(370, 470);
 
     //Rate Slider
-    rateSlider.setSliderStyle(juce::Slider::Rotary);
-    rateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
-    rateSlider.setTextValueSuffix(" Hz");
-    rateSlider.setRange(0.1f, 10.0f, 0.1f);
-    addAndMakeVisible(&rateSlider);
-    rateSlider.addListener(this);
-    rateSlider.setValue(audioProcessor.chorus.getParameter(Chorus::Parameters::Rate));
-    rateSlider.setLookAndFeel(&graphics);
-   
+    rateSlider.reset(new juce::Slider("RateSlider"));
+    rateSlider->setSliderStyle(juce::Slider::Rotary);
+    rateSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    rateSlider->setTextValueSuffix(" Hz");
+    rateSlider->setLookAndFeel(&graphics);
+    addAndMakeVisible(rateSlider.get());    
+
+    rateSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "RATE_ID", *rateSlider);
 
     //Depth Slider
-    depthSlider.setSliderStyle(juce::Slider::Rotary);
-    depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
-    depthSlider.setTextValueSuffix(" %");
-    depthSlider.setRange(0.1f, 100.0f, 0.1f);
-    addAndMakeVisible(&depthSlider);
-    depthSlider.addListener(this);
-    depthSlider.setValue(audioProcessor.chorus.getParameter(Chorus::Parameters::Depth));
-    depthSlider.setLookAndFeel(&graphics);
-    
+    depthSlider.reset(new juce::Slider("DepthSlider"));
+    depthSlider->setSliderStyle(juce::Slider::Rotary);
+    depthSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    depthSlider->setTextValueSuffix(" %");
+    depthSlider->setLookAndFeel(&graphics);
+    addAndMakeVisible(depthSlider.get());
+
+    depthSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "DEPTH_ID", *depthSlider);
 
     //Wet Slider
-    wetSlider.setSliderStyle(juce::Slider::Rotary);
-    wetSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
-    wetSlider.setRange(0.0f, 1.0f, 0.1f);
-    addAndMakeVisible(&wetSlider);
-    wetSlider.addListener(this);
-    wetSlider.setValue(audioProcessor.chorus.getParameter(Chorus::Parameters::WetMix));
-    wetSlider.setLookAndFeel(&graphics);
- 
+    wetSlider.reset(new juce::Slider("WetSlider"));
+    wetSlider->setSliderStyle(juce::Slider::Rotary);
+    wetSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    wetSlider->setLookAndFeel(&graphics);
+    addAndMakeVisible(wetSlider.get()); 
+    
+    wetSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "WET_ID", *wetSlider);
 
     //Dry Slider
-    drySlider.setSliderStyle(juce::Slider::Rotary);
-    drySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
-    drySlider.setRange(0.0f, 1.0f, 0.1f);
-    addAndMakeVisible(&drySlider);
-    drySlider.addListener(this);
-    drySlider.setValue(audioProcessor.chorus.getParameter(Chorus::Parameters::DryMix));
-    drySlider.setLookAndFeel(&graphics);
-    
+    drySlider.reset(new juce::Slider("DrySlider"));
+    drySlider->setSliderStyle(juce::Slider::Rotary);
+    drySlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    drySlider->setLookAndFeel(&graphics);
+    addAndMakeVisible(drySlider.get());     
 
+    drySliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "DRY_ID", *drySlider);
+
+    rateSlider->setBounds(44, 91, 124, 124);
+    depthSlider->setBounds(198, 91, 124, 124);
+    wetSlider->setBounds(44, 252, 124, 124);
+    drySlider->setBounds(198, 252, 124, 124);
 }
 
 ChorusPluginAudioProcessorEditor::~ChorusPluginAudioProcessorEditor()
 {
+    rateSliderAtt = nullptr;
+    depthSliderAtt = nullptr;
+    wetSliderAtt = nullptr;
+    drySliderAtt = nullptr;
 }
 
 //==============================================================================
@@ -73,21 +72,5 @@ void ChorusPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
 void ChorusPluginAudioProcessorEditor::resized()
 {
-    rateSlider.setBounds(44, 91, 124, 124);
-    depthSlider.setBounds(198, 91, 124, 124);
-    wetSlider.setBounds(44, 252, 124, 124);
-    drySlider.setBounds(198, 252, 124, 124);
+    
 }
-
-void ChorusPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
-{
-    if (slider == &rateSlider)
-        audioProcessor.chorus.setParameter(Chorus::Parameters::Rate, slider->getValue());
-    else if (slider == &depthSlider)
-        audioProcessor.chorus.setParameter(Chorus::Parameters::Depth, slider->getValue());
-    else if (slider == &wetSlider)
-        audioProcessor.chorus.setParameter(Chorus::Parameters::WetMix, slider->getValue());
-    else if (slider == &drySlider)
-        audioProcessor.chorus.setParameter(Chorus::Parameters::DryMix, slider->getValue());
-}
-

@@ -129,9 +129,7 @@ void DelayPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
   delay.process(channelDataLeft, 0, buffer.getNumSamples());
 
   // Do dual mono
-  for(int sample = 0; sample < buffer.getNumSamples(); ++sample)
-    channelDataRight[sample] = channelDataLeft[sample];
-
+  AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
 }
 
 void DelayPluginAudioProcessor::updateParameters()
