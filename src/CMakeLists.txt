@@ -14,8 +14,8 @@ target_sources(${PROJECT_NAME}
         Chorus.h
         Vibrado.cpp
         Vibrado.h
-        #Flanger.cpp
-        #Flanger.h
+        Flanger.cpp
+        Flanger.h
         #Reverb.cpp
         #Reverb.h
         #Distortion.cpp

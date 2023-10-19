@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "PluginProcessor.h"
@@ -14,8 +6,7 @@
 //==============================================================================
 /**
 */
-class FlangerPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                           public juce::Slider::Listener
+class FlangerPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     FlangerPluginAudioProcessorEditor (FlangerPluginAudioProcessor&);
@@ -24,11 +15,11 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void sliderValueChanged(juce::Slider* slider);
 
 private:
     
-    juce::Slider rateSlider, depthSlider, wetSlider, drySlider;
+    std::unique_ptr<juce::Slider> rateSlider, depthSlider, wetSlider, drySlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> rateSliderAtt, depthSliderAtt, wetSliderAtt, drySliderAtt;
     
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Flanger };
 

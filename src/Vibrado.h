@@ -47,14 +47,14 @@ public:
 	 */
 	void process(SampleType* data, int startSample, int endSample);
 	/**
-	 * @brief Sets chorus modulation rate
+	 * @brief Sets vibrado modulation rate
 	 * 
 	 * @param newRate New rate value
 	 */
 	void setRate(SampleType newRate);
 
 	/**
-	 * @brief Sets chorus modulation depth
+	 * @brief Sets vibrado modulation depth
 	 * 
 	 * @param newDepth New depth value
 	 */

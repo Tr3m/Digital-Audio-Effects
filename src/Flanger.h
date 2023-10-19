@@ -1,43 +1,86 @@
 #pragma once
-#include <JuceHeader.h>
-#include "Delay.h"
+#include <utils/LinearInterpolationCircularBuffer.h>
 #include <utils/LFO.h>
 
+/**
+ * Basic Flanger Effect
+ * 
+ */
+template <typename SampleType>
 class Flanger
 {
 public:
-	
+
+	/**
+	 * @brief Constructor
+	 * 
+	 */
 	Flanger();
 
-	void prepare(double sampleRate, int samplesPerBlock);
-    void process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels);
+	/**
+	 * @brief Destructor
+	 * 
+	 */
+	~Flanger();
 
-	//Setters and Getters
-	void setParameter(int index, float newValue);
-	float getParameter(int index);
+	/**
+	 * @brief Prepares object for playback
+	 * 
+	 * @param sampleRate Current sampling rate
+	 */
+	void prepare(SampleType sampleRate);
 
-	enum Parameters
-	{
-		Rate = 0,
-		Depth,
-		WetMix,
-		DryMix
-	};
+	/**
+	 * @brief Processes a single sample
+	 * 
+	 * @param input Input sample
+	 */
+	SampleType processSample(SampleType input);
+
+	/**
+	 * @brief Processes a memory block that holds audio samples
+	 * 
+	 * @param data Memory block start pointer 
+	 * @param startSample Sample index to start processing from
+	 * @param endSample Number of samples to process
+	 */
+	void process(SampleType* data, int startSample, int endSample);
+	/**
+	 * @brief Sets flanger modulation rate
+	 * 
+	 * @param newRate New rate value
+	 */
+	void setRate(SampleType newRate);
+
+	/**
+	 * @brief Sets flanger modulation depth
+	 * 
+	 * @param newDepth New depth value
+	 */
+	void setDepth(SampleType newDepth);
+
+	/**
+	 * @brief Sets flanger wet/dry mix
+	 * 
+	 * @param newMix New wet/dry mix value
+	 */
+	void setMix(SampleType newMix);
 
 private:
-	double doUnipolarModulationFromMin(double unipolarModulatorValue, double minValue, double maxValue);
-	double bipolarToUnipolar(double value);
-	
 
-	Delay delayLine_L, delayLine_R;
+	SampleType doUnipolarModulationFromMin(SampleType unipolarModulatorValue, SampleType minValue, SampleType maxValue);
+	SampleType bipolarToUnipolar(SampleType value);
+
+private:
+
+	SampleType sampleRate;
+
+	LinearInterpolationCircularBuffer<SampleType> delayLine;
 	LFO lfo;
 
-	double minDelay = 0.0001;
-	double maxDelay = 0.007;
+	// Min and Max delay times in samples
+	SampleType minDelay {1.0};
+	SampleType maxDelay {50.0};
 
-	//User Parameters
-	double rate{0.33}; //In Hz
-	double depth{65.0}; //Depth %
-	double wet{0.5}, dry{0.5};
-
+	SampleType rate{0.33}, depth{0.15}, mix{0.5}; 
 };

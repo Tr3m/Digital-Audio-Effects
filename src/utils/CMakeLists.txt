@@ -12,7 +12,7 @@ target_sources(${PROJECT_NAME}
         EnvelopeDetector.h
         LFO.cpp
         LFO.h
-        FirstOrderSmoother.h
+        extras/FirstOrderSmoother.h
         extras/AudioChannelUtilities.h
         extras/GainUtilities.h 
 )

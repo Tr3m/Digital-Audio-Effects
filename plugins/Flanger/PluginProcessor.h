@@ -1,14 +1,7 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <utils/extras/AudioChannelUtilities.h>
 #include <Flanger.h>
 
 //==============================================================================
@@ -54,10 +47,15 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    Flanger flanger;
+    void updateParameters();
+
+    juce::AudioProcessorValueTreeState apvts;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
 private:
     //==============================================================================
+
+    Flanger<float> flanger;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerPluginAudioProcessor)
 };

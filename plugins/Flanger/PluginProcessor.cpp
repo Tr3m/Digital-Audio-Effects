@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -19,7 +11,7 @@ FlangerPluginAudioProcessor::FlangerPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts(*this, nullptr, "Params", createParameters())
 #endif
 {
 }
@@ -93,7 +85,7 @@ void FlangerPluginAudioProcessor::changeProgramName (int index, const juce::Stri
 //==============================================================================
 void FlangerPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    flanger.prepare(sampleRate, samplesPerBlock);
+    flanger.prepare(sampleRate);
    
 }
 
@@ -129,17 +121,38 @@ bool FlangerPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& lay
 
 void FlangerPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    updateParameters();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    auto* channelDataLeft = buffer.getWritePointer (0);
+    auto* channelDataRight = buffer.getWritePointer (1);
+
+    flanger.process(channelDataLeft, 0, buffer.getNumSamples());
+
+    // Do dual mono
+    AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
     
-    flanger.process(buffer, totalNumInputChannels, totalNumOutputChannels);
- ;
-    
+}
+
+void FlangerPluginAudioProcessor::updateParameters()
+{
+  flanger.setRate(*apvts.getRawParameterValue("RATE_ID"));
+  flanger.setDepth((*apvts.getRawParameterValue("DEPTH_ID")) / 100.0);
+  flanger.setMix(*apvts.getRawParameterValue("WET_ID"));
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout FlangerPluginAudioProcessor::createParameters()
+{
+  std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("RATE_ID", "RATE", 0.0f, 10.0, 0.3));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DEPTH_ID", "DEPTH", 0.0f, 100.0, 50.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("WET_ID", "WET", 0.0f, 1.0, 0.4));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRY_ID", "DRY", 0.0f, 1.0, 0.4));
+
+  return { parameters.begin(), parameters.end() };
 }
 
 //==============================================================================
@@ -156,12 +169,18 @@ juce::AudioProcessorEditor* FlangerPluginAudioProcessor::createEditor()
 //==============================================================================
 void FlangerPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    
+  auto state = apvts.copyState();
+  std::unique_ptr<juce::XmlElement> xml(state.createXml());
+  copyXmlToBinary(*xml, destData);
 }
 
 void FlangerPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-   
+  std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+  if (xmlState.get() != nullptr)
+      if (xmlState->hasTagName(apvts.state.getType()))
+          apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
 }
 
 //==============================================================================

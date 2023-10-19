@@ -1,135 +1,75 @@
 #include "Flanger.h"
 
-Flanger::Flanger()
+template <typename SampleType>
+Flanger<SampleType>::Flanger()
 {
-	delayLine_L.setParameter(Delay::Parameters::wetMixParam, wet);
-	delayLine_L.setParameter(Delay::Parameters::dryMixParam, dry);
-	delayLine_L.setParameter(Delay::Parameters::feedbackParam, 0.0f);
-	delayLine_L.setParameter(Delay::Parameters::delayLengthParam, 0.007f);
 
-	delayLine_R.setParameter(Delay::Parameters::wetMixParam, wet);
-	delayLine_R.setParameter(Delay::Parameters::dryMixParam, dry);
-	delayLine_R.setParameter(Delay::Parameters::feedbackParam, 0.0f);
-	delayLine_R.setParameter(Delay::Parameters::delayLengthParam, 0.007f);
-
-	lfo.setWaveformType(LFO::WaveformTypes::Triangle);
-
-	lfo.setFrequency(rate);
 }
 
-void Flanger::prepare(double sampleRate, int samplesPerBlock)
+template <typename SampleType>
+Flanger<SampleType>::~Flanger()
 {
-	delayLine_L.prepare(sampleRate, samplesPerBlock);
-	delayLine_R.prepare(sampleRate, samplesPerBlock);
+
+}
+
+template <typename SampleType>
+void Flanger<SampleType>::prepare(SampleType sampleRate)
+{
+	this->sampleRate = sampleRate;
+
+	delayLine.prepare(sampleRate);
+	delayLine.setSize(int(sampleRate / 2));
+	
 	lfo.prepare(sampleRate);
+	lfo.setWaveformType(0);
 }
 
-void Flanger::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels)
+template <typename SampleType>
+SampleType Flanger<SampleType>::processSample(SampleType input)
 {
+	SampleType modMin = minDelay;
+	SampleType modMax = minDelay + maxDelay;
 	
+	SampleType in = input;
+	SampleType out = in;                
 
-	double modDepth = depth / 100.0f;
-	double modMin = minDelay;
-	double modMax = minDelay + maxDelay;
+	SampleType newDelTime = (doUnipolarModulationFromMin(bipolarToUnipolar(depth * lfo.getNextOutputSample(LFO::LFOPhase::Normal)), modMin, modMax));
 
-	
-	
-	auto* channelDataLeft = buffer.getWritePointer(0);
-	auto* channelDataRight = buffer.getWritePointer(1);
+	delayLine.pushSample(out);        
+	delayLine.setDelayInSamples(newDelTime);
+	out = delayLine.popSample();
 
-	for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-	{
-		lfo.generateOutputSample();
-		double newDelayTime = doUnipolarModulationFromMin(bipolarToUnipolar(modDepth * lfo.getOutputSample(LFO::PhaseTypes::Normal)), modMin, modMax);
-
-		channelDataLeft[sample] = delayLine_L.processSample(channelDataLeft[sample], 0);
-		delayLine_L.setParameter(Delay::Parameters::delayLengthParam, newDelayTime);
-
-		channelDataRight[sample] = delayLine_R.processSample(channelDataRight[sample], 1);
-		delayLine_R.setParameter(Delay::Parameters::delayLengthParam, newDelayTime);
-
-	}
-	
+	return (1.0 - mix) * in + mix * out;
 }
 
-void Flanger::setParameter(int index, float newValue)
+template <typename SampleType>
+void Flanger<SampleType>::process(SampleType* data, int startSample, int endSample)
 {
-	switch (index)
-	{
-	case Parameters::Rate:
-		rate = newValue;
-	
-		//Bounds Check
-		if (rate < 0.1)
-			rate = 0.1;
-		if (rate > 10.0)
-			rate = 10;
-
-		lfo.setFrequency(rate);
-
-		break;
-
-	case Parameters::Depth:
-		depth = newValue;
-
-		//Bounds Check
-		if (depth > 100.0)
-			depth = 100;
-		if (depth < 0.0)
-			depth = 0;
-
-		break;
-
-	case Parameters::WetMix:
-		wet = newValue;
-
-		//Bounds Check
-		if (wet > 1.0)
-			wet = 1.0;
-		if (wet < 0.0)
-			wet = 0.0;
-
-		delayLine_L.setParameter(Delay::Parameters::wetMixParam, wet);
-		delayLine_R.setParameter(Delay::Parameters::wetMixParam, wet);
-
-		break;
-
-	case Parameters::DryMix:
-		dry = newValue;
-
-		//Bounds Check
-		if (dry > 1.0)
-			dry = 1.0;
-		if (dry < 0.0)
-			dry = 0.0;
-
-		delayLine_L.setParameter(Delay::Parameters::dryMixParam, dry);
-		delayLine_R.setParameter(Delay::Parameters::dryMixParam, dry);
-
-		break;
-	}
+	for(int sample = startSample; sample < endSample; ++sample)
+		data[sample] = processSample(data[sample]);
 }
 
-float Flanger::getParameter(int index)
+template <typename SampleType>
+void Flanger<SampleType>::setRate(SampleType newRate)
 {
-	switch (index)
-	{
-	case Parameters::Rate:
-		return rate;
-		break;
-	case Parameters::Depth:
-		return depth;
-		break;
-	case Parameters::WetMix:
-		return wet;
-		break;
-	case Parameters::DryMix:
-		return dry;
-		break;
-	}
+	this->rate = newRate;
+	lfo.setFrequency(this->rate);
 }
 
-double Flanger::doUnipolarModulationFromMin(double unipolarModulatorValue, double minValue, double maxValue)
+template <typename SampleType>
+void Flanger<SampleType>::setDepth(SampleType newDepth)
+{
+	this->depth = newDepth;
+}
+
+template <typename SampleType>
+void Flanger<SampleType>::setMix(SampleType newMix)
+{
+	this->mix = newMix;
+}
+
+template <typename SampleType>
+SampleType Flanger<SampleType>::doUnipolarModulationFromMin(SampleType unipolarModulatorValue, SampleType minValue, SampleType maxValue)
 {
 	// --- UNIPOLAR bound
 	unipolarModulatorValue = fmin(unipolarModulatorValue, 1.0f);
@@ -139,8 +79,11 @@ double Flanger::doUnipolarModulationFromMin(double unipolarModulatorValue, doubl
 	return unipolarModulatorValue * (maxValue - minValue) + minValue;
 }
 
-double Flanger::bipolarToUnipolar(double value)
+template <typename SampleType>
+SampleType Flanger<SampleType>::bipolarToUnipolar(SampleType value)
 {
 	return 0.5 * value + 0.5;
 }
 
+template class Flanger<float>;
+template class Flanger<double>;

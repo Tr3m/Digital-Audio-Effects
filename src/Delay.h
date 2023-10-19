@@ -1,6 +1,6 @@
 #pragma once
 #include <utils/CombFilter.h>
-#include <utils/FirstOrderSmoother.h>
+#include <utils/extras/FirstOrderSmoother.h>
 
 
 /**
