@@ -1,27 +1,86 @@
 #pragma once
-#include <juce_audio_processors/juce_audio_processors.h>
+#include <cmath>
 
+/**
+ * Envelope Detector Class
+ */
+template <typename SampleType>
 class EnvelopeDetector
 {
 public:
 
+    /**
+     * @brief Constructor
+     * 
+     */
     EnvelopeDetector();
-        
-    void prepare(double _sampleRate);
-    double processSample(double input);
+    
+    /**
+     * @brief Prepares object for processing
+     * 
+     * @param sampleRate Current sampling rate
+     */
+    void prepare(SampleType sampleRate);
 
-    //Setters and Getters
+    /**
+     * @brief Processes a single sample
+     * 
+     * @param input Input sample
+     */
+    SampleType processSample(SampleType input);
 
-    void setAttackTime(double newValue);
-    double getAttackTime();
+    /**
+     * @brief Sets the attack time of the Envelope Detector object
+     * 
+     * @param newValue New attack time in milliseconds
+     */
+    void setAttackTime(SampleType newValue);
 
-    void setReleaseTime(double newValue);
-    double getReleaseTime();
+    /**
+     * @brief Returns the attack time parameter value of the Envelope Detector object
+     */
+    SampleType getAttackTime();
 
+    /**
+     * @brief Sets the release time of the Envelope Detector object
+     * 
+     * @param newValue New Release time in milliseconds
+     */
+    void setReleaseTime(SampleType newValue);
+
+    /**
+     * @brief Returns the release time parameter value of the Envelope Detector object
+     * 
+     * @return SampleType 
+     */
+    SampleType getReleaseTime();
+    
+    /**
+     * @brief Sets the detection mode of the Envelope Detector object
+     * 
+     * @param index Detection mode index
+     */
     void setDetectionMode(int index);
+
+    /**
+     * @brief Returns the detection mode index of the Envelope Detector object
+     */
     int getDetectionMode();
 
-    void setOutputIndB(bool _output_In_dB);
+    /**
+     * @brief Sets the envelope detector in dB or linear output mode
+     * 
+     * @param outputIndB Should output be in dB boolean. 
+     * True = db Output, False = Linear Output
+     */
+    void setOutputIndB(bool outputIndB);
+
+    /**
+     * @brief Returns Envelope Detector detection mode
+     * 
+     * @return true dB output
+     * @return false Linear output
+     */
     bool isOutputIndB();
 
     enum DetectionModes
@@ -34,21 +93,21 @@ public:
 
 private:    
 
-    double sampleRate{ 44100.0 };
+    SampleType sampleRate{ 44100.0 };
 
     //User Parameters
-    double attackTime{ 0.0 };   //In ms
-    double releaseTime{ 0.0 };  //In ms
+    SampleType attackTime{ 0.0 };   //In ms
+    SampleType releaseTime{ 0.0 };  //In ms
     int detectionMode{DetectionModes::Peak};
 
 
-    double attackTimeCoeff{ 0.0 };
-    double releaseTimeCoeff{ 0.0 };
+    SampleType attackTimeCoeff{ 0.0 };
+    SampleType releaseTimeCoeff{ 0.0 };
     bool output_In_dB{false};
 
     const double rc_atc = -0.99967234081320612357829304641019; //RC filter analog time constant
 
-    double previousValue{0.0}; //Envelope value for the previous sample
+    SampleType previousValue{0.0}; //Envelope value for the previous sample
 
-    void setSampleRate(double m_SampleRate);
+    void setSampleRate(SampleType sampleRate);
 };

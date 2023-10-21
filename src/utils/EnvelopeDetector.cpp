@@ -1,19 +1,22 @@
 #include "EnvelopeDetector.h"
 
-EnvelopeDetector::EnvelopeDetector()
+template <typename SampleType>
+EnvelopeDetector<SampleType>::EnvelopeDetector()
 {
 }
 
-void EnvelopeDetector::prepare(double _sampleRate)
+template <typename SampleType>
+void EnvelopeDetector<SampleType>::prepare(SampleType sampleRate)
 {
-	setSampleRate(_sampleRate);
+	setSampleRate(sampleRate);
 	previousValue = 0.0;
 }
 
-double EnvelopeDetector::processSample(double input)
+template <typename SampleType>
+SampleType EnvelopeDetector<SampleType>::processSample(SampleType input)
 {
-	double xn = std::fabs(input);
-	double currentValue = 0.0; //Envelope value for the current sample
+	SampleType xn = std::fabs(input);
+	SampleType currentValue = 0.0; //Envelope value for the current sample
 
 	if(detectionMode == DetectionModes::MS || detectionMode == DetectionModes::RMS)
 		xn = xn*xn;
@@ -52,27 +55,32 @@ double EnvelopeDetector::processSample(double input)
 	return 20*(std::log10(currentValue));
 }
 
-void EnvelopeDetector::setAttackTime(double newValue)
+template <typename SampleType>
+void EnvelopeDetector<SampleType>::setAttackTime(SampleType newValue)
 {
 	attackTimeCoeff = std::exp(rc_atc / (newValue * sampleRate * 0.001));
 }
 
-double EnvelopeDetector::getAttackTime()
+template <typename SampleType>
+SampleType EnvelopeDetector<SampleType>::getAttackTime()
 {
 	return attackTime;
 }
 
-void EnvelopeDetector::setReleaseTime(double newValue)
+template <typename SampleType>
+void EnvelopeDetector<SampleType>::setReleaseTime(SampleType newValue)
 {
 	releaseTimeCoeff = std::exp(rc_atc / (newValue * sampleRate * 0.001));
 }
 
-double EnvelopeDetector::getReleaseTime()
+template <typename SampleType>
+SampleType EnvelopeDetector<SampleType>::getReleaseTime()
 {
 	return releaseTimeCoeff;
 }
 
-void EnvelopeDetector::setDetectionMode(int index)
+template <typename SampleType>
+void EnvelopeDetector<SampleType>::setDetectionMode(int index)
 {
 	switch(index)
 	{
@@ -90,24 +98,31 @@ void EnvelopeDetector::setDetectionMode(int index)
 	}
 }
 
-int EnvelopeDetector::getDetectionMode()
+template <typename SampleType>
+int EnvelopeDetector<SampleType>::getDetectionMode()
 {
 	return detectionMode;
 }
 
-void EnvelopeDetector::setOutputIndB(bool _output_In_dB)
+template <typename SampleType>
+void EnvelopeDetector<SampleType>::setOutputIndB(bool outputIndB)
 {
-	output_In_dB = _output_In_dB;
+	output_In_dB = outputIndB;
 }
 
-bool EnvelopeDetector::isOutputIndB()
+template <typename SampleType>
+bool EnvelopeDetector<SampleType>::isOutputIndB()
 {
 	return output_In_dB;
 }
 
-void EnvelopeDetector::setSampleRate(double m_SampleRate)
+template <typename SampleType>
+void EnvelopeDetector<SampleType>::setSampleRate(SampleType sampleRate)
 {
-	sampleRate = m_SampleRate;
+	this->sampleRate = sampleRate;
 	setAttackTime(attackTime);
 	setReleaseTime(releaseTime);
 }
+
+template class EnvelopeDetector<float>;
+template class EnvelopeDetector<double>;

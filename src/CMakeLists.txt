@@ -6,8 +6,8 @@ target_sources(${PROJECT_NAME}
         Delay.h
         IIRFilter.cpp
         IIRFilter.h
-        #Compressor.cpp
-        #Compressor.h
+        Compressor.cpp
+        Compressor.h
         #Limiter.cpp
         #Limiter.h
         Chorus.cpp

@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "PluginProcessor.h"
@@ -14,8 +6,7 @@
 //==============================================================================
 /**
 */
-class CompressorPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                              public juce::Slider::Listener
+class CompressorPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     CompressorPluginAudioProcessorEditor (CompressorPluginAudioProcessor&);
@@ -24,13 +15,14 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void initializeSlider(juce::Slider&);
-    void sliderValueChanged(juce::Slider* slider);
 
 private:
     
-    juce::Slider thresholdSlider, ratioSlider, attackSlider, releaseSilder, gainSlider;
+    std::unique_ptr<juce::Slider> thresholdSlider, ratioSlider, attackSlider, releaseSilder, gainSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> thresholdSliderAtt, ratioSliderAtt, attackSliderAtt, releaseSilderAtt, gainSliderAtt;
+
     juce::TextButton hardKnee, softKnee;
+
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Compressor };
 
     CompressorPluginAudioProcessor& audioProcessor;

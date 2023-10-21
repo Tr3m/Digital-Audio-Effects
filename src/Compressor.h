@@ -1,20 +1,108 @@
 #pragma once
 #include <utils/EnvelopeDetector.h>
+#include <utils/extras/GainUtilities.h>
 
+/**
+ * Basic Compressor Effect
+ */
+template <typename SampleType>
 class Compressor
 {
 public:
 
+	/**
+	 * @brief Constructor
+	 */
 	Compressor();
 
-	void prepare(double _sampleRate);
-	double processSample(double input);
+	/**
+	 * @brief Destructor
+	 */
+	~Compressor();
 
-	//Setters and Getters
-	void setParameter(int index, double newValue);
-	double getParameter(int index);
+	/**
+     * @brief Prepares object for playback
+     * 
+     * @param sampleRate Current sampling rate
+     */
+	void prepare(SampleType sampleRate);
 
+	/**
+     * @brief Processes a single sample
+     * 
+     * @param input Input sample
+     */
+	SampleType processSample(SampleType input);
+
+	/**
+     * @brief Processes a memory block that holds audio samples
+     * 
+     * @param data Memory block start pointer 
+     * @param startSample Sample index to start processing from
+     * @param endSample Number of samples to process
+     */
+	void process(SampleType* data, int startSample, int endSample);
+
+	/**
+	 * @brief Sets the compressor threshold
+	 * 
+	 * @param newThreshold New threshold value in decibels
+	 */
+	void setThreshold(SampleType newThreshold);
+
+	/**
+	 * @brief Sets the compression ratio
+	 * 
+	 * @param newRatio New ratio value
+	 */
+	void setRatio(SampleType newRatio);
+
+	/**
+	 * @brief Sets the compressor attack time
+	 * 
+	 * @param newAttack New attack time value in milliseconds
+	 */
+	void setAttack(SampleType newAttack);
+
+	/**
+	 * @brief Sets the compressor release time
+	 * 
+	 * @param newRelease New release time value in milliseconds
+	 */
+	void setRelease(SampleType newRelease);
+
+	/**
+	 * @brief Sets the compressor make-up gain
+	 * 
+	 * @param newGain New gain value in decibels
+	 */
+	void setGain(SampleType newGain);
+
+	/**
+	 * @brief Sets one of the compressor's parameters
+	 * 
+	 * @param index Parameter index
+	 * @param newValue New parameter value
+	 */
+	void setParameter(int index, SampleType newValue);
+
+	/**
+	 * @brief Returns one of the compressor's parameters
+	 * 
+	 * @param index Parameter index
+	 */
+	SampleType getParameter(int index);
+
+	/**
+	 * @brief Sets the compressor knee type
+	 * 
+	 * @param index Knee type index
+	 */
 	void setKneeType(int index);
+
+	/**
+	 * @brief Returns the compressor knee type index
+	 */
 	int getKneeType();
 
 	enum Parameters
@@ -34,22 +122,22 @@ public:
 
 private:
 
-
-	//User Parameters
-	double threshold{ -10.0 }; //in dB
-	double ratio{ 50.0 };
-	double makeupGain{ 0.0 }; //in dB
-	double attack{ 10.0 }; //in ms
-	double release{ 100.0 }; //in ms
+	SampleType sampleRate;
+	
+	// User Parameters
+	SampleType threshold{ -10.0 }; //in dB
+	SampleType ratio{ 50.0 };
+	SampleType makeupGain{ 0.0 }; //in dB
+	SampleType attack{ 10.0 }; //in ms
+	SampleType release{ 100.0 }; //in ms
 	int kneeType{ KneeTypes::Soft };
+
 	//=============================================
 
-	double kneeWidth{ 30.0 }; //in dB
-	EnvelopeDetector detector;
+	SampleType kneeWidth{ 30.0 }; //in dB
+	EnvelopeDetector<SampleType> detector;
 
 	//============================================
 
-	double calaculateGain(double input);
-	double decibelToLinear(double dbValue);
-
+	SampleType calaculateGain(SampleType input);
 };
