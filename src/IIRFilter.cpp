@@ -1,46 +1,125 @@
 #include "IIRFilter.h"
 
-
-IIRFilter::IIRFilter(double sampleRate)
+template <typename SampleType>
+IIRFilter<SampleType>::IIRFilter()
 {
-	setCutoff(400.0f);
-	last_SampleRate = sampleRate;
-	filterType = 0;	//Defaults to LPF
-	Q = 1.0;
-	notchGain = 0.0f;
+
+}
+
+template <typename SampleType>
+IIRFilter<SampleType>::~IIRFilter()
+{
+	
+}
+
+template <typename SampleType>
+void IIRFilter<SampleType>::prepare(SampleType sampleRate)
+{
+	this->sampleRate = sampleRate;
+	calculateCoeffs();		
+}
+
+template <typename SampleType>
+SampleType IIRFilter<SampleType>::processSample(SampleType input)
+{
+	auto yn = d0*input + c0*(a0 * input + a1 * xn_1 + a2 * xn_2 - b1 * yn_1 - b2 * yn_2);
+
+	xn_2 = xn_1;
+	xn_1 = input;
+
+	yn_2 = yn_1;
+	yn_1 = yn;
+
+	return yn;
+}
+
+template <typename SampleType>
+void IIRFilter<SampleType>::process(SampleType* data, int startSample, int endSample)
+{
+	for(int sample = startSample; sample < endSample; ++sample)
+		data[sample] = processSample(data[sample]);
+}
+
+template <typename SampleType>
+void IIRFilter<SampleType>::setCutoff(SampleType newValue)
+{
+	if (newValue < 20.0f)
+		fc = 20.0f;
+	else if (newValue > 20000.0f)
+		fc = 20000.0f;
+	else
+		fc = newValue;
 
 	calculateCoeffs();
 }
 
-IIRFilter::IIRFilter(double sampleRate, int type)
+template <typename SampleType>
+SampleType IIRFilter<SampleType>::getCutoff()
 {
-	setCutoff(400.0f);
-	last_SampleRate = sampleRate;
-	setFilterType(type);
-	Q = 1.0;
-	notchGain = 0.0f;
+	return fc;
+}
+
+template <typename SampleType>
+void IIRFilter<SampleType>::setFilterType(int type)
+{
+	if (type < 0)
+		type = 0;
+	else if (type > 4)
+		type = 4;
+
+	filterType = type;
 
 	calculateCoeffs();
 }
 
-IIRFilter::IIRFilter(double sampleRate, int type, float freq)
+template <typename SampleType>
+int IIRFilter<SampleType>::getFilterType()
 {
-	setCutoff(freq);
-	last_SampleRate = sampleRate;
-	setFilterType(type);
-	Q = 1.0;
-	notchGain = 0.0f;
+	return filterType;
+}
+
+template <typename SampleType>
+void IIRFilter<SampleType>::setQ(SampleType newValue)
+{
+	SampleType this_q = newValue;
+
+	if (this_q > 20.0)
+		this_q = 20.0;
+	else if (this_q < 0.2)
+		this_q = 0.2;
+
+	Q = this_q;
 
 	calculateCoeffs();
 }
 
-void IIRFilter::calculateCoeffs()
+template <typename SampleType>
+SampleType IIRFilter<SampleType>::getQ()
+{
+	return Q;
+}
+
+template <typename SampleType>
+void IIRFilter<SampleType>::setGain(SampleType newValue)
+{
+	notchGain = newValue;
+	calculateCoeffs();
+}
+
+template <typename SampleType>
+SampleType IIRFilter<SampleType>::getGain()
+{
+	return notchGain;
+}
+
+template <typename SampleType>
+void IIRFilter<SampleType>::calculateCoeffs()
 {
 	switch (filterType)
 	{
 		case FilterTypes::LPF : //2nd Order Butterworth LPF
 			r = std::sqrt(2);
-			C = float(1.0f / tan(m_pi * fc / (float)last_SampleRate));
+			C = SampleType(1.0f / tan(PI * fc / (SampleType)this->sampleRate));
 			a0 = 1.0f / (1.0f + r * C + C * C);
 			a1 = 2 * a0;
 			a2 = a0;
@@ -52,7 +131,7 @@ void IIRFilter::calculateCoeffs()
 
 		case FilterTypes::HPF : //2nd Order Butterworth HPF
 			r = std::sqrt(2);
-			C = float(tan(m_pi * fc / (float)last_SampleRate));
+			C = SampleType(tan(PI * fc / (SampleType)this->sampleRate));
 			a0 = 1.0f / (1.0f + r * C + C * C);
 			a1 = -2 * a0;
 			a2 = a0;
@@ -64,7 +143,7 @@ void IIRFilter::calculateCoeffs()
 
 		case FilterTypes::Parametric :
 			
-			K = tan(m_pi*fc/float(last_SampleRate));
+			K = tan(PI*fc/SampleType(this->sampleRate));
 			V0 = std::pow(10, notchGain / 20);
 			D0 = 1 + (K/Q)+K*K;
 			e0 = 1 + (K/(V0*Q)) + K*K;
@@ -100,7 +179,7 @@ void IIRFilter::calculateCoeffs()
 
 			}
 
-			/*theta_c = (2 * m_pi * fc) / float(last_SampleRate);
+			/*theta_c = (2 * PI * fc) / SampleType(this->sampleRate);
 			u = std::pow(10, notchGain / 20);
 			zeta = 4.0 / (1.0 + u);
 			beta = 0.5 * (1.0f - (zeta * tan(theta_c / (2.0 * Q)))) / (1.0f + (zeta * tan(theta_c / (2.0 * Q))));
@@ -116,113 +195,7 @@ void IIRFilter::calculateCoeffs()
 			break;
 		
 	}
-		
-
-	
-	//std::string log = "a0 = " + std::to_string(a0) + "\na1 = " + std::to_string(a1) + "\na1 = " + std::to_string(a2) + "\na2 = " + std::to_string(a2)
-		//+ "\nb1 = " + std::to_string(b1) + "\nb2 = " + std::to_string(b2) + "\nSample Rate = " + std::to_string(m_SampleRate) + "\nC = " + std::to_string(C);
-
-	//DBG(log);
 }
 
-void IIRFilter::prepare(double sampleRate, int samplesPerBlock)
-{
-	last_SampleRate = sampleRate;
-	calculateCoeffs();	
-		
-}
-
-void IIRFilter::process(juce::AudioBuffer<float>& buffer, int channel, double sampleRate)
-{
-	last_SampleRate = sampleRate;
-
-	calculateCoeffs();
-
-	
-	
-	auto* channelData = buffer.getWritePointer(channel);
-
-		
-
-	for(int sample = 0; sample < buffer.getNumSamples(); ++sample)
-	{
-			
-
-		auto yn = d0*channelData[sample] + c0*(a0 * channelData[sample] + a1 * xn_1 + a2 * xn_2 - b1 * yn_1 - b2 * yn_2);
-			
-
-		xn_2 = xn_1;
-		xn_1 = channelData[sample];
-
-		yn_2 = yn_1;
-		yn_1 = yn;
-
-		channelData[sample] = yn;
-	}
-	
-}
-
-void IIRFilter::setCutoff(float newValue)
-{
-	if (newValue < 20.0f)
-		fc = 20.0f;
-	else if (newValue > 20000.0f)
-		fc = 20000.0f;
-	else
-		fc = newValue;
-
-	calculateCoeffs();
-}
-
-float IIRFilter::getCutoff()
-{
-	return fc;
-}
-
-void IIRFilter::setFilterType(int type)
-{
-	if (type < 0)
-		type = 0;
-	else if (type > 4)
-		type = 4;
-
-	filterType = type;
-
-	calculateCoeffs();
-}
-
-int IIRFilter::getFilterType()
-{
-	return filterType;
-}
-
-void IIRFilter::setQ(float newValue)
-{
-	float this_q = newValue;
-
-	if (this_q > 20.0)
-		this_q = 20.0;
-	else if (this_q < 0.2)
-		this_q = 0.2;
-
-	Q = this_q;
-
-	calculateCoeffs();
-}
-
-float IIRFilter::getQ()
-{
-	return Q;
-}
-
-void IIRFilter::setGain(float newValue)
-{
-	notchGain = newValue;
-	calculateCoeffs();
-}
-
-float IIRFilter::getGain()
-{
-	return notchGain;
-}
-
+template class IIRFilter<float>;
+template class IIRFilter<double>;

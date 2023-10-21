@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -15,12 +7,11 @@ IirfilterPluginAudioProcessor::IirfilterPluginAudioProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+                       .withInput  ("Input",  juce::AudioChannelSet::mono(), true)
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), leftFilter(getSampleRate(),IIRFilter::FilterTypes::HPF),
-                          rightFilter(getSampleRate(), IIRFilter::FilterTypes::HPF)
+                       ), apvts(*this, nullptr, "Params", createParameters())
 #endif
 {
 }
@@ -94,8 +85,7 @@ void IirfilterPluginAudioProcessor::changeProgramName (int index, const juce::St
 //==============================================================================
 void IirfilterPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    leftFilter.prepare(sampleRate, samplesPerBlock);
-    rightFilter.prepare(sampleRate, samplesPerBlock);
+  iirFilter.prepare(sampleRate);
 }
 
 void IirfilterPluginAudioProcessor::releaseResources()
@@ -128,22 +118,45 @@ bool IirfilterPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& l
 
 void IirfilterPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+  updateParameters();
 
-    
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    
-    //Process Left Channel
-    leftFilter.process(buffer, 0, getSampleRate());
+    auto* channelDataLeft = buffer.getWritePointer (0);
+    auto* channelDataRight = buffer.getWritePointer (1);
 
-    //Process Right Channel
-   rightFilter.process(buffer, 1, getSampleRate());
-    
+    iirFilter.process(channelDataLeft, 0, buffer.getNumSamples());
 
+    // Do dual mono
+    AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
+}
+
+void IirfilterPluginAudioProcessor::updateParameters()
+{
+  iirFilter.setCutoff(*apvts.getRawParameterValue("FREQUENCY_ID"));
+  iirFilter.setGain(*apvts.getRawParameterValue("GAIN_ID"));
+}
+
+void IirfilterPluginAudioProcessor::setFilterType(int filterTypeIndex)
+{
+  iirFilter.setFilterType(filterTypeIndex);
+}
+
+int IirfilterPluginAudioProcessor::getFilterType()
+{
+  return iirFilter.getFilterType();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout IirfilterPluginAudioProcessor::createParameters()
+{
+  std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FREQUENCY_ID", "FREQUENCY", 20.0f, 20000.0, 500.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN_ID", "GAIN", -20.0f, 20.0, 0.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("Q_ID", "Q", 0.2f, 10.0, 1.0));
+
+  return { parameters.begin(), parameters.end() };
 }
 
 //==============================================================================
@@ -160,12 +173,18 @@ juce::AudioProcessorEditor* IirfilterPluginAudioProcessor::createEditor()
 //==============================================================================
 void IirfilterPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    
+  auto state = apvts.copyState();
+  std::unique_ptr<juce::XmlElement> xml(state.createXml());
+  copyXmlToBinary(*xml, destData);    
 }
 
 void IirfilterPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-  
+  std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+  if (xmlState.get() != nullptr)
+    if (xmlState->hasTagName(apvts.state.getType()))
+      apvts.replaceState(juce::ValueTree::fromXml(*xmlState)); 
 }
 
 //==============================================================================

@@ -1,70 +1,125 @@
 #pragma once
-#include <juce_audio_processors/juce_audio_processors.h>
+#include <cmath>
 
+#define PI 3.14159265358979323846
+
+/**
+ * IIR Filter Class
+ * 
+ */
+template <typename SampleType>
 class IIRFilter
 {
-
 public:
 
-	//Constructors 
-	IIRFilter(double sampleRate);
-	IIRFilter(double sampleRate, int type);
-	IIRFilter(double sampleRate, int type, float freq);
+	/**
+	 * @brief Constructor
+	 */
+	IIRFilter();
 
+	/**
+	 * @brief Destructor
+	 */
+	~IIRFilter();
 
-	void prepare(double sampleRate, int samplesPerBlock);
-    void process(juce::AudioBuffer<float>& buffer, int channel, double sampleRate);
+	/**
+	 * @brief Prepares object for playback
+	 * 
+	 * @param sampleRate Current sampling rate
+	 */
+	void prepare(SampleType sampleRate);
 
-    
-    //Might not need those...
-    //==================================================
-    //void setParameter(int index, float newValue);
-    //float getPameter(int index);
+	/**
+	 * @brief Processes a single sample
+	 * 
+	 * @param input Input sample
+	 */
+	SampleType processSample(SampleType input);
 
-	
-    //Param Setters and Getters
-    //==================================================
-	void setCutoff(float newValue);
+	/**
+	 * @brief Processes a memory block that holds audio samples
+	 * 
+	 * @param data Memory block start pointer 
+	 * @param startSample Sample index to start processing from
+	 * @param endSample Number of samples to process
+	 */
+    void process(SampleType* data, int startSample, int endSample);
+
+	/**
+	 * @brief Sets filter cutoff frequency
+	 * 
+	 * @param newValue New cutoff frequency value
+	 * 
+	 * When the filter mode is set to Parametric it sets the center frequency instead.
+	 */
+	void setCutoff(SampleType newValue);
+
+	/**
+	 * @brief Sets the filter type
+	 * 
+	 * @param filterType Filter type index
+	 */
 	void setFilterType(int filterType);
-	void setQ(float newValue);
-	void setGain(float newValue);
 
-	float getCutoff();
-	float getQ();
-	float getGain();
+	/**
+	 * @brief Sets the filter quality factor
+	 * 
+	 * @param newValue New filter quality factor
+	 */
+	void setQ(SampleType newValue);
+
+	/**
+	 * @brief Sets the amount of boost/attenuation of the parametric mode
+	 * 
+	 * @param newValue New boost/attention value in decibels
+	 */
+	void setGain(SampleType newValue);
+
+	/**
+	 * @brief Returns the cutoff/center frequency of the filter
+	 */
+	SampleType getCutoff();
+
+	/**
+	 * @brief Returns the quality factor of the filter
+	 */
+	SampleType getQ();
+
+	/**
+	 * @brief Returns the boost/cut value of the parametric filter mode
+	 */
+	SampleType getGain();
+
+	/**
+	 * @brief Returns the filter type index
+	 */
 	int getFilterType();
     
-    //==================================================
-
 	enum FilterTypes
 	{
-		LPF = 0,	//Low Pass Fitler
-		HPF,		//High Pass Filter
+		LPF = 0,	// Low Pass Fitler
+		HPF,		// High Pass Filter
 		Parametric,
 	};
 
-	//==================================================
 
 private:
 
+	SampleType sampleRate;
+
+	SampleType a0, a1, a2, b1, b2, c0, d0, r, C;
+
+	// Paremetric EQ Filter Variables
+	SampleType K, V0, e0, D0, alpha, beta, gamma, delta, heta;
+	SampleType theta_c, u, zeta;
+
+	// Previous in/out values
+	SampleType xn_1 = 0, xn_2 = 0, yn_1 = 0, yn_2 = 0;
+
+	// User Parameters
+	SampleType fc {500.0}, Q {1.0}, notchGain {0.0};
+	int filterType {FilterTypes::LPF};
+
 	void calculateCoeffs();
-
-
-	float a0, a1, a2, b1, b2, c0, d0, r, C;
-
-	double last_SampleRate;
-
-	float m_pi = 3.14159265358979323846;
-
-	//Paremetric EQ Filter Variables
-	float K, V0, e0, D0, alpha, beta, gamma, delta, heta;
-
-	float theta_c, u, zeta;
-
-	float xn_1 = 0, xn_2 = 0, yn_1 = 0, yn_2 = 0;
-
-	//User Variables
-	float fc, Q, notchGain;
-	int filterType;
 
 };

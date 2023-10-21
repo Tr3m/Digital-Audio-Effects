@@ -1,15 +1,8 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <IIRFilter.h>
+#include <utils/extras/AudioChannelUtilities.h>
 
 //==============================================================================
 /**
@@ -53,11 +46,18 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+    void updateParameters();
+    void setFilterType(int filterTypeIndex);
+    int getFilterType();
+
+    juce::AudioProcessorValueTreeState apvts;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
     
-    IIRFilter leftFilter, rightFilter;
 private:
     //==============================================================================
 
+    IIRFilter<float> iirFilter;
    
         
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IirfilterPluginAudioProcessor)

@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "PluginProcessor.h"
@@ -29,15 +21,18 @@ public:
 
 
 private:
-    juce::Slider freqSlider, qSlider, gainSlider;
+    
+    std::unique_ptr<juce::Slider> freqSlider, qSlider, gainSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqSliderAtt, qSliderAtt, gainSliderAtt;
+
     juce::Label freqLabel, qLabel, gainLabel;
     juce::TextButton lpButton, hpButton, parButton;
 
     juce::TooltipWindow tooltipWindow{ this, 200 };
 
-    IirfilterPluginAudioProcessor& audioProcessor;
-
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Filter };
 
+    IirfilterPluginAudioProcessor& audioProcessor;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IirfilterPluginAudioProcessorEditor)
 };

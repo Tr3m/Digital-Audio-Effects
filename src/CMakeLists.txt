@@ -4,8 +4,8 @@ target_sources(${PROJECT_NAME}
         GUIGraphics.h
         Delay.cpp
         Delay.h
-        #IIRFilter.cpp
-        #IIRFilter.h
+        IIRFilter.cpp
+        IIRFilter.h
         #Compressor.cpp
         #Compressor.h
         #Limiter.cpp
