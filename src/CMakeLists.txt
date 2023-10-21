@@ -8,8 +8,8 @@ target_sources(${PROJECT_NAME}
         IIRFilter.h
         Compressor.cpp
         Compressor.h
-        #Limiter.cpp
-        #Limiter.h
+        Limiter.cpp
+        Limiter.h
         Chorus.cpp
         Chorus.h
         Vibrado.cpp

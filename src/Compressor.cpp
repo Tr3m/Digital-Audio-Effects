@@ -30,12 +30,10 @@ SampleType Compressor<SampleType>::processSample(SampleType sample)
 	//Gain Reduction Calculation
 	SampleType gainReduction = calaculateGain(detect_input);
 
-	//MakeupGain
+	//Make-up Gain
 	SampleType muGain = GainUtilities<SampleType>::decibelsToGain(makeupGain);
-	//SampleType muGain = decibelToLinear(makeupGain);
 
 	return xn * gainReduction * muGain;
-
 }
 
 template <typename SampleType>
