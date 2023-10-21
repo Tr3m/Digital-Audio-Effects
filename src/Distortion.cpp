@@ -1,125 +1,83 @@
 #include "Distortion.h"
 
-Distortion::Distortion()
+template <typename SampleType>
+Distortion<SampleType>::Distortion()
 {
-	m_Gain = 0.0f;
-	m_Level = -20.0f;
+
+}
+
+template <typename SampleType>
+Distortion<SampleType>::~Distortion()
+{
 	
-	/*
-	preGain.setGainDecibels(m_Gain);
-	clipGain.setGainDecibels(40.0f);
-	level.setGainDecibels(m_Level);
-	*/
-
 }
 
-
-void Distortion::prepare(double sampleRate, int samplesPerBlock, int numOutputChannels)
+template <typename SampleType>
+void Distortion<SampleType>::prepare(SampleType sampleRate)
 {
-	/*
-	juce::dsp::ProcessSpec spec;
-	spec.sampleRate = sampleRate;
-	spec.maximumBlockSize = samplesPerBlock;
-	spec.numChannels = numOutputChannels;
-	*/
+	this->sampleRate = sampleRate;
 
-	/*
-	preGain.reset();
-	preGain.prepare(spec);
-
-	clipGain.reset();
-	clipGain.prepare(spec);
-
-	level.reset();
-	level.prepare(spec);
-	*/
-
-	filterLeft.prepare(sampleRate, samplesPerBlock);
-	filterRight.prepare(sampleRate, samplesPerBlock);
-
-	m_SampleRate = sampleRate;
-
+	filter.prepare(sampleRate);
+	filter.setFilterType(IIRFilter<SampleType>::FilterTypes::LPF);
+	filter.setCutoff(filterCutoff);
 }
 
-void Distortion::process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels)
+template <typename SampleType>
+SampleType Distortion<SampleType>::processSample(SampleType input)
 {
-	//juce::dsp::AudioBlock<float> block(buffer);
+	SampleType in = input;
+	SampleType out = in;
 
-	//Set Values
-	//preGain.setGainDecibels(m_Gain);
-	//level.setGainDecibels(m_Level);
-
-	//Gain Control
-	//preGain.process(juce::dsp::ProcessContextReplacing<float>(block));
-
-	buffer.applyGain(juce::Decibels::decibelsToGain(m_Gain));
+	// Gain
+	out = out * GainUtilities<SampleType>::decibelsToGain(gain);
 	
-	//Clipping
-	//clipGain.process(juce::dsp::ProcessContextReplacing<float>(block));
+	// Clipping
+	out = out * GainUtilities<SampleType>::decibelsToGain(40.0);
 
-	buffer.applyGain(juce::Decibels::decibelsToGain(40.0));
-
-	//Distortion Transfer Function (Waveshaping)
-	for (int channel = 0; channel < numOutputChannels; ++channel)
+	// Distortion Transfer Function (Waveshaping)	
+	if (out >= 0) 
 	{
-		auto* channelData = buffer.getWritePointer(channel);
-
-		for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-		{
-			if (channelData[sample] >= 0) 
-			{
-
-				channelData[sample] = (float)(atan(k * channelData[sample]) / atan(k));
-			}
-			else 
-			{
-
-				channelData[sample] = (float)(0.5 * (atan((k / g) * channelData[sample]) / atan(k / g)));
-
-			}
-		}
-
+		out = (SampleType)(atan(k * out) / atan(k));
 	}
+	else 
+	{
+		out = (SampleType)(0.5 * (atan((k / g) * out) / atan(k / g)));
+	}		
 
-	//Filter Control
-	filterLeft.process(buffer, 0, m_SampleRate);
-	filterRight.process(buffer, 1, m_SampleRate);
+	// Filter
+	out = filter.processSample(out);
 
-	//Level Control
-	//level.process(juce::dsp::ProcessContextReplacing<float>(block));
-	buffer.applyGain(juce::Decibels::decibelsToGain(m_Level));
+	// Level
+	out = out * GainUtilities<SampleType>::decibelsToGain(level);
 
+	return out;
 }
 
-void Distortion::setParameter(int index, float newValue)
+template <typename SampleType>
+void Distortion<SampleType>::process(SampleType* data, int startSample, int endSample)
 {
-	switch(index)
-	{
-		case gainParam:
-			m_Gain = newValue;
-			break;
-		case levelParam:
-			m_Level = newValue;
-			break;
-		case filterParam:
-			filterLeft.setCutoff(newValue);
-			filterRight.setCutoff(newValue);
-			break;
-	}
+	for(int sample = startSample; sample < endSample; ++sample)
+		data[sample] = processSample(data[sample]);
 }
 
-float Distortion::getParameter(int index)
+template <typename SampleType>
+void Distortion<SampleType>::setGain(SampleType newGain)
 {
-	switch(index)
-	{
-		case gainParam:
-			return m_Gain;
-			break;
-		case levelParam:
-			return m_Level;
-			break;
-		case filterParam:
-			return m_FilterCutoff;
-			break;
-	}
+	gain = newGain;
 }
+
+template <typename SampleType>
+void Distortion<SampleType>::setLevel(SampleType newLevel)
+{
+	level = newLevel;
+}
+
+template <typename SampleType>
+void Distortion<SampleType>::setFilterFreq(SampleType newFilterFreq)
+{
+	filterCutoff = newFilterFreq;
+	filter.setCutoff(filterCutoff);
+}
+
+template class Distortion<float>;
+template class Distortion<double>;

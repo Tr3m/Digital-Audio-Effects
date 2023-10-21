@@ -18,8 +18,8 @@ target_sources(${PROJECT_NAME}
         Flanger.h
         #Reverb.cpp
         #Reverb.h
-        #Distortion.cpp
-        #Distortion.h
+        Distortion.cpp
+        Distortion.h
 )
 
 add_subdirectory(utils)

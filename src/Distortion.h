@@ -1,43 +1,79 @@
 #pragma once
-#include <juce_audio_processors/juce_audio_processors.h>
-#include "IIRFilter.h"
+#include <IIRFilter.h>
+#include <utils/extras/GainUtilities.h>
 
+/**
+ * Basic Distortion Effect
+ */
+template <typename SampleType>
 class Distortion
 {
-
 public:
 
-
+	/**
+	 * @brief Constructor
+	 */
 	Distortion();
 
+	/**
+	 * @brief Destructor
+	 */
+	~Distortion();
+
+	/**
+     * @brief Prepares object for playback
+     * 
+     * @param sampleRate Current sampling rate
+     */
+	void prepare(SampleType sampleRate);
+
+	/**
+     * @brief Processes a single sample
+     * 
+     * @param input Input sample
+     */
+	SampleType processSample(SampleType input);
+
+	/**
+     * @brief Processes a memory block that holds audio samples
+     * 
+     * @param data Memory block start pointer 
+     * @param startSample Sample index to start processing from
+     * @param endSample Number of samples to process
+     */
+	void process(SampleType* data, int startSample, int endSample);
 	
-	void setParameter(int index, float newValue);
-	float getParameter(int index);
+	/**
+	 * @brief Sets distortion input gain
+	 * 
+	 * @param newGain New gain value in decibels
+	 */
+	void setGain(SampleType newGain);
 
-	void prepare(double sampleRate, int samplesPerBlock, int numOutputChannels);
-    void process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels);
+	/**
+	 * @brief Sets distortion output level
+	 * 
+	 * @param newLevel New output level value in decibels
+	 */
+	void setLevel(SampleType newLevel);
 
-    enum Parameters
-    {
-    	gainParam = 0,
-    	levelParam,
-		filterParam
-    };
-
+	/**
+	 * @brief Sets the filter frequency
+	 * 
+	 * @param newFilterFreq New filter frequency in Hz
+	 */
+	void setFilterFreq(SampleType newFilterFreq);
 
 private:
 
-	float m_Gain, m_Level;
-	float m_FilterCutoff = 20000.0;
+	SampleType sampleRate;
 
-	double m_SampleRate;
+	SampleType gain {0.0}, level {-20.0}; // In dB
+	SampleType filterCutoff {20000.0};
 
-	//juce::dsp::Gain <float> preGain, clipGain, level;
-	IIRFilter filterLeft{44100, IIRFilter::FilterTypes::LPF, m_FilterCutoff };
-	IIRFilter filterRight{44100, IIRFilter::FilterTypes::LPF, m_FilterCutoff };
+	IIRFilter<SampleType> filter;
 
-
-	float k{ 1.5 }; //input gain
-	float g{ 0.7 }; //saturation limit
+	SampleType k{ 1.5 }; //input gain
+	SampleType g{ 0.7 }; //saturation limit
 
 };

@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "PluginProcessor.h"
@@ -14,9 +6,7 @@
 //==============================================================================
 /**
 */
-class DistortionPluginAudioProcessorEditor : public juce::AudioProcessorEditor,
-                                             public juce::Slider::Listener,
-                                             public juce::Timer
+class DistortionPluginAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
     DistortionPluginAudioProcessorEditor (DistortionPluginAudioProcessor&);
@@ -25,12 +15,11 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void sliderValueChanged(juce::Slider* slider);
-    void timerCallback();
 
 private:
     
-    juce::Slider gainSlider, levelSlider, filterSlider;
+    std::unique_ptr<juce::Slider> gainSlider, levelSlider, filterSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainSliderAtt, levelSliderAtt, filterSliderAtt;
 
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Distortion };
 

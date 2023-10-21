@@ -20,7 +20,7 @@ juce_add_plugin(${PROJECT_NAME}
     # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE
     # COPY_PLUGIN_AFTER_BUILD TRUE/FALSE  
     PLUGIN_MANUFACTURER_CODE Juce             
-    PLUGIN_CODE dlu0                                                            
+    PLUGIN_CODE dst0                                                            
     FORMATS AU VST3 Standalone                  
     PRODUCT_NAME "Distortion")    
 
