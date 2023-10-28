@@ -86,6 +86,7 @@ void DelayPluginAudioProcessor::changeProgramName (int index, const juce::String
 void DelayPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
   delay.prepare(sampleRate);
+  meterSource.prepare(sampleRate);
 }
 
 void DelayPluginAudioProcessor::releaseResources()
@@ -126,7 +127,12 @@ void DelayPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
   auto* channelDataLeft = buffer.getWritePointer (0);
   auto* channelDataRight = buffer.getWritePointer (1);
 
+  meterSource.updateInputLevel(buffer);
+  
   delay.process(channelDataLeft, 0, buffer.getNumSamples());
+  buffer.applyGain(GainUtilities<float>::decibelsToGain(*apvts.getRawParameterValue("LEVEL_ID")));
+
+  meterSource.updateOutputLevel(buffer);
 
   // Do dual mono
   AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
@@ -136,7 +142,7 @@ void DelayPluginAudioProcessor::updateParameters()
 {
   delay.setDelayTime(*apvts.getRawParameterValue("DELAY_TIME_ID"));
   delay.setFeedback(*apvts.getRawParameterValue("FEEDBACK_ID"));
-  delay.setMix(*apvts.getRawParameterValue("WET_ID"));
+  delay.setMix((*apvts.getRawParameterValue("MIX_ID") / 100.0));
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout DelayPluginAudioProcessor::createParameters()
@@ -145,8 +151,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayPluginAudioProcessor::c
 
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAY_TIME_ID", "DELAY_TIME", 95.0f, 1000.0, 500.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACK_ID", "FEEDBACK", 0.0f, 0.95, 0.7));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("WET_ID", "WET", 0.0f, 1.0, 0.4));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRY_ID", "DRY", 0.0f, 1.0, 0.4));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("MIX_ID", "MIX", 0.0f, 100.0, 50.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -12.0f, 12.0, 0.0));
 
   return { parameters.begin(), parameters.end() };
 }

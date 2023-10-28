@@ -1,7 +1,5 @@
 target_sources(${PROJECT_NAME}
     PRIVATE
-        GUIGraphics.cpp
-        GUIGraphics.h
         Delay.cpp
         Delay.h
         IIRFilter.cpp

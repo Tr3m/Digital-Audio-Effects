@@ -1,7 +1,8 @@
 #pragma once
 
 #include "PluginProcessor.h"
-#include <GUIGraphics.h>
+#include <utils/custom_juce_classes/GUIGraphics.h>
+#include <utils/custom_juce_classes/LevelMeter.h>
 
 
 //==============================================================================
@@ -19,10 +20,11 @@ public:
 
 private:
 
-    std::unique_ptr<juce::Slider> delayLengthSlider, feedbackSlider, dryMixSlider, wetMixSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> delayLengthSliderAtt, feedbackSliderAtt, dryMixSliderAtt, wetMixSliderAtt;
+    std::unique_ptr<juce::Slider> delayLengthSlider, feedbackSlider, mixSlider, levelSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> delayLengthSliderAtt, feedbackSliderAtt, mixSliderAtt, levelSliderAtt;
     
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Delay };
+    LevelMeter inputMeter, outputMeter;
 
     DelayPluginAudioProcessor& audioProcessor;
 

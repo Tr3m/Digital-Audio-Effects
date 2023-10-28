@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PluginProcessor.h"
-#include <GUIGraphics.h>
+#include <utils/custom_juce_classes/GUIGraphics.h>
 //==============================================================================
 /**
 */

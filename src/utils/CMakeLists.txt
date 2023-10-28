@@ -22,5 +22,8 @@ target_sources(${PROJECT_NAME}
         LFO.h
         extras/FirstOrderSmoother.h
         extras/AudioChannelUtilities.h
-        extras/GainUtilities.h 
+        extras/GainUtilities.h
 )
+
+add_subdirectory(custom_juce_classes)
+include_directories(custom_juce_classes)
