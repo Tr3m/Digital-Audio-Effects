@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "PluginProcessor.h"
@@ -14,9 +6,7 @@
 //==============================================================================
 /**
 */
-class ReverbPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                          public juce::Slider::Listener,
-                                          public juce::Timer
+class ReverbPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     ReverbPluginAudioProcessorEditor (ReverbPluginAudioProcessor&);
@@ -25,11 +15,11 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void sliderValueChanged(juce::Slider* slider);
-    void timerCallback();
 
 private:
-    juce::Slider length, feedback, wet, dry, filter;
+    std::unique_ptr<juce::Slider> roomSizeSlider, decaySlider, mixSlider, filterSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> roomSizeSliderAtt, decaySliderAtt, mixSliderAtt, filterSliderAtt;
+
     juce::Label lengthLabel, feedbackLabel, wetLabel, dryLabel, filterLabel;
 
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Reverb };

@@ -6,8 +6,16 @@ target_sources(${PROJECT_NAME}
         LinearInterpolationCircularBuffer.h
         AllPassFilter.cpp
         AllPassFilter.h
+        InterpolatedAllPassFilter.cpp
+        InterpolatedAllPassFilter.h
+        ModulatedAllPassFilter.cpp
+        ModulatedAllPassFilter.h
         CombFilter.cpp
         CombFilter.h
+        InterpolatedCombFilter.cpp
+        InterpolatedCombFilter.h
+        ModulatedCombFilter.cpp
+        ModulatedCombFilter.h
         EnvelopeDetector.cpp
         EnvelopeDetector.h
         LFO.cpp

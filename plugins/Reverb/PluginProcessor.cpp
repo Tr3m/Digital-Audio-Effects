@@ -19,7 +19,7 @@ ReverbPluginAudioProcessor::ReverbPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts(*this, nullptr, "Params", createParameters())
 #endif
 {
     
@@ -94,7 +94,7 @@ void ReverbPluginAudioProcessor::changeProgramName (int index, const juce::Strin
 //==============================================================================
 void ReverbPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-       rev1.prepare(sampleRate, samplesPerBlock);
+    reverb.prepare(sampleRate);
 }
 
 void ReverbPluginAudioProcessor::releaseResources()
@@ -129,19 +129,40 @@ bool ReverbPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 
 void ReverbPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    updateParameters();
 
- 
-    
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    auto* channelDataLeft = buffer.getWritePointer (0);
+    auto* channelDataRight = buffer.getWritePointer (1);
 
-    rev1.process(buffer, totalNumInputChannels, totalNumOutputChannels);
+    reverb.process(channelDataLeft, 0, buffer.getNumSamples());
 
+    // Do dual mono
+    AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
   
+}
+
+void ReverbPluginAudioProcessor::updateParameters()
+{
+  reverb.setRoomSize(*apvts.getRawParameterValue("ROOM_SIZE_ID"));
+  reverb.setDecay(*apvts.getRawParameterValue("DECAY_ID"));
+  reverb.setCutoff(abs(*apvts.getRawParameterValue("FILTER_ID")));
+  reverb.setMix(*apvts.getRawParameterValue("MIX_ID"));
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout ReverbPluginAudioProcessor::createParameters()
+{
+  std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("ROOM_SIZE_ID", "ROOM_SIZE", 1.0f, 3.0, 1.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY_ID", "DECAY", 0.0f, 1.0, 0.5));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_ID", "FILTER", -20000.0, -500.0, -20000.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("MIX_ID", "MIX", 0.0f, 1.0, 0.4));
+
+
+  return { parameters.begin(), parameters.end() };
 }
 
 //==============================================================================
@@ -158,15 +179,18 @@ juce::AudioProcessorEditor* ReverbPluginAudioProcessor::createEditor()
 //==============================================================================
 void ReverbPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+  auto state = apvts.copyState();
+  std::unique_ptr<juce::XmlElement> xml(state.createXml());
+  copyXmlToBinary(*xml, destData);
 }
 
 void ReverbPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+  std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+  if (xmlState.get() != nullptr)
+    if (xmlState->hasTagName(apvts.state.getType()))
+        apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
 }
 
 //==============================================================================

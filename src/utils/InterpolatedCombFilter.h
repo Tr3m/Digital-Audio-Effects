@@ -1,26 +1,28 @@
 #pragma once
-#include <utils/CircularBuffer.h>
+#include <utils/LinearInterpolationCircularBuffer.h>
 
 #define FEEDBACK_LIMIT 0.99
 
 /**
- * First Order All-Pass Filter
+ * Comb Filter that utilizes linear interpolation when poping samples.
+ * 
+ * Allows for smoother delay time changes and modulation.
  * 
  */
 template <typename SampleType>
-class AllPassFilter
+class InterpolatedCombFilter
 {
 public:
 
     /**
      * @brief Constructor
      */
-    AllPassFilter();
+    InterpolatedCombFilter();
 
     /**
      * @brief Destructor
      */
-    ~AllPassFilter();
+    ~InterpolatedCombFilter();
     
     /**
      * @brief Prepares object for playback
@@ -39,7 +41,7 @@ public:
     /**
      * @brief Sets the delay time in samples 
      * 
-     * @param delayInMs Delay time in samples
+     * @param delayInSamples Delay time in samples
      */
     void setDelaySamples(SampleType delayInSamples);
 
@@ -51,6 +53,7 @@ public:
      * @param newFeedback Feedback amount
      */
     void setFeedback(SampleType newFeedback);
+
     /**
      * @brief Processes a single sample
      * 
@@ -67,15 +70,14 @@ public:
      */
     void process(SampleType* channelData, int startSample, int endSample);
 
-
 private:
 
     SampleType sampleRate;
-    CircularBuffer<SampleType> circularBuffer;
-    SampleType delayTime {500.0};
-    SampleType feedback {0.0};
+    
+    LinearInterpolationCircularBuffer<SampleType> circularBuffer;
 
+    SampleType delaySamples {0.0};
+    SampleType feedback {0.0};
     SampleType lastOutput {0.0};
-    SampleType lastInput {0.0};
     
 };

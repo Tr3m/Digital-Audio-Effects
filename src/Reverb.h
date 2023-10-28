@@ -1,55 +1,63 @@
 #pragma once
-#include <juce_audio_processors/juce_audio_processors.h>
-#include "Delay.h"
-#include "IIRFilter.h"
-#include <utils/AllPassFilter.h>
-#include <utils/CombFilter.h>
 
+#include <utils/ModulatedCombFilter.h>
+#include <utils/ModulatedAllPassFilter.h>
+#include <utils/LFO.h>
+#include <IIRFilter.h>
 
+#define NUM_COMBS 4
+#define NUM_ALLPASS 2
+
+template <typename SampleType>
 class Reverb
 {
-	public:
+public:
+	Reverb();
+	~Reverb();
 
-		Reverb();
+	void prepare(SampleType sampleRate);
 
-		float getParameter(int index);
-	    void setParameter(int index, float newValue);
-   
+	/**
+	 * @brief Processes a single sample
+	 * 
+	 * @param input Input sample
+	 */
+	SampleType processSample(SampleType input);
 
-	    void prepare(double sampleRate, int samplesPerBlock);
-	    void process(juce::AudioBuffer<float>& buffer, int numInputChannels, int numOutputChannels);
+	/**
+	 * @brief Processes a memory block that holds audio samples
+	 * 
+	 * @param data Memory block start pointer 
+	 * @param startSample Sample index to start processing from
+	 * @param endSample Number of samples to process
+	 */
+	void process(SampleType* data, int startSample, int endSample);
 
-		enum Parameters
-		{
-			length = 0,
-			feedback,
-			wetMix,
-			dryMix,
-			Filter
-		};
+	void setRoomSize(SampleType newRoomSize);
+	void setDecay(SampleType newDecay);
+	void setCutoff(SampleType newCutoff);
+	void setMix(SampleType newMix);
 
-    //=======================================================================
+private:
 
-	private:
+	SampleType sampleRate;
 
-		double m_SampleRate;
+	ModulatedCombFilter<SampleType> combFilters[NUM_COMBS];
+	ModulatedAllPassFilter<SampleType> allPassFilters[NUM_ALLPASS];
+	
+	LFO combLFO[NUM_COMBS];
+	LFO allPassLFO[NUM_ALLPASS];
 
-		void updateReverbParameters();
+	SampleType combDelayTimeValues[NUM_COMBS] {43.7, 41.1, 37.1, 29.7}; // CombFilter Delay times in ms
+	SampleType combFeedbackValues[NUM_COMBS] {0.9, -0.9, 0.9, -0.9};
+	SampleType combModRates[NUM_COMBS] {0.6, 0.71, 0.83, 0.95};
 
-		float len = 0.09; //Length
-		float g = 0.8;	//Feedback
-		float dry = 0.5;
-		float wet = 0.5;
-		float filterValue = 20000.0;
+	SampleType allPassDelayTimeValues[NUM_ALLPASS] {5.0, 1.7}; // AllPass Delay times in ms
+	SampleType allPassFeedbackValues[NUM_ALLPASS] {0.7, 0.7};
+	SampleType allPassModRates[NUM_ALLPASS] {0.6, 0.83};
 
-		//TODO: Maybe do these in an array...
+	IIRFilter<SampleType> filter;
 
-		CombFilter comb1, comb2, comb3, comb4; 
-		IIRFilter filterLeft{ 44100, IIRFilter::FilterTypes::LPF, filterValue };
-		IIRFilter filterRight{ 44100, IIRFilter::FilterTypes::LPF, filterValue };
-
-		AllPassFilter allpass1{ 0.005, 0.7};
-		AllPassFilter allpass2{ 0.00168, 0.7};
-		AllPassFilter allpass3{ 0.00048, 0.7};
-	    
+	// User Parameters
+	SampleType roomSize {1.0}, decay {0.5}, filterCutoff {20000.0}, mix {0.5};
 };

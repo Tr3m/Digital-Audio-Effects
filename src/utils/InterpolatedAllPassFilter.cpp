@@ -1,19 +1,19 @@
-#include "AllPassFilter.h"
+#include "InterpolatedAllPassFilter.h"
 
 template <typename SampleType>
-AllPassFilter<SampleType>::AllPassFilter()
+InterpolatedAllPassFilter<SampleType>::InterpolatedAllPassFilter()
 {
 
 }
 
 template <typename SampleType>
-AllPassFilter<SampleType>::~AllPassFilter()
+InterpolatedAllPassFilter<SampleType>::~InterpolatedAllPassFilter()
 {
 
 }
 
 template <typename SampleType>
-void AllPassFilter<SampleType>::prepare(SampleType sampleRate)
+void InterpolatedAllPassFilter<SampleType>::prepare(SampleType sampleRate)
 {
     this->sampleRate = sampleRate;
     circularBuffer.prepare(sampleRate);
@@ -23,19 +23,19 @@ void AllPassFilter<SampleType>::prepare(SampleType sampleRate)
 }
 
 template <typename SampleType>
-void AllPassFilter<SampleType>::setDelayMs(SampleType delayInMs)
+void InterpolatedAllPassFilter<SampleType>::setDelayMs(SampleType delayInMs)
 {
     circularBuffer.setDelayInMs(delayInMs);
 }
 
 template <typename SampleType>
-void AllPassFilter<SampleType>::setDelaySamples(SampleType delayInSamples)
+void InterpolatedAllPassFilter<SampleType>::setDelaySamples(SampleType delayInSamples)
 {
     circularBuffer.setDelayInSamples(delayInSamples);
 }
 
 template <typename SampleType>
-void AllPassFilter<SampleType>::setFeedback(SampleType newFeedback)
+void InterpolatedAllPassFilter<SampleType>::setFeedback(SampleType newFeedback)
 {
     newFeedback >= FEEDBACK_LIMIT ? newFeedback = FEEDBACK_LIMIT : newFeedback = newFeedback;
     newFeedback <= 0.0 ? newFeedback = 0.0 : newFeedback = newFeedback;
@@ -44,7 +44,7 @@ void AllPassFilter<SampleType>::setFeedback(SampleType newFeedback)
 }
 
 template <typename SampleType>
-SampleType AllPassFilter<SampleType>::processSample(SampleType input)
+SampleType InterpolatedAllPassFilter<SampleType>::processSample(SampleType input)
 {
     lastOutput = circularBuffer.popSample();
     circularBuffer.pushSample(input + (feedback * lastOutput));
@@ -54,11 +54,11 @@ SampleType AllPassFilter<SampleType>::processSample(SampleType input)
 }
 
 template <typename SampleType>
-void AllPassFilter<SampleType>::process(SampleType* channelData, int startSample, int endSample)
+void InterpolatedAllPassFilter<SampleType>::process(SampleType* channelData, int startSample, int endSample)
 {
     for(int sample = startSample; sample < endSample; ++sample)
         channelData[sample] = processSample(channelData[sample]);
 }
 
-template class AllPassFilter<float>;
-template class AllPassFilter<double>;
+template class InterpolatedAllPassFilter<float>;
+template class InterpolatedAllPassFilter<double>;

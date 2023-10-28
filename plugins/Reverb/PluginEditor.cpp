@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -15,55 +7,61 @@ ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPlugin
 {    
     setSize (370, 470);
 
-    length.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    length.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
-    length.setRange(0.001f, 0.1f, 0.001);
-    addAndMakeVisible(&length);
-    length.addListener(this);
-    length.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::length));
-    length.setLookAndFeel(&graphics);
-  
+    roomSizeSlider.reset(new juce::Slider("RoomSizeSlider"));
+    roomSizeSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    roomSizeSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    addAndMakeVisible(roomSizeSlider.get());
+    //roomSizeSlider->setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::length));
+    roomSizeSlider->setLookAndFeel(&graphics);
 
-    feedback.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    feedback.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
-    feedback.setRange(0, 1, 0.001);
-    addAndMakeVisible(&feedback);
-    feedback.addListener(this);
-    feedback.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::feedback));
-    feedback.setLookAndFeel(&graphics);
+    roomSizeSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "ROOM_SIZE_ID", *roomSizeSlider);  
 
+    decaySlider.reset(new juce::Slider("decaySlider"));
+    decaySlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    decaySlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    addAndMakeVisible(decaySlider.get());
+    //decaySlider->setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::feedback));
+    decaySlider->setLookAndFeel(&graphics);
+    
+    decaySliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "DECAY_ID", *decaySlider);  
 
+    mixSlider.reset(new juce::Slider("mixSlider"));
+    mixSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    mixSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    addAndMakeVisible(mixSlider.get());
+    //mixSlider->setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::wetMix));
+    mixSlider->setLookAndFeel(&graphics);  
 
-    wet.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    wet.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
-    wet.setRange(0, 1, 0.01);
-    addAndMakeVisible(&wet);
-    wet.addListener(this);
-    wet.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::wetMix));
-    wet.setLookAndFeel(&graphics);
+    mixSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "MIX_ID", *mixSlider);  
 
+    filterSlider.reset(new juce::Slider("filterSlider"));
+    filterSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    filterSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    addAndMakeVisible(filterSlider.get());
+    //filterSlider->setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::Filter));
+    filterSlider->setLookAndFeel(&graphics);
 
-    dry.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    dry.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
-    dry.setRange(0, 1, 0.01);
-    addAndMakeVisible(&dry);
-    dry.addListener(this);
-    dry.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::dryMix));
-    dry.setLookAndFeel(&graphics);
-  
+    filterSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "FILTER_ID", *filterSlider);
 
-    filter.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    filter.setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
-    filter.setRange(500.0f, 20000.0f, 10);
-    addAndMakeVisible(&filter);
-    filter.addListener(this);
-    filter.setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::Filter));
-    filter.setLookAndFeel(&graphics);
+    int smallSlider = 100;
+
+    roomSizeSlider->setBounds(44, 91, 124, 124);
+    decaySlider->setBounds(198, 91, 124, 124);
+    mixSlider->setBounds(20, 266, smallSlider, smallSlider);
+    filterSlider->setBounds(243, 266, smallSlider, smallSlider);
    
 }
 
 ReverbPluginAudioProcessorEditor::~ReverbPluginAudioProcessorEditor()
 {
+    roomSizeSliderAtt = nullptr;
+    decaySliderAtt = nullptr;
+    mixSliderAtt = nullptr;
+    filterSliderAtt = nullptr;
 }
 
 //==============================================================================
@@ -74,30 +72,5 @@ void ReverbPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
 void ReverbPluginAudioProcessorEditor::resized()
 {
-    int smallSlider = 100;
-
-    length.setBounds(44, 91, 124, 124);
-    feedback.setBounds(198, 91, 124, 124);
-    wet.setBounds(20, 266, smallSlider, smallSlider);
-    dry.setBounds(132, 266, smallSlider, smallSlider);
-    filter.setBounds(243, 266, smallSlider, smallSlider);
-}
-
-void ReverbPluginAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
-{
-    if (slider == &length)
-        audioProcessor.rev1.setParameter(Reverb::Parameters::length, slider->getValue());
-    else if (slider == &feedback)
-        audioProcessor.rev1.setParameter(Reverb::Parameters::feedback, slider->getValue());
-    else if (slider == &wet)
-        audioProcessor.rev1.setParameter(Reverb::Parameters::wetMix, slider->getValue());
-    else if (slider == &dry)
-        audioProcessor.rev1.setParameter(Reverb::Parameters::dryMix, slider->getValue());
-    else if (slider == &filter)
-        audioProcessor.rev1.setParameter(Reverb::Parameters::Filter, slider->getValue());
-}
-
-void ReverbPluginAudioProcessorEditor::timerCallback()
-{
-
+    
 }
