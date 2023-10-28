@@ -2,6 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <utils/extras/AudioChannelUtilities.h>
+#include <utils/custom_juce_classes/LevelMeterSource.h>
 #include <Reverb.h>
 
 //==============================================================================
@@ -52,6 +53,7 @@ public:
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
+    LevelMeterSource meterSource;
 
 private:
     //==============================================================================

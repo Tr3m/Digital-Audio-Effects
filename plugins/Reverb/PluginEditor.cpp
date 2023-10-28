@@ -3,15 +3,22 @@
 
 //==============================================================================
 ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    inputMeter(LevelMeter::Orientations::Vertical, [&]() {return audioProcessor.meterSource.getNextInput();}),
+    outputMeter(LevelMeter::Orientations::Vertical, [&]() {return audioProcessor.meterSource.getNextOutput();})
 {    
     setSize (370, 470);
 
+    graphics.setColour (Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    graphics.setColour (Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
+    graphics.setColour (Slider::textBoxTextColourId, juce::Colours::ivory.withAlpha(0.85f));
+
+    setMeters();
+
     roomSizeSlider.reset(new juce::Slider("RoomSizeSlider"));
     roomSizeSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    roomSizeSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    roomSizeSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     addAndMakeVisible(roomSizeSlider.get());
-    //roomSizeSlider->setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::length));
     roomSizeSlider->setLookAndFeel(&graphics);
 
     roomSizeSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
@@ -19,9 +26,8 @@ ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPlugin
 
     decaySlider.reset(new juce::Slider("decaySlider"));
     decaySlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    decaySlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    decaySlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     addAndMakeVisible(decaySlider.get());
-    //decaySlider->setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::feedback));
     decaySlider->setLookAndFeel(&graphics);
     
     decaySliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
@@ -29,9 +35,9 @@ ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPlugin
 
     mixSlider.reset(new juce::Slider("mixSlider"));
     mixSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    mixSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    mixSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    mixSlider->setTextValueSuffix(" %");
     addAndMakeVisible(mixSlider.get());
-    //mixSlider->setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::wetMix));
     mixSlider->setLookAndFeel(&graphics);  
 
     mixSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
@@ -39,20 +45,20 @@ ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPlugin
 
     filterSlider.reset(new juce::Slider("filterSlider"));
     filterSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    filterSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 80, 20);
+    filterSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    filterSlider->setTextValueSuffix(" Hz");
     addAndMakeVisible(filterSlider.get());
-    //filterSlider->setValue(audioProcessor.rev1.getParameter(Reverb::Parameters::Filter));
     filterSlider->setLookAndFeel(&graphics);
 
     filterSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
         SliderAttachment>(audioProcessor.apvts, "FILTER_ID", *filterSlider);
 
-    int smallSlider = 100;
 
-    roomSizeSlider->setBounds(44, 91, 124, 124);
-    decaySlider->setBounds(198, 91, 124, 124);
-    mixSlider->setBounds(20, 266, smallSlider, smallSlider);
-    filterSlider->setBounds(243, 266, smallSlider, smallSlider);
+    int knobSize = 133;
+    roomSizeSlider->setBounds(40, 107, knobSize, knobSize);
+    decaySlider->setBounds(198, 63, knobSize, knobSize);
+    mixSlider->setBounds(40, 283, knobSize, knobSize);
+    filterSlider->setBounds(198, 234, knobSize, knobSize);
    
 }
 
@@ -73,4 +79,18 @@ void ReverbPluginAudioProcessorEditor::paint (juce::Graphics& g)
 void ReverbPluginAudioProcessorEditor::resized()
 {
     
+}
+
+void ReverbPluginAudioProcessorEditor::setMeters()
+{
+    addAndMakeVisible(&inputMeter);
+    addAndMakeVisible(&outputMeter);
+
+    inputMeter.setMeterColour(juce::Colours::ivory);
+    outputMeter.setMeterColour(juce::Colours::ivory);
+    inputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+    outputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+
+    inputMeter.setBounds(13, getHeight() / 2 + 13, 6, 195);
+    outputMeter.setBounds(getWidth() - 17, 24, 6, 195);
 }

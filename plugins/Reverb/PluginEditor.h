@@ -2,6 +2,7 @@
 
 #include "PluginProcessor.h"
 #include <utils/custom_juce_classes/GUIGraphics.h>
+#include <utils/custom_juce_classes/LevelMeter.h>
 
 //==============================================================================
 /**
@@ -16,6 +17,8 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    void setMeters();
+
 private:
     std::unique_ptr<juce::Slider> roomSizeSlider, decaySlider, mixSlider, filterSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> roomSizeSliderAtt, decaySliderAtt, mixSliderAtt, filterSliderAtt;
@@ -23,6 +26,7 @@ private:
     juce::Label lengthLabel, feedbackLabel, wetLabel, dryLabel, filterLabel;
 
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Reverb };
+    LevelMeter inputMeter, outputMeter;
 
     ReverbPluginAudioProcessor& audioProcessor;
 

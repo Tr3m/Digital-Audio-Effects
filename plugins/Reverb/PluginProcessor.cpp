@@ -95,6 +95,7 @@ void ReverbPluginAudioProcessor::changeProgramName (int index, const juce::Strin
 void ReverbPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     reverb.prepare(sampleRate);
+    meterSource.prepare(sampleRate);
 }
 
 void ReverbPluginAudioProcessor::releaseResources()
@@ -134,32 +135,35 @@ void ReverbPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    meterSource.updateInputLevel(buffer);
+
     auto* channelDataLeft = buffer.getWritePointer (0);
     auto* channelDataRight = buffer.getWritePointer (1);
 
     reverb.process(channelDataLeft, 0, buffer.getNumSamples());
 
+    meterSource.updateOutputLevel(buffer);
+
     // Do dual mono
-    AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
-  
+    AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());  
 }
 
 void ReverbPluginAudioProcessor::updateParameters()
 {
   reverb.setRoomSize(*apvts.getRawParameterValue("ROOM_SIZE_ID"));
-  reverb.setDecay(*apvts.getRawParameterValue("DECAY_ID"));
-  reverb.setCutoff(abs(*apvts.getRawParameterValue("FILTER_ID")));
-  reverb.setMix(*apvts.getRawParameterValue("MIX_ID"));
+  reverb.setDecay(*apvts.getRawParameterValue("DECAY_ID") / 100.0);
+  reverb.setCutoff(*apvts.getRawParameterValue("FILTER_ID"));
+  reverb.setMix(*apvts.getRawParameterValue("MIX_ID") / 100.0);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout ReverbPluginAudioProcessor::createParameters()
 {
   std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("ROOM_SIZE_ID", "ROOM_SIZE", 1.0f, 3.0, 1.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY_ID", "DECAY", 0.0f, 1.0, 0.5));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_ID", "FILTER", -20000.0, -500.0, -20000.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("MIX_ID", "MIX", 0.0f, 1.0, 0.4));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("ROOM_SIZE_ID", "ROOM_SIZE", 1.0f, 5.0, 1.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY_ID", "DECAY", 0.0f, 100.0, 50.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_ID", "FILTER", 500.0, 20000.0, 20000.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("MIX_ID", "MIX", 0.0f, 100.0, 40.0));
 
 
   return { parameters.begin(), parameters.end() };
