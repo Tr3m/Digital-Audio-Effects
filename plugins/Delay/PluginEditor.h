@@ -18,6 +18,8 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    void setMeters();
+
 private:
 
     std::unique_ptr<juce::Slider> delayLengthSlider, feedbackSlider, mixSlider, levelSlider;

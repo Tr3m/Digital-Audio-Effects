@@ -13,16 +13,7 @@ DelayPluginAudioProcessorEditor::DelayPluginAudioProcessorEditor (DelayPluginAud
     graphics.setColour (Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
     graphics.setColour (Slider::textBoxTextColourId, juce::Colours::ivory.withAlpha(0.85f));
 
-    addAndMakeVisible(&inputMeter);
-    addAndMakeVisible(&outputMeter);
-
-    inputMeter.setMeterColour(juce::Colours::ivory);
-    outputMeter.setMeterColour(juce::Colours::ivory);
-    inputMeter.setBackgroundColour(juce::Colours::transparentBlack);
-    outputMeter.setBackgroundColour(juce::Colours::transparentBlack);
-
-    inputMeter.setBounds(13, getHeight() / 2 + 13, 6, 195);
-    outputMeter.setBounds(getWidth() - 17, 24, 6, 195);
+    setMeters();
 
     delayLengthSlider.reset(new juce::Slider("DelayLengthSlider"));
     delayLengthSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
@@ -88,4 +79,18 @@ void DelayPluginAudioProcessorEditor::paint (juce::Graphics& g)
 void DelayPluginAudioProcessorEditor::resized()
 {
 
+}
+
+void DelayPluginAudioProcessorEditor::setMeters()
+{
+    addAndMakeVisible(&inputMeter);
+    addAndMakeVisible(&outputMeter);
+
+    inputMeter.setMeterColour(juce::Colours::ivory);
+    outputMeter.setMeterColour(juce::Colours::ivory);
+    inputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+    outputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+
+    inputMeter.setBounds(13, getHeight() / 2 + 13, 6, 195);
+    outputMeter.setBounds(getWidth() - 17, 24, 6, 195);
 }
