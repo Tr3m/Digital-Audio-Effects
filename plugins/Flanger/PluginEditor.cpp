@@ -3,14 +3,21 @@
 
 //==============================================================================
 FlangerPluginAudioProcessorEditor::FlangerPluginAudioProcessorEditor (FlangerPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    inputMeter(LevelMeter::Orientations::Vertical, [&]() {return audioProcessor.meterSource.getNextInput();}),
+    outputMeter(LevelMeter::Orientations::Vertical, [&]() {return audioProcessor.meterSource.getNextOutput();})
 {
-
     setSize (370, 470);
+
+    graphics.setColour (Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    graphics.setColour (Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
+    graphics.setColour (Slider::textBoxTextColourId, juce::Colours::ivory.withAlpha(0.85f));
+
+    setMeters();
 
     //Rate Slider
     rateSlider.reset(new juce::Slider("RateSlider"));
-    rateSlider->setSliderStyle(juce::Slider::Rotary);
+    rateSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     rateSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     rateSlider->setTextValueSuffix(" Hz");
     rateSlider->setLookAndFeel(&graphics);
@@ -21,9 +28,8 @@ FlangerPluginAudioProcessorEditor::FlangerPluginAudioProcessorEditor (FlangerPlu
 
     //Depth Slider
     depthSlider.reset(new juce::Slider("DepthSlider"));
-    depthSlider->setSliderStyle(juce::Slider::Rotary);
+    depthSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     depthSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
-    depthSlider->setTextValueSuffix(" %");
     depthSlider->setLookAndFeel(&graphics);
     addAndMakeVisible(depthSlider.get());
 
@@ -31,29 +37,34 @@ FlangerPluginAudioProcessorEditor::FlangerPluginAudioProcessorEditor (FlangerPlu
         SliderAttachment>(audioProcessor.apvts, "DEPTH_ID", *depthSlider);
 
     //Wet Slider
-    wetSlider.reset(new juce::Slider("WetSlider"));
-    wetSlider->setSliderStyle(juce::Slider::Rotary);
-    wetSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
-    wetSlider->setLookAndFeel(&graphics);
-    addAndMakeVisible(wetSlider.get()); 
+    mixSlider.reset(new juce::Slider("MixSlider"));
+    mixSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    mixSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    mixSlider->setTextValueSuffix(" %");
+    mixSlider->setLookAndFeel(&graphics);
+    addAndMakeVisible(mixSlider.get()); 
     
-    wetSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
-        SliderAttachment>(audioProcessor.apvts, "WET_ID", *wetSlider);
+    mixSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "MIX_ID", *mixSlider);
 
-    //Dry Slider
-    drySlider.reset(new juce::Slider("DrySlider"));
-    drySlider->setSliderStyle(juce::Slider::Rotary);
-    drySlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
-    drySlider->setLookAndFeel(&graphics);
-    addAndMakeVisible(drySlider.get());     
+    //Level Slider
+    levelSlider.reset(new juce::Slider("LevelSlider"));
+    levelSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    levelSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    levelSlider->setTextValueSuffix(" dB");
+    levelSlider->setLookAndFeel(&graphics);
+    addAndMakeVisible(levelSlider.get());     
 
-    drySliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
-        SliderAttachment>(audioProcessor.apvts, "DRY_ID", *drySlider);
+    levelSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "LEVEL_ID", *levelSlider);
 
-    rateSlider->setBounds(44, 91, 124, 124);
-    depthSlider->setBounds(198, 91, 124, 124);
-    wetSlider->setBounds(44, 252, 124, 124);
-    drySlider->setBounds(198, 252, 124, 124);
+
+    int knobSize = 133;
+
+    rateSlider->setBounds(40, 107, knobSize, knobSize);
+    depthSlider->setBounds(198, 63, knobSize, knobSize);
+    mixSlider->setBounds(40, 283, knobSize, knobSize);
+    levelSlider->setBounds(198, 234, knobSize, knobSize);
 
 }
 
@@ -61,8 +72,8 @@ FlangerPluginAudioProcessorEditor::~FlangerPluginAudioProcessorEditor()
 {
     rateSliderAtt = nullptr;
     depthSliderAtt = nullptr;
-    wetSliderAtt = nullptr;
-    drySliderAtt = nullptr;
+    mixSliderAtt = nullptr;
+    levelSliderAtt = nullptr;
 }
 
 //==============================================================================
@@ -74,4 +85,18 @@ void FlangerPluginAudioProcessorEditor::paint (juce::Graphics& g)
 void FlangerPluginAudioProcessorEditor::resized()
 {
     
+}
+
+void FlangerPluginAudioProcessorEditor::setMeters()
+{
+    addAndMakeVisible(&inputMeter);
+    addAndMakeVisible(&outputMeter);
+
+    inputMeter.setMeterColour(juce::Colours::ivory);
+    outputMeter.setMeterColour(juce::Colours::ivory);
+    inputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+    outputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+
+    inputMeter.setBounds(13, getHeight() / 2 + 13, 6, 195);
+    outputMeter.setBounds(getWidth() - 17, 24, 6, 195);
 }

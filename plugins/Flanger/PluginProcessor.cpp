@@ -85,8 +85,8 @@ void FlangerPluginAudioProcessor::changeProgramName (int index, const juce::Stri
 //==============================================================================
 void FlangerPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    flanger.prepare(sampleRate);
-   
+  flanger.prepare(sampleRate);
+  meterSource.prepare(sampleRate);   
 }
 
 void FlangerPluginAudioProcessor::releaseResources()
@@ -123,6 +123,8 @@ void FlangerPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 {
     updateParameters();
 
+    meterSource.updateInputLevel(buffer);
+
     for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
@@ -130,6 +132,10 @@ void FlangerPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     auto* channelDataRight = buffer.getWritePointer (1);
 
     flanger.process(channelDataLeft, 0, buffer.getNumSamples());
+
+    buffer.applyGain(GainUtilities<float>::decibelsToGain(*apvts.getRawParameterValue("LEVEL_ID")));
+
+    meterSource.updateOutputLevel(buffer);
 
     // Do dual mono
     AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
@@ -140,7 +146,7 @@ void FlangerPluginAudioProcessor::updateParameters()
 {
   flanger.setRate(*apvts.getRawParameterValue("RATE_ID"));
   flanger.setDepth((*apvts.getRawParameterValue("DEPTH_ID")) / 100.0);
-  flanger.setMix(*apvts.getRawParameterValue("WET_ID"));
+  flanger.setMix(*apvts.getRawParameterValue("MIX_ID") / 100.0);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout FlangerPluginAudioProcessor::createParameters()
@@ -149,8 +155,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout FlangerPluginAudioProcessor:
 
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("RATE_ID", "RATE", 0.0f, 10.0, 0.3));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DEPTH_ID", "DEPTH", 0.0f, 100.0, 50.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("WET_ID", "WET", 0.0f, 1.0, 0.4));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRY_ID", "DRY", 0.0f, 1.0, 0.4));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("MIX_ID", "MIX", 0.0f, 100.0, 40.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -12.0f, 12.0, 0.0));
 
   return { parameters.begin(), parameters.end() };
 }
