@@ -14,6 +14,7 @@ VibradoPluginAudioProcessor::VibradoPluginAudioProcessor()
                        ), apvts(*this, nullptr, "Params", createParameters())
 #endif
 {
+
 }
 
 VibradoPluginAudioProcessor::~VibradoPluginAudioProcessor()
@@ -86,6 +87,8 @@ void VibradoPluginAudioProcessor::changeProgramName (int index, const juce::Stri
 void VibradoPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     vibrado.prepare(sampleRate);
+    meterSource.prepare(sampleRate);
+    setLfoType(*apvts.getRawParameterValue("LFO_TYPE_ID"));
 }
 
 void VibradoPluginAudioProcessor::releaseResources()
@@ -121,6 +124,8 @@ void VibradoPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 {
     updateParameters();
 
+    meterSource.updateInputLevel(buffer);
+
     for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
@@ -128,6 +133,8 @@ void VibradoPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     auto* channelDataRight = buffer.getWritePointer (1);
 
     vibrado.process(channelDataLeft, 0, buffer.getNumSamples());
+
+    meterSource.updateOutputLevel(buffer);
 
     // Do dual mono
     AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
@@ -142,7 +149,7 @@ void VibradoPluginAudioProcessor::updateParameters()
 
 void VibradoPluginAudioProcessor::setLfoType(int lfoTypeIndex)
 {
-    vibrado.setLFOType(lfoTypeIndex);
+    vibrado.setLFOType(*apvts.getRawParameterValue("LFO_TYPE_ID"));
 }
 
 int VibradoPluginAudioProcessor::getLfoType()
@@ -156,7 +163,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout VibradoPluginAudioProcessor:
 
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("RATE_ID", "RATE", 0.0f, 10.0, 0.3));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DEPTH_ID", "DEPTH", 0.0f, 100.0, 50.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -20.0f, 20.0, 0.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -12.0f, 12.0, 0.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterInt>("LFO_TYPE_ID", "LFO_TYPE", 0, 2, 0));
 
   return { parameters.begin(), parameters.end() };
 }

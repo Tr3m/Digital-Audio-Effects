@@ -15,7 +15,6 @@ public:
     void reloadImage(int _effectType);
     juce::Image getBackground();
     juce::Image getFilterBackground(int filterState);
-    juce::Image getVibradoBackground(int vibradoState);
     juce::Image getCompressorBackground(int compressorState);
     juce::Image getLimiterBackground(int LimiterState);
 
@@ -37,13 +36,6 @@ public:
         HighPass = 0,
         LowPass,
         Parametric
-    };
-
-    enum VibradoStates
-    {
-        Sine = 0,
-        Triangle,
-        Saw
     };
 
     enum CompressorStates

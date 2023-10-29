@@ -4,4 +4,5 @@ target_sources(${PROJECT_NAME}
         GUIGraphics.h
         LevelMeterSource.h
         LevelMeter.h
+        AssetManager.h
         )

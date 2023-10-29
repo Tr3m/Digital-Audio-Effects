@@ -107,6 +107,9 @@ juce::Image GUIGraphics::getBackground()
     case EffectTypes::Chorus:
         backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::chorus_background_png, BinaryData::chorus_background_pngSize);
         break;
+    case EffectTypes::Vibrado:
+        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::vibrado_background_png, BinaryData::vibrado_background_pngSize);
+        break;
   
     }
 
@@ -127,24 +130,6 @@ juce::Image GUIGraphics::getFilterBackground(int filterState)
         backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::filter_parametric_png, BinaryData::filter_parametric_pngSize);
     }
 
-    return backgroundImage;
-}
-
-juce::Image GUIGraphics::getVibradoBackground(int vibradoState)
-{
-    switch (vibradoState)
-    {
-    case VibradoStates::Sine:
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::vibrado_sine_png, BinaryData::vibrado_sine_pngSize);
-        break;
-    case VibradoStates::Triangle:
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::vibrado_triangle_png, BinaryData::vibrado_triangle_pngSize);
-        break;
-    case VibradoStates::Saw:
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::vibrado_saw_png, BinaryData::vibrado_saw_pngSize);
-        break;
-    }
-    
     return backgroundImage;
 }
 

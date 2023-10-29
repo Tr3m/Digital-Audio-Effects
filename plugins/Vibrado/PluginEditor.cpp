@@ -3,14 +3,22 @@
 
 //==============================================================================
 VibradoPluginAudioProcessorEditor::VibradoPluginAudioProcessorEditor (VibradoPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    inputMeter(LevelMeter::Orientations::Vertical, [&]() {return audioProcessor.meterSource.getNextInput();}),
+    outputMeter(LevelMeter::Orientations::Vertical, [&]() {return audioProcessor.meterSource.getNextOutput();})
 {
     
     setSize(370, 470);
 
+    graphics.setColour (Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    graphics.setColour (Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
+    graphics.setColour (Slider::textBoxTextColourId, juce::Colours::ivory.withAlpha(0.85f));
+
+    setMeters();
+
     //Rate Slider
     rateSlider.reset(new juce::Slider("RateSlider"));
-    rateSlider->setSliderStyle(juce::Slider::Rotary);
+    rateSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     rateSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     rateSlider->setTextValueSuffix(" Hz");
     rateSlider->setLookAndFeel(&graphics);
@@ -22,9 +30,8 @@ VibradoPluginAudioProcessorEditor::VibradoPluginAudioProcessorEditor (VibradoPlu
 
     //Depth Slider
     depthSlider.reset(new juce::Slider("DepthSlider"));
-    depthSlider->setSliderStyle(juce::Slider::Rotary);
+    depthSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     depthSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
-    depthSlider->setTextValueSuffix(" %");
     depthSlider->setLookAndFeel(&graphics);
     addAndMakeVisible(depthSlider.get());
 
@@ -33,45 +40,55 @@ VibradoPluginAudioProcessorEditor::VibradoPluginAudioProcessorEditor (VibradoPlu
 
     //Level Slider
     levelSlider.reset(new juce::Slider("LevelSlider"));
-    levelSlider->setSliderStyle(juce::Slider::Rotary);
+    levelSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     levelSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    levelSlider->setTextValueSuffix(" dB");
     levelSlider->setLookAndFeel(&graphics);
     addAndMakeVisible(levelSlider.get()); 
     
     levelSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
         SliderAttachment>(audioProcessor.apvts, "LEVEL_ID", *levelSlider);
-    
-    rateSlider->setBounds(44, 91, 124, 124);
-    depthSlider->setBounds(198, 91, 124, 124);
-    levelSlider->setBounds(198, 252, 124, 124);
 
-    addAndMakeVisible(&sineButton);
-    sineButton.setBounds(84, 269, 50, 20);
-    sineButton.setTooltip("Sine");
-    sineButton.setAlpha(0);
-    sineButton.onClick = [this] {
+    lfoTypeSlider.reset(new juce::Slider("LfoType"));
+    lfoTypeSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "LFO_TYPE_ID", *lfoTypeSlider);
+
+    int knobSize = 133;
+    rateSlider->setBounds(40, 107, knobSize, knobSize);
+    depthSlider->setBounds(198, 63, knobSize, knobSize);
+    levelSlider->setBounds(198, 234, knobSize, knobSize);
+
+    sineButton.reset(new juce::ImageButton("SineButton"));
+    addAndMakeVisible(sineButton.get());
+    sineButton->setBounds(71, 283, 70, 40);
+    sineButton->setTooltip("Sine");
+    sineButton->onClick = [this] {
+        lfoTypeSlider->setValue(Vibrado<float>::LFO_Types::Sine, juce::NotificationType::sendNotificationSync);
         audioProcessor.setLfoType(Vibrado<float>::LFO_Types::Sine);
-        repaint();
+        updateButtons();
     };
 
-    addAndMakeVisible(&triangleButton);
-    triangleButton.setBounds(84, 297, 50, 20);
-    triangleButton.setTooltip("Triangle");
-    triangleButton.setAlpha(0);
-    triangleButton.onClick = [this] {
+    triangleButton.reset(new juce::ImageButton("TriangleButton"));
+    addAndMakeVisible(triangleButton.get());
+    triangleButton->setBounds(71, 323, 70, 40);
+    triangleButton->setTooltip("Triangle");
+    triangleButton->onClick = [this] {
+        lfoTypeSlider->setValue(Vibrado<float>::LFO_Types::Triangle, juce::NotificationType::sendNotificationSync);
         audioProcessor.setLfoType(Vibrado<float>::LFO_Types::Triangle);
-        repaint();
+        updateButtons();
     };
 
-    addAndMakeVisible(&sawButton);
-    sawButton.setBounds(84, 339, 50, 20);
-    sawButton.setTooltip("Saw");
-    sawButton.setAlpha(0);
-    sawButton.onClick = [this] {
+    sawButton.reset(new juce::ImageButton("SawButton"));
+    addAndMakeVisible(sawButton.get());
+    sawButton->setBounds(71, 363, 70, 40);
+    sawButton->setTooltip("Saw");
+    sawButton->onClick = [this] {
+        lfoTypeSlider->setValue(Vibrado<float>::LFO_Types::Saw, juce::NotificationType::sendNotificationSync);
         audioProcessor.setLfoType(Vibrado<float>::LFO_Types::Saw);
-        repaint();
+        updateButtons();
     };
 
+    updateButtons();
 }
 
 VibradoPluginAudioProcessorEditor::~VibradoPluginAudioProcessorEditor()
@@ -79,27 +96,37 @@ VibradoPluginAudioProcessorEditor::~VibradoPluginAudioProcessorEditor()
     rateSliderAtt = nullptr;
     depthSliderAtt = nullptr;
     levelSliderAtt = nullptr;
+    lfoTypeSliderAtt = nullptr;
 }
 
 //==============================================================================
 void VibradoPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    
-    switch (audioProcessor.getLfoType())
-    {
-    case Vibrado<float>::LFO_Types::Sine:
-        g.drawImageAt(graphics.getVibradoBackground(GUIGraphics::VibradoStates::Sine), 0, 0);
-        break;
-    case Vibrado<float>::LFO_Types::Triangle:
-        g.drawImageAt(graphics.getVibradoBackground(GUIGraphics::VibradoStates::Triangle), 0, 0);
-        break;
-    case Vibrado<float>::LFO_Types::Saw:
-        g.drawImageAt(graphics.getVibradoBackground(GUIGraphics::VibradoStates::Saw), 0, 0);
-        break;
-    }
+    g.drawImageAt(graphics.getBackground(), 0, 0);
 }
 
 void VibradoPluginAudioProcessorEditor::resized()
 {
-    
+
+}
+
+void VibradoPluginAudioProcessorEditor::setMeters()
+{
+    addAndMakeVisible(&inputMeter);
+    addAndMakeVisible(&outputMeter);
+
+    inputMeter.setMeterColour(juce::Colours::ivory);
+    outputMeter.setMeterColour(juce::Colours::ivory);
+    inputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+    outputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+
+    inputMeter.setBounds(13, getHeight() / 2 + 13, 6, 195);
+    outputMeter.setBounds(getWidth() - 17, 24, 6, 195);
+}
+
+void VibradoPluginAudioProcessorEditor::updateButtons()
+{
+    assetManager.setButtonAsset(sineButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Sine);
+    assetManager.setButtonAsset(triangleButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Triangle);
+    assetManager.setButtonAsset(sawButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Saw);
 }

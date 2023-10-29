@@ -1,6 +1,8 @@
 file(GLOB SRC_FILES    
     "backgrounds/*.png"
     "knobs/*.png"
+    "buttons/*.png"
+    "buttons/vibrado_buttons/*.png"
 )
 
 juce_add_binary_data(BinaryData SOURCES
