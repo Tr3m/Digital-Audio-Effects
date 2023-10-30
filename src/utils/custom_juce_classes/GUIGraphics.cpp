@@ -114,6 +114,9 @@ juce::Image GUIGraphics::getBackground()
     case EffectTypes::Compressor:
         backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::compressor_background_png, BinaryData::compressor_background_pngSize);
         break;
+    case EffectTypes::Limiter:
+        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::limiter_background_png, BinaryData::limiter_background_pngSize);
+        break;
   
     }
 

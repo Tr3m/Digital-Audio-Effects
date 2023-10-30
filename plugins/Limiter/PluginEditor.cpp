@@ -3,9 +3,17 @@
 
 //==============================================================================
 LimiterPluginAudioProcessorEditor::LimiterPluginAudioProcessorEditor (LimiterPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    inputMeter(LevelMeter::Orientations::Vertical, [&]() {return audioProcessor.meterSource.getNextInput();}),
+    outputMeter(LevelMeter::Orientations::Vertical, [&]() {return audioProcessor.meterSource.getNextOutput();})
 {
     setSize(370, 470);
+
+    graphics.setColour (Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    graphics.setColour (Slider::textBoxBackgroundColourId, juce::Colours::transparentBlack);
+    graphics.setColour (Slider::textBoxTextColourId, juce::Colours::ivory.withAlpha(0.85f));
+
+    setMeters();
 
     thresholdSlider.reset(new juce::Slider("ThresholdSlider"));
     thresholdSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
@@ -47,26 +55,37 @@ LimiterPluginAudioProcessorEditor::LimiterPluginAudioProcessorEditor (LimiterPlu
     gainSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
         SliderAttachment>(audioProcessor.apvts, "GAIN_ID", *gainSlider);
 
-    addAndMakeVisible(&hardKnee);
-    hardKnee.setBounds(227, 150, 50, 30);
-    hardKnee.setAlpha(0);
-    hardKnee.onClick = [this] {
-        audioProcessor.setKneeType(Limiter<float>::KneeTypes::Hard);
-        repaint();
-    };
+    kneeSlider.reset(new juce::Slider("KneeSlider"));
+    kneeSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "KNEE_ID", *kneeSlider);
 
-    addAndMakeVisible(&softKnee);
-    softKnee.setBounds(227, 116, 50, 30);
-    softKnee.setAlpha(0);
-    softKnee.onClick = [this] {
+    softKnee.reset(new juce::ImageButton("SoftKneeButtton"));
+    addAndMakeVisible(softKnee.get());
+    softKnee->setBounds(4, inputMeter.getY() - 83, 25, 25);
+    softKnee->setTooltip("Soft");
+    softKnee->onClick = [this] {
+        kneeSlider->setValue(Limiter<float>::KneeTypes::Soft, juce::NotificationType::sendNotificationSync);
         audioProcessor.setKneeType(Limiter<float>::KneeTypes::Soft);
-        repaint();
+        updateButtons();
+    }; 
+
+    hardKnee.reset(new juce::ImageButton("HardKneeButtton"));
+    addAndMakeVisible(hardKnee.get());
+    hardKnee->setBounds(softKnee->getX(), softKnee->getY() + 27, 25, 25);
+    hardKnee->setTooltip("Hard");
+    hardKnee->onClick = [this] {
+        kneeSlider->setValue(Limiter<float>::KneeTypes::Hard, juce::NotificationType::sendNotificationSync);
+        audioProcessor.setKneeType(Limiter<float>::KneeTypes::Hard);
+        updateButtons();
     };
 
-    thresholdSlider->setBounds(62, 100, 124, 124);  
-    attackSlider->setBounds(20, 266, 100, 100);
-    releaseSilder->setBounds(132, 266, 100, 100);
-    gainSlider->setBounds(243, 266, 100, 100);
+    updateButtons();
+
+    int knobSize = 133;
+    thresholdSlider->setBounds(40, 107, knobSize, knobSize);
+    gainSlider->setBounds(198, 63, knobSize, knobSize);
+    attackSlider->setBounds(40, 283, knobSize, knobSize);
+    releaseSilder->setBounds(198, 234, knobSize, knobSize);
 }
 
 LimiterPluginAudioProcessorEditor::~LimiterPluginAudioProcessorEditor()
@@ -75,15 +94,36 @@ LimiterPluginAudioProcessorEditor::~LimiterPluginAudioProcessorEditor()
     attackSliderAtt = nullptr;
     releaseSilderAtt = nullptr;
     gainSliderAtt = nullptr;
+    kneeSliderAtt = nullptr;
 }
 
 //==============================================================================
 void LimiterPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.drawImageAt(graphics.getLimiterBackground(audioProcessor.getKneeType()), 0, 0);
+    g.drawImageAt(graphics.getBackground(), 0, 0);
 }
 
 void LimiterPluginAudioProcessorEditor::resized()
 {
 
+}
+
+void LimiterPluginAudioProcessorEditor::setMeters()
+{
+    addAndMakeVisible(&inputMeter);
+    addAndMakeVisible(&outputMeter);
+
+    inputMeter.setMeterColour(juce::Colours::ivory);
+    outputMeter.setMeterColour(juce::Colours::ivory);
+    inputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+    outputMeter.setBackgroundColour(juce::Colours::transparentBlack);
+
+    inputMeter.setBounds(13, getHeight() / 2 + 13, 6, 195);
+    outputMeter.setBounds(getWidth() - 17, 24, 6, 195);
+}
+
+void LimiterPluginAudioProcessorEditor::updateButtons()
+{
+    assetManager.setCompressorButton(softKnee, audioProcessor.getKneeType(), Limiter<float>::KneeTypes::Soft);
+    assetManager.setCompressorButton(hardKnee, audioProcessor.getKneeType(), Limiter<float>::KneeTypes::Hard);
 }

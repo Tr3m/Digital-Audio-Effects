@@ -86,6 +86,8 @@ void LimiterPluginAudioProcessor::changeProgramName (int index, const juce::Stri
 void LimiterPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     limiter.prepare(sampleRate);
+    meterSource.prepare(sampleRate);
+    limiter.setKneeType(*apvts.getRawParameterValue("KNEE_ID"));
 }
 
 void LimiterPluginAudioProcessor::releaseResources()
@@ -124,10 +126,14 @@ void LimiterPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    meterSource.updateInputLevel(buffer);
+
     auto* channelDataLeft = buffer.getWritePointer (0);
     auto* channelDataRight = buffer.getWritePointer (1);
 
     limiter.process(channelDataLeft, 0, buffer.getNumSamples());
+
+    meterSource.updateOutputLevel(buffer);
 
     // Do dual mono
     AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
@@ -143,7 +149,7 @@ void LimiterPluginAudioProcessor::updateParameters()
 
 void LimiterPluginAudioProcessor::setKneeType(int kneeTypeIndex)
 {
-    limiter.setKneeType(kneeTypeIndex);
+    limiter.setKneeType(*apvts.getRawParameterValue("KNEE_ID"));
 }
 
 int LimiterPluginAudioProcessor::getKneeType()
@@ -159,6 +165,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout LimiterPluginAudioProcessor:
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("ATTACK_ID", "ATTACK", 1.0f, 100.0, 35.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("RELEASE_ID", "RELEASE", 10.0f, 100.0, 35.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN_ID", "GAIN", -20.0f, 20.0, 0.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterInt>("KNEE_ID", "KNEE", 0, 1, 1));
 
   return { parameters.begin(), parameters.end() };
 }
