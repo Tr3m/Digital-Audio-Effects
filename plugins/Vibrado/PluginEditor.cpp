@@ -126,7 +126,7 @@ void VibradoPluginAudioProcessorEditor::setMeters()
 
 void VibradoPluginAudioProcessorEditor::updateButtons()
 {
-    assetManager.setButtonAsset(sineButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Sine);
-    assetManager.setButtonAsset(triangleButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Triangle);
-    assetManager.setButtonAsset(sawButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Saw);
+    assetManager.setVibradoButton(sineButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Sine);
+    assetManager.setVibradoButton(triangleButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Triangle);
+    assetManager.setVibradoButton(sawButton, audioProcessor.getLfoType(), Vibrado<float>::LFO_Types::Saw);
 }

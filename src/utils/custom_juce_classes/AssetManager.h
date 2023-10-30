@@ -23,6 +23,16 @@ public:
         toggleButtonAssets[Buttons::Vibrado_Saw][2] = juce::ImageFileFormat::loadFrom(BinaryData::vibrado_22_png, BinaryData::vibrado_22_pngSize);
         toggleButtonAssets[Buttons::Vibrado_Saw][3] = juce::ImageFileFormat::loadFrom(BinaryData::vibrado_23_png, BinaryData::vibrado_23_pngSize);
 
+        toggleButtonAssets[Buttons::Compressor_Soft_Knee][0] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_00_png, BinaryData::compressor_00_pngSize);
+        toggleButtonAssets[Buttons::Compressor_Soft_Knee][1] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_01_png, BinaryData::compressor_01_pngSize);
+        toggleButtonAssets[Buttons::Compressor_Soft_Knee][2] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_02_png, BinaryData::compressor_02_pngSize);
+        toggleButtonAssets[Buttons::Compressor_Soft_Knee][3] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_03_png, BinaryData::compressor_03_pngSize);
+
+        toggleButtonAssets[Buttons::Compressor_Hard_Knee][0] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_10_png, BinaryData::compressor_10_pngSize);
+        toggleButtonAssets[Buttons::Compressor_Hard_Knee][1] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_11_png, BinaryData::compressor_11_pngSize);
+        toggleButtonAssets[Buttons::Compressor_Hard_Knee][2] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_12_png, BinaryData::compressor_12_pngSize);
+        toggleButtonAssets[Buttons::Compressor_Hard_Knee][3] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_13_png, BinaryData::compressor_13_pngSize);
+
     };
 
     ~AssetManager()
@@ -30,7 +40,7 @@ public:
 
     };
     
-    void setButtonAsset(std::unique_ptr<juce::ImageButton>& button, int activeButton, int buttonIndex)
+    void setVibradoButton(std::unique_ptr<juce::ImageButton>& button, int activeButton, int buttonIndex)
     {
         if(int(activeButton) == int(buttonIndex))
         {
@@ -41,11 +51,24 @@ public:
             resetButtonAssets(button, buttonIndex);
     };
 
+    void setCompressorButton(std::unique_ptr<juce::ImageButton>& button, int activeButton, int buttonIndex)
+    {
+        if(int(activeButton) == int(buttonIndex))
+        {
+            button->setImages(false, false, false, toggleButtonAssets[buttonIndex + 3][2], 1.0f, juce::Colours::transparentWhite,
+                toggleButtonAssets[buttonIndex + 3][2], 1.0f, juce::Colours::transparentWhite, toggleButtonAssets[buttonIndex + 3][3], 1.0f, juce::Colours::transparentWhite, 0);
+        }
+        else
+            resetButtonAssets(button, buttonIndex + 3);
+    };
+
     enum Buttons
     {
         Vibrado_Triagle = 0,
         Vibrado_Sine,
-        Vibrado_Saw
+        Vibrado_Saw,
+        Compressor_Soft_Knee,
+        Compressor_Hard_Knee
     };
 
 private:
@@ -58,6 +81,6 @@ private:
 
 private:
 
-    juce::Image toggleButtonAssets[3][4];    
+    juce::Image toggleButtonAssets[5][4];    
      
 };

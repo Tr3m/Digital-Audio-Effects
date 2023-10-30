@@ -86,6 +86,8 @@ void CompressorPluginAudioProcessor::changeProgramName (int index, const juce::S
 void CompressorPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     compressor.prepare(sampleRate);
+    meterSource.prepare(sampleRate);
+    compressor.setKneeType(*apvts.getRawParameterValue("KNEE_ID"));
 }
 
 void CompressorPluginAudioProcessor::releaseResources()
@@ -125,10 +127,14 @@ void CompressorPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buf
     for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    meterSource.updateInputLevel(buffer);
+
     auto* channelDataLeft = buffer.getWritePointer (0);
     auto* channelDataRight = buffer.getWritePointer (1);
 
     compressor.process(channelDataLeft, 0, buffer.getNumSamples());
+
+    meterSource.updateOutputLevel(buffer);
 
     // Do dual mono
     AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
@@ -145,7 +151,7 @@ void CompressorPluginAudioProcessor::updateParameters()
 
 void CompressorPluginAudioProcessor::setKneeType(int kneeTypeIndex)
 {
-    compressor.setKneeType(kneeTypeIndex);
+    compressor.setKneeType(*apvts.getRawParameterValue("KNEE_ID"));
 }
 
 int CompressorPluginAudioProcessor::getKneeType()
@@ -162,6 +168,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout CompressorPluginAudioProcess
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("ATTACK_ID", "ATTACK", 1.0f, 100.0, 35.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("RELEASE_ID", "RELEASE", 10.0f, 100.0, 35.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN_ID", "GAIN", -20.0f, 20.0, 0.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterInt>("KNEE_ID", "KNEE", 0, 1, 1));
 
   return { parameters.begin(), parameters.end() };
 }

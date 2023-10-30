@@ -9,14 +9,12 @@ class GUIGraphics : public juce::LookAndFeel_V4
 {
 public:
 
-    GUIGraphics(int effectType);
+    GUIGraphics(int effectType, bool isSmallSlider = false);
 
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider) override;
     void reloadImage(int _effectType);
     juce::Image getBackground();
     juce::Image getFilterBackground(int filterState);
-    juce::Image getCompressorBackground(int compressorState);
-    juce::Image getLimiterBackground(int LimiterState);
 
     enum EffectTypes
     {
@@ -38,17 +36,6 @@ public:
         Parametric
     };
 
-    enum CompressorStates
-    {
-        SoftKnee = 0,
-        HardKnee
-    };
-
-    enum LimiterStates
-    {
-        SoftKneeLimiter = 0,
-        HardKneeLimiter
-    };
 
     public: Slider::SliderLayout getSliderLayout (Slider& slider) override
     {
@@ -89,7 +76,13 @@ public:
                 else /* above or below -> centre horizontally */ layout.textBoxBounds.setX ((localBounds.getWidth() - textBoxWidth) / 2);
 
                 if (textBoxPos == Slider::TextBoxAbove)          layout.textBoxBounds.setY (0);
-                else if (textBoxPos == Slider::TextBoxBelow)     layout.textBoxBounds.setY (localBounds.getHeight() - textBoxHeight - 10);
+                else if (textBoxPos == Slider::TextBoxBelow)     
+                {
+                    if(isSmallSlider)
+                        layout.textBoxBounds.setY (localBounds.getHeight() - textBoxHeight - 12);
+                    else
+                        layout.textBoxBounds.setY (localBounds.getHeight() - textBoxHeight - 10);
+                }
                 else /* left or right -> centre vertically */    layout.textBoxBounds.setY ((localBounds.getHeight() - textBoxHeight) / 2);
             }
         }
@@ -150,5 +143,6 @@ private:
 
     juce::Image knobImage, backgroundImage;
     int effectType;
+    bool isSmallSlider;
 };
 

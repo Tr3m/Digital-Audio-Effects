@@ -1,8 +1,9 @@
 #include "GUIGraphics.h"
 
-GUIGraphics::GUIGraphics(int effectType)
+GUIGraphics::GUIGraphics(int effectType, bool isSmallSlider)
 {
     reloadImage(effectType);
+    this->isSmallSlider = isSmallSlider;
 }
 
 void GUIGraphics::reloadImage(int _effectType)
@@ -110,6 +111,9 @@ juce::Image GUIGraphics::getBackground()
     case EffectTypes::Vibrado:
         backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::vibrado_background_png, BinaryData::vibrado_background_pngSize);
         break;
+    case EffectTypes::Compressor:
+        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::compressor_background_png, BinaryData::compressor_background_pngSize);
+        break;
   
     }
 
@@ -129,26 +133,6 @@ juce::Image GUIGraphics::getFilterBackground(int filterState)
     case FilterStates::Parametric:
         backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::filter_parametric_png, BinaryData::filter_parametric_pngSize);
     }
-
-    return backgroundImage;
-}
-
-juce::Image GUIGraphics::getCompressorBackground(int compressorState)
-{
-    if (compressorState == CompressorStates::SoftKnee)
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::compressor_soft_png, BinaryData::compressor_soft_pngSize);
-    else if (compressorState == CompressorStates::HardKnee)
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::compressor_hard_png, BinaryData::compressor_hard_pngSize);
-
-    return backgroundImage;
-}
-
-juce::Image GUIGraphics::getLimiterBackground(int limiterState)
-{
-    if (limiterState == LimiterStates::SoftKneeLimiter)
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::limiter_soft_png, BinaryData::compressor_soft_pngSize);
-    else if (limiterState == LimiterStates::HardKneeLimiter)
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::limiter_hard_png, BinaryData::compressor_hard_pngSize);
 
     return backgroundImage;
 }
