@@ -14,7 +14,6 @@ public:
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider) override;
     void reloadImage(int _effectType);
     juce::Image getBackground();
-    juce::Image getFilterBackground(int filterState);
 
     enum EffectTypes
     {
@@ -28,14 +27,6 @@ public:
         Compressor,
         Limiter
     };
-
-    enum FilterStates
-    {
-        HighPass = 0,
-        LowPass,
-        Parametric
-    };
-
 
     public: Slider::SliderLayout getSliderLayout (Slider& slider) override
     {

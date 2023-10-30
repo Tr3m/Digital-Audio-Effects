@@ -117,24 +117,10 @@ juce::Image GUIGraphics::getBackground()
     case EffectTypes::Limiter:
         backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::limiter_background_png, BinaryData::limiter_background_pngSize);
         break;
+    case EffectTypes::Filter:
+        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::filter_background_png, BinaryData::filter_background_pngSize);
+        break;
   
-    }
-
-    return backgroundImage;
-}
-
-juce::Image GUIGraphics::getFilterBackground(int filterState)
-{
-    switch (filterState)
-    {
-    case FilterStates::HighPass:
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::filter_highpass_png, BinaryData::filter_highpass_pngSize);
-        break;
-    case FilterStates::LowPass:
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::filter_lowpass_png, BinaryData::filter_lowpass_pngSize);
-        break;
-    case FilterStates::Parametric:
-        backgroundImage = juce::ImageFileFormat::loadFrom(BinaryData::filter_parametric_png, BinaryData::filter_parametric_pngSize);
     }
 
     return backgroundImage;

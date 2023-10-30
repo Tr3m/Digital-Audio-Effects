@@ -86,6 +86,8 @@ void IirfilterPluginAudioProcessor::changeProgramName (int index, const juce::St
 void IirfilterPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
   iirFilter.prepare(sampleRate);
+  meterSource.prepare(sampleRate);
+  iirFilter.setFilterType(*apvts.getRawParameterValue("FILTER_TYPE_ID"));
 }
 
 void IirfilterPluginAudioProcessor::releaseResources()
@@ -120,13 +122,19 @@ void IirfilterPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buff
 {
   updateParameters();
 
-    for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+  meterSource.updateInputLevel(buffer);
 
-    auto* channelDataLeft = buffer.getWritePointer (0);
-    auto* channelDataRight = buffer.getWritePointer (1);
+  for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
+    buffer.clear (i, 0, buffer.getNumSamples());
 
-    iirFilter.process(channelDataLeft, 0, buffer.getNumSamples());
+  auto* channelDataLeft = buffer.getWritePointer (0);
+  auto* channelDataRight = buffer.getWritePointer (1);
+
+  iirFilter.process(channelDataLeft, 0, buffer.getNumSamples());
+
+  buffer.applyGain(GainUtilities<float>::decibelsToGain(*apvts.getRawParameterValue("LEVEL_ID")));
+
+  meterSource.updateOutputLevel(buffer);
 
     // Do dual mono
     AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
@@ -140,7 +148,7 @@ void IirfilterPluginAudioProcessor::updateParameters()
 
 void IirfilterPluginAudioProcessor::setFilterType(int filterTypeIndex)
 {
-  iirFilter.setFilterType(filterTypeIndex);
+  iirFilter.setFilterType(*apvts.getRawParameterValue("FILTER_TYPE_ID"));
 }
 
 int IirfilterPluginAudioProcessor::getFilterType()
@@ -154,7 +162,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout IirfilterPluginAudioProcesso
 
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FREQUENCY_ID", "FREQUENCY", 20.0f, 20000.0, 500.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN_ID", "GAIN", -20.0f, 20.0, 0.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("Q_ID", "Q", 0.2f, 10.0, 1.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -12.0f, 12.0, 0.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterInt>("FILTER_TYPE_ID", "FILTER_TYPE", 0, 2, 0));
 
   return { parameters.begin(), parameters.end() };
 }

@@ -2,12 +2,13 @@
 
 #include "PluginProcessor.h"
 #include <utils/custom_juce_classes/GUIGraphics.h>
+#include <utils/custom_juce_classes/LevelMeter.h>
+#include <utils/custom_juce_classes/AssetManager.h>
 
 //==============================================================================
 /**
 */
-class IirfilterPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                             public juce::Slider::Listener
+class IirfilterPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     IirfilterPluginAudioProcessorEditor (IirfilterPluginAudioProcessor&);
@@ -16,21 +17,31 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void sliderValueChanged(juce::Slider* slider);
 
+    void setMeters();
+    void updateButtons();
+    void setGainKnob();
 
+    enum FilterTypes
+	{
+		LPF = 0,	// Low Pass Fitler
+		HPF,		// High Pass Filter
+		Parametric,
+	};
 
 private:
     
-    std::unique_ptr<juce::Slider> freqSlider, qSlider, gainSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqSliderAtt, qSliderAtt, gainSliderAtt;
+    std::unique_ptr<juce::Slider> freqSlider, levelSlider, gainSlider, filterTypeSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqSliderAtt, levelSliderAtt, gainSliderAtt, filterTypeSliderAtt;
 
-    juce::Label freqLabel, qLabel, gainLabel;
-    juce::TextButton lpButton, hpButton, parButton;
-
-    juce::TooltipWindow tooltipWindow{ this, 200 };
+    std::unique_ptr<juce::ImageButton> lpButton, hpButton, parButton;
 
     GUIGraphics graphics{ GUIGraphics::EffectTypes::Filter };
+    AssetManager assetManager;
+
+    LevelMeter inputMeter, outputMeter;
+
+    juce::TooltipWindow tooltipWindow{ this, 200 };
 
     IirfilterPluginAudioProcessor& audioProcessor;
     

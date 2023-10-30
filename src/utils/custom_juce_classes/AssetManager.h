@@ -33,6 +33,21 @@ public:
         toggleButtonAssets[Buttons::Compressor_Hard_Knee][2] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_12_png, BinaryData::compressor_12_pngSize);
         toggleButtonAssets[Buttons::Compressor_Hard_Knee][3] = juce::ImageFileFormat::loadFrom(BinaryData::compressor_13_png, BinaryData::compressor_13_pngSize);
 
+        toggleButtonAssets[Buttons::Filter_LOWPASS][0] = juce::ImageFileFormat::loadFrom(BinaryData::filter_00_png, BinaryData::filter_00_pngSize);
+        toggleButtonAssets[Buttons::Filter_LOWPASS][1] = juce::ImageFileFormat::loadFrom(BinaryData::filter_01_png, BinaryData::filter_01_pngSize);
+        toggleButtonAssets[Buttons::Filter_LOWPASS][2] = juce::ImageFileFormat::loadFrom(BinaryData::filter_02_png, BinaryData::filter_02_pngSize);
+        toggleButtonAssets[Buttons::Filter_LOWPASS][3] = juce::ImageFileFormat::loadFrom(BinaryData::filter_03_png, BinaryData::filter_03_pngSize);
+
+        toggleButtonAssets[Buttons::Filter_HIGHPASS][0] = juce::ImageFileFormat::loadFrom(BinaryData::filter_10_png, BinaryData::filter_10_pngSize);
+        toggleButtonAssets[Buttons::Filter_HIGHPASS][1] = juce::ImageFileFormat::loadFrom(BinaryData::filter_11_png, BinaryData::filter_11_pngSize);
+        toggleButtonAssets[Buttons::Filter_HIGHPASS][2] = juce::ImageFileFormat::loadFrom(BinaryData::filter_12_png, BinaryData::filter_12_pngSize);
+        toggleButtonAssets[Buttons::Filter_HIGHPASS][3] = juce::ImageFileFormat::loadFrom(BinaryData::filter_13_png, BinaryData::filter_13_pngSize);
+
+        toggleButtonAssets[Buttons::Filter_PEAKING][0] = juce::ImageFileFormat::loadFrom(BinaryData::filter_20_png, BinaryData::filter_20_pngSize);
+        toggleButtonAssets[Buttons::Filter_PEAKING][1] = juce::ImageFileFormat::loadFrom(BinaryData::filter_21_png, BinaryData::filter_21_pngSize);
+        toggleButtonAssets[Buttons::Filter_PEAKING][2] = juce::ImageFileFormat::loadFrom(BinaryData::filter_22_png, BinaryData::filter_22_pngSize);
+        toggleButtonAssets[Buttons::Filter_PEAKING][3] = juce::ImageFileFormat::loadFrom(BinaryData::filter_23_png, BinaryData::filter_23_pngSize);
+
     };
 
     ~AssetManager()
@@ -62,13 +77,27 @@ public:
             resetButtonAssets(button, buttonIndex + 3);
     };
 
+    void setFilterButton(std::unique_ptr<juce::ImageButton>& button, int activeButton, int buttonIndex)
+    {
+        if(int(activeButton) == int(buttonIndex))
+        {
+            button->setImages(false, false, false, toggleButtonAssets[buttonIndex + 5][2], 1.0f, juce::Colours::transparentWhite,
+                toggleButtonAssets[buttonIndex + 5][2], 1.0f, juce::Colours::transparentWhite, toggleButtonAssets[buttonIndex + 5][3], 1.0f, juce::Colours::transparentWhite, 0);
+        }
+        else
+            resetButtonAssets(button, buttonIndex + 5);
+    };    
+
     enum Buttons
     {
         Vibrado_Triagle = 0,
         Vibrado_Sine,
         Vibrado_Saw,
         Compressor_Soft_Knee,
-        Compressor_Hard_Knee
+        Compressor_Hard_Knee,
+        Filter_LOWPASS,
+        Filter_HIGHPASS,
+        Filter_PEAKING
     };
 
 private:
@@ -81,6 +110,6 @@ private:
 
 private:
 
-    juce::Image toggleButtonAssets[5][4];    
+    juce::Image toggleButtonAssets[8][4];    
      
 };
