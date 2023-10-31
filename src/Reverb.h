@@ -4,6 +4,7 @@
 #include <utils/ModulatedAllPassFilter.h>
 #include <utils/LFO.h>
 #include <IIRFilter.h>
+#include <utils/extras/FirstOrderSmoother.h>
 
 #define NUM_COMBS 4
 #define NUM_ALLPASS 2
@@ -55,6 +56,8 @@ private:
 	SampleType allPassDelayTimeValues[NUM_ALLPASS] {5.0, 1.7}; // AllPass Delay times in ms
 	SampleType allPassFeedbackValues[NUM_ALLPASS] {0.7, 0.7};
 	SampleType allPassModRates[NUM_ALLPASS] {0.6, 0.83};
+
+	FirstOrderSmoother valueSmoothers[NUM_COMBS];
 
 	IIRFilter<SampleType> filter;
 

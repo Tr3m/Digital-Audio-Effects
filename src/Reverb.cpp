@@ -25,6 +25,8 @@ void Reverb<SampleType>::prepare(SampleType sampleRate)
         combFilters[comb].setWidth(8);
         combFilters[comb].setRate(combModRates[comb]);
         combFilters[comb].setDepth(1.0);
+
+        valueSmoothers[comb].prepare(450.0, sampleRate);
     }
 
     for(int allpass = 0; allpass < NUM_ALLPASS; ++allpass)
@@ -50,7 +52,10 @@ SampleType Reverb<SampleType>::processSample(SampleType input)
 
     // Comb Filters
     for(int comb = 0; comb < NUM_COMBS; ++comb)
+    {
+        combFilters[comb].setDelayMs(valueSmoothers[comb].process(roomSize) * combDelayTimeValues[comb]);
         combOutput += combFilters[comb].processSample(input);
+    }
 
     combOutput = combOutput / NUM_COMBS;
 
@@ -74,10 +79,7 @@ void Reverb<SampleType>::process(SampleType* data, int startSample, int endSampl
 template <typename SampleType>
 void Reverb<SampleType>::setRoomSize(SampleType newRoomSize)
 {
-    this->roomSize = newRoomSize;
-
-    for(int comb = 0; comb < NUM_COMBS; ++comb)
-        combFilters[comb].setDelayMs(roomSize * combDelayTimeValues[comb]);
+    this->roomSize = newRoomSize;        
 }
 
 template <typename SampleType>

@@ -141,6 +141,7 @@ void ReverbPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto* channelDataRight = buffer.getWritePointer (1);
 
     reverb.process(channelDataLeft, 0, buffer.getNumSamples());
+    buffer.applyGain(GainUtilities<float>::decibelsToGain(*apvts.getRawParameterValue("LEVEL_ID")));
 
     meterSource.updateOutputLevel(buffer);
 
@@ -164,6 +165,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout ReverbPluginAudioProcessor::
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY_ID", "DECAY", 0.0f, 100.0, 50.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_ID", "FILTER", 500.0, 20000.0, 20000.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("MIX_ID", "MIX", 0.0f, 100.0, 40.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -12.0f, 12.0, 0.0));
 
 
   return { parameters.begin(), parameters.end() };

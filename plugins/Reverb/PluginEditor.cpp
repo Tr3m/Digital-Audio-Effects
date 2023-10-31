@@ -53,12 +53,26 @@ ReverbPluginAudioProcessorEditor::ReverbPluginAudioProcessorEditor (ReverbPlugin
     filterSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
         SliderAttachment>(audioProcessor.apvts, "FILTER_ID", *filterSlider);
 
+    levelSlider.reset(new juce::Slider("LevelSlider"));
+    levelSlider->setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+    levelSlider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    levelSlider->setTextValueSuffix(" dB");
+    addAndMakeVisible(levelSlider.get());
+    levelSlider->setLookAndFeel(&graphics);
+
+    filterSliderAtt = std::make_unique<juce::AudioProcessorValueTreeState::
+        SliderAttachment>(audioProcessor.apvts, "LEVEL_ID", *levelSlider);
+
 
     int knobSize = 133;
+    int knobSizeSmall = 111;
+
     roomSizeSlider->setBounds(40, 107, knobSize, knobSize);
     decaySlider->setBounds(198, 63, knobSize, knobSize);
-    mixSlider->setBounds(40, 283, knobSize, knobSize);
-    filterSlider->setBounds(198, 234, knobSize, knobSize);
+    
+    mixSlider->setBounds(19, 328, knobSizeSmall, knobSizeSmall);
+    filterSlider->setBounds(132, 291, knobSizeSmall, knobSizeSmall);
+    levelSlider->setBounds(247, 250, knobSizeSmall, knobSizeSmall);
    
 }
 
@@ -68,6 +82,7 @@ ReverbPluginAudioProcessorEditor::~ReverbPluginAudioProcessorEditor()
     decaySliderAtt = nullptr;
     mixSliderAtt = nullptr;
     filterSliderAtt = nullptr;
+    levelSliderAtt = nullptr;
 }
 
 //==============================================================================

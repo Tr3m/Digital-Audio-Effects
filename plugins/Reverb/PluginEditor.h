@@ -20,8 +20,8 @@ public:
     void setMeters();
 
 private:
-    std::unique_ptr<juce::Slider> roomSizeSlider, decaySlider, mixSlider, filterSlider;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> roomSizeSliderAtt, decaySliderAtt, mixSliderAtt, filterSliderAtt;
+    std::unique_ptr<juce::Slider> roomSizeSlider, decaySlider, mixSlider, filterSlider, levelSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> roomSizeSliderAtt, decaySliderAtt, mixSliderAtt, filterSliderAtt, levelSliderAtt;
 
     juce::Label lengthLabel, feedbackLabel, wetLabel, dryLabel, filterLabel;
 
