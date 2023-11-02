@@ -9,7 +9,6 @@ CircularBuffer<SampleType>::CircularBuffer()
 template <typename SampleType>
 CircularBuffer<SampleType>::~CircularBuffer()
 {
-    //DBG("~Circular Buffer Destroyed");
     buffer->clear();
     buffer.reset(nullptr);
 }

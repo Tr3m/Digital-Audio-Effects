@@ -2,7 +2,10 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <utils/extras/AudioChannelUtilities.h>
+#include <utils/custom_juce_classes/LevelMeterSource.h>
 #include <Distortion.h>
+
+#define NUM_MODULES 5
 
 //==============================================================================
 /**
@@ -48,9 +51,12 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     void updateParameters();
+    void setAlgorithm(int algoIndex);
 
     juce::AudioProcessorValueTreeState apvts;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+
+    LevelMeterSource meterSource;
 
 private:
 

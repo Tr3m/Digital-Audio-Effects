@@ -12,7 +12,14 @@ class CircularBuffer
 {
 public:
 
+    /**
+     * @brief Constructor
+     */
     CircularBuffer();
+
+    /**
+     * @brief Destructor
+     */
     ~CircularBuffer();
 
     /**

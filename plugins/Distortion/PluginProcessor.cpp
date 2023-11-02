@@ -84,7 +84,8 @@ void DistortionPluginAudioProcessor::changeProgramName (int index, const juce::S
 //==============================================================================
 void DistortionPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    distortion.prepare(sampleRate);
+  distortion.prepare(sampleRate);
+  meterSource.prepare(sampleRate);
 }
 
 void DistortionPluginAudioProcessor::releaseResources()
@@ -119,6 +120,8 @@ void DistortionPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buf
 {
   updateParameters();
 
+  meterSource.updateInputLevel(buffer);
+
   for (auto i = getTotalNumInputChannels(); i < getTotalNumOutputChannels(); ++i)
     buffer.clear (i, 0, buffer.getNumSamples());
 
@@ -126,6 +129,8 @@ void DistortionPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buf
   auto* channelDataRight = buffer.getWritePointer (1);
 
   distortion.process(channelDataLeft, 0, buffer.getNumSamples());
+
+  meterSource.updateOutputLevel(buffer);
 
   // Do dual mono
   AudioChannelUtilities<float>::doDualMono(channelDataLeft, channelDataRight, 0, buffer.getNumSamples());
@@ -138,13 +143,20 @@ void DistortionPluginAudioProcessor::updateParameters()
   distortion.setFilterFreq(*apvts.getRawParameterValue("FILTER_FREQ_ID"));
 }
 
+void DistortionPluginAudioProcessor::setAlgorithm(int algoIndex)
+{
+  distortion.setAlgorithm(algoIndex);
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout DistortionPluginAudioProcessor::createParameters()
 {
   std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN_ID", "GAIN", -10.0f, 20.0, 0.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -60.0, 20.0, -10.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_FREQ_ID", "FILTER_FREQ", 500.0f, 20000.0, 20000.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN_ID", "GAIN", -20.0f, 20.0, 0.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -20.0f, 20.0, 0.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_FREQ_ID", "FILTER_FREQ", 2000.0f, 20000.0, 20000.0));
+
+  parameters.push_back(std::make_unique<juce::AudioParameterInt>("ALGORITHM_ID", "ALGORITHM", 1, NUM_MODULES, 1));
 
   return { parameters.begin(), parameters.end() };
 }

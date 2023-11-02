@@ -13,7 +13,14 @@ class LinearInterpolationCircularBuffer
 {
 public:
 
+    /**
+     * @brief Constructor
+     */
     LinearInterpolationCircularBuffer();
+
+    /**
+     * @brief Destructor
+     */
     ~LinearInterpolationCircularBuffer();
 
     /**

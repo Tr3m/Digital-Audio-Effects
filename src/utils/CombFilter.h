@@ -3,12 +3,23 @@
 
 #define FEEDBACK_LIMIT 0.99
 
+/**
+ * Basic comb filter implementation
+ * 
+ */
 template <typename SampleType>
 class CombFilter
 {
 public:
+
+    /**
+     * @brief Constructor
+     */
     CombFilter();
 
+    /**
+     * @brief Destructor
+     */
     ~CombFilter();
     
     /**

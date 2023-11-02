@@ -1,6 +1,16 @@
 #pragma once
+#include <cmath>
+#include <stdexcept>
 #include <IIRFilter.h>
 #include <utils/extras/GainUtilities.h>
+
+#include <utils/saturators/Diode.h>
+#include <utils/saturators/HardClipper.h>
+#include <utils/saturators/SoftClipper.h>
+#include <utils/saturators/VaccumTube.h>
+#include <utils/saturators/AsymetricClipper.h>
+
+#define NUM_ALGORITHMS 5
 
 /**
  * Basic Distortion Effect
@@ -42,6 +52,19 @@ public:
      * @param endSample Number of samples to process
      */
 	void process(SampleType* data, int startSample, int endSample);
+
+	/**
+	 * @brief Sets saturation algorithm
+	 * 
+	 * @param algorithmIndex Algorithm Index
+	 */
+	void setAlgorithm(int algorithmIndex);
+
+	/**
+	 * @brief Returns the algorithm index
+	 * 
+	 */
+  	int getAlgorithm();
 	
 	/**
 	 * @brief Sets distortion input gain
@@ -64,16 +87,22 @@ public:
 	 */
 	void setFilterFreq(SampleType newFilterFreq);
 
+	enum Algorithms
+	{
+		Tube = 0,
+		Shockley_Diode,
+		Soft,
+		Hard,
+		Asymetric
+	};
+
 private:
 
 	SampleType sampleRate;
 
-	SampleType gain {0.0}, level {-20.0}; // In dB
-	SampleType filterCutoff {20000.0};
-
 	IIRFilter<SampleType> filter;
 
-	SampleType k{ 1.5 }; //input gain
-	SampleType g{ 0.7 }; //saturation limit
+	int algorithm {1};
+	SampleType gain {0.0}, level {0.0}, filterCutoff {20000.0};
 
 };

@@ -19,38 +19,48 @@ void Distortion<SampleType>::prepare(SampleType sampleRate)
 
 	filter.prepare(sampleRate);
 	filter.setFilterType(IIRFilter<SampleType>::FilterTypes::LPF);
-	filter.setCutoff(filterCutoff);
+	filter.setCutoff(this->filterCutoff);
 }
 
 template <typename SampleType>
 SampleType Distortion<SampleType>::processSample(SampleType input)
 {
 	SampleType in = input;
-	SampleType out = in;
+	SampleType out = 0.0;
 
-	// Gain
-	out = out * GainUtilities<SampleType>::decibelsToGain(gain);
-	
-	// Clipping
-	out = out * GainUtilities<SampleType>::decibelsToGain(40.0);
-
-	// Distortion Transfer Function (Waveshaping)	
-	if (out >= 0) 
+	switch(algorithm)
 	{
-		out = (SampleType)(atan(k * out) / atan(k));
+	case Algorithms::Tube:
+		in *= GainUtilities<SampleType>::decibelsToGain(this->gain);
+		out = VaccumTube<SampleType>::processSample(in);
+		break;
+	case Algorithms::Shockley_Diode:
+		in *= GainUtilities<SampleType>::decibelsToGain(50.0);
+		in *= GainUtilities<SampleType>::decibelsToGain(this->gain);
+		out = Diode<SampleType>::processSample(in);
+		out *= GainUtilities<SampleType>::decibelsToGain(23.0);
+		break;
+	case Algorithms::Soft:
+		out = SoftClipper<SampleType>::processSample(in, GainUtilities<SampleType>::decibelsToGain(this->gain));
+		break;
+	case Algorithms::Hard:
+		in *= GainUtilities<SampleType>::decibelsToGain(this->gain);
+		out = HardClipper<SampleType>::processSample(in);
+		break;
+	case Algorithms::Asymetric:
+		in *= GainUtilities<SampleType>::decibelsToGain(40.0);
+		in *= GainUtilities<SampleType>::decibelsToGain(this->gain);
+		out = AsymetricClipper<SampleType>::processSample(in);
+		out *= GainUtilities<SampleType>::decibelsToGain(-30.0);
+		break;
+	default:
+		out = in;
+		break;
 	}
-	else 
-	{
-		out = (SampleType)(0.5 * (atan((k / g) * out) / atan(k / g)));
-	}		
 
-	// Filter
 	out = filter.processSample(out);
 
-	// Level
-	out = out * GainUtilities<SampleType>::decibelsToGain(level);
-
-	return out;
+	return out * GainUtilities<SampleType>::decibelsToGain(this->level);
 }
 
 template <typename SampleType>
@@ -61,15 +71,30 @@ void Distortion<SampleType>::process(SampleType* data, int startSample, int endS
 }
 
 template <typename SampleType>
+void Distortion<SampleType>::setAlgorithm(int algorithmIndex)
+{
+	if (algorithmIndex < 0 || algorithmIndex >= NUM_ALGORITHMS)
+		throw std::invalid_argument("Algorithm index out of range");
+
+	this->algorithm = algorithmIndex;
+}
+
+template <typename SampleType>
+int Distortion<SampleType>::getAlgorithm()
+{
+	return this->algorithm;
+}
+
+template <typename SampleType>
 void Distortion<SampleType>::setGain(SampleType newGain)
 {
-	gain = newGain;
+	this->gain = newGain;
 }
 
 template <typename SampleType>
 void Distortion<SampleType>::setLevel(SampleType newLevel)
 {
-	level = newLevel;
+	this->level = newLevel;
 }
 
 template <typename SampleType>

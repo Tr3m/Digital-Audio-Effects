@@ -25,5 +25,8 @@ target_sources(${PROJECT_NAME}
         extras/GainUtilities.h
 )
 
+add_subdirectory(saturators)
+include_directories(saturators)
+
 add_subdirectory(custom_juce_classes)
 include_directories(custom_juce_classes)
