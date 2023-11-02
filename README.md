@@ -1,4 +1,4 @@
-# Overview
+### Overview
 This repository is a collection of real-time audio effect algorithms implemented in C++. Each effect class is also demonstrated as an audio plug-in (Built using the JUCE Framework).
 
 ### Effects Implemented
@@ -70,7 +70,9 @@ The resulting binaries can be found under the path:
 ```
 build/<PLUGIN_NAME>_artefacts/Release/
 ```
-<br/>
+
+### Documentation
+ Documentation can be found [here](https://thesisdocs.loudsample.com).
 
 ### Acknowledgements
 These Digital Audio Effects are being developed in the context of my Graduate Project Thesis at the [Department of Music Technology and Acoustics](https://mta.hmu.gr) of [the Hellenic Mediterranean University (HMU)](https://www.hmu.gr).
