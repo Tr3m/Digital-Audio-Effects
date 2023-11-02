@@ -5,43 +5,72 @@ This repository is a collection of real-time audio effect algorithms implemented
 The effects implemented are the following:
 * Time-Based:
   * Digital Delay
-  * Digital Reverb
+  * Reverb
 * Modulation Effects:
   * Flanger
   * Chorus
   * Vibrado
 * Distortion:
+  * Vaccum Tube
+  * Diode
+  * Soft Clipper
+  * Hard Clipper
   * Asymmetrical Clipping Distortion
 * IIR Filters
     * 2nd Order Butterworth Low-Pass Filter
     * 2nd Order Butterworth High-Pass Filter
-    * Parametric EQ
+    * Peaking Filter
 * Dynamic Effects:
   * Compressor
   * Limiter
 * Utility Classes:
   * Comb Filter
+  * Comb Filter (w/ Linear Interpolation)
+  * Modulated Comb Filter
   * All-Pass Filter
+  * All-Pass Filter (w/ Linear Interpolation)
+  * Modulated All-Pass Filter
   * LFO (Low Frequency Oscillator)
   * Envelope Detector
 
 
-![repo_cover-3x3x3](https://user-images.githubusercontent.com/58518865/120931273-81193000-c6f9-11eb-9cb6-d860558a1776.png)
-<br><br/>
-### Requirements -  Third Party Libraries
-The JUCE C++ framework is required in order to build the plug-ins. It can be downloaded from the
-[JUCE GitHub repository](https://github.com/juce-framework/JUCE) or the [JUCE Website](https://juce.com/get-juce/download)
-<br><br />
+![repo_cover-3x3x3](https://github.com/Tr3m/Digital-Audio-Effects/assets/58518865/adb171de-abee-460c-be5b-b2ed823de1fc)
+<br/>
+
+### Building
+
+### Prerequisites
+
+Before building the plugins, the JUCE submodule included in this repo must be initialized by running:
+
+```bash
+git submodule update --init --recursive
+```
+
 ### Building the Plug-ins
-1. Open with the Projucer application the file with the ".jucer" extension in the root directory of the plug-in you want to build
 
-2. In the exporters tab, add the exporter of your choice based on your OS.
+The source code and `CMakeLists.txt` files for building each plugin can be found in the ```plugins``` directory.
 
-3. Click the "Save and open in IDE" button on the top right to open the project. (Projucer will auto generate the appropriate library files)
+### Building on Windows
 
-<br><br />
+```bash
+cmake -B build
+cmake --build build --config Release
+```
+
+### Building on MacOS/Linux
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+The resulting binaries can be found under the path:
+
+```
+build/<PLUGIN_NAME>_artefacts/Release/
+```
+<br/>
+
 ### Acknowledgements
-These DAFX plugins are being  developed in the context of my Graduate Project Thesis at the   [Department of Music Technology and Acoustics](https://mta.hmu.gr) of [the Hellenic Mediterranean University (HMU)](https://www.hmu.gr).
-<br><br />
-### Contact
-Manos Labrakis <labrakismanos_at_outlook.com>
+These Digital Audio Effects are being developed in the context of my Graduate Project Thesis at the [Department of Music Technology and Acoustics](https://mta.hmu.gr) of [the Hellenic Mediterranean University (HMU)](https://www.hmu.gr).
