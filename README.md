@@ -34,7 +34,7 @@ The effects implemented are the following:
   * Envelope Detector
 
 
-![repo_cover-3x3x3](https://github.com/Tr3m/Digital-Audio-Effects/assets/58518865/adb171de-abee-460c-be5b-b2ed823de1fc)
+<img src="https://github.com/Tr3m/Digital-Audio-Effects/assets/58518865/adb171de-abee-460c-be5b-b2ed823de1fc" width="100%" />
 <br/>
 
 ### Building
