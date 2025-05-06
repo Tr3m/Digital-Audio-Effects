@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <stdexcept>
+#include <base/EffectProcessorBase.h>
 #include <IIRFilter.h>
 #include <utils/extras/GainUtilities.h>
 
@@ -16,7 +17,7 @@
  * Basic Distortion Effect
  */
 template <typename SampleType>
-class Distortion
+class Distortion : public EffectProcessorBase<SampleType>
 {
 public:
 
@@ -35,14 +36,14 @@ public:
      * 
      * @param sampleRate Current sampling rate
      */
-	void prepare(SampleType sampleRate);
+	void prepare(SampleType sampleRate) override;
 
 	/**
      * @brief Processes a single sample
      * 
      * @param input Input sample
      */
-	SampleType processSample(SampleType input);
+	SampleType processSample(SampleType input) override;
 
 	/**
      * @brief Processes a memory block that holds audio samples
@@ -51,7 +52,7 @@ public:
      * @param startSample Sample index to start processing from
      * @param endSample Number of samples to process
      */
-	void process(SampleType* data, int startSample, int endSample);
+	void process(SampleType* data, int startSample, int endSample) override;
 
 	/**
 	 * @brief Sets saturation algorithm

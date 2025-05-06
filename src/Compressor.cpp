@@ -15,8 +15,8 @@ Compressor<SampleType>::~Compressor()
 template <typename SampleType>
 void Compressor<SampleType>::prepare(SampleType sampleRate)
 {
-	detector.prepare(sampleRate);
-	detector.setOutputIndB(true);
+	this->detector.prepare(sampleRate);
+	this->detector.setOutputIndB(true);
 }
 
 template <typename SampleType>
@@ -25,7 +25,7 @@ SampleType Compressor<SampleType>::processSample(SampleType sample)
 	SampleType xn = sample;
 	SampleType detect_input = 0.0;
 
-	detect_input = detector.processSample(xn);
+	detect_input = this->detector.processSample(xn);
 
 	//Gain Reduction Calculation
 	SampleType gainReduction = calaculateGain(detect_input);
@@ -78,7 +78,7 @@ void Compressor<SampleType>::setAttack(SampleType newAttack)
 	if (attack < 1.0)
 		attack = 1.0;
 	
-	detector.setAttackTime(attack);
+	this->detector.setAttackTime(attack);
 }
 
 template <typename SampleType>
@@ -92,7 +92,7 @@ void Compressor<SampleType>::setRelease(SampleType newRelease)
 	if (release < 10.0)
 		release = 10.0;
 
-	detector.setReleaseTime(release);
+	this->detector.setReleaseTime(release);
 }
 
 template <typename SampleType>

@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <base/EffectProcessorBase.h>
 
 #define PI 3.14159265358979323846
 
@@ -8,7 +9,7 @@
  * 
  */
 template <typename SampleType>
-class IIRFilter
+class IIRFilter : public EffectProcessorBase<SampleType>
 {
 public:
 
@@ -27,14 +28,14 @@ public:
 	 * 
 	 * @param sampleRate Current sampling rate
 	 */
-	void prepare(SampleType sampleRate);
+	void prepare(SampleType sampleRate) override;
 
 	/**
 	 * @brief Processes a single sample
 	 * 
 	 * @param input Input sample
 	 */
-	SampleType processSample(SampleType input);
+	SampleType processSample(SampleType input) override;
 
 	/**
 	 * @brief Processes a memory block that holds audio samples
@@ -43,7 +44,7 @@ public:
 	 * @param startSample Sample index to start processing from
 	 * @param endSample Number of samples to process
 	 */
-    void process(SampleType* data, int startSample, int endSample);
+    void process(SampleType* data, int startSample, int endSample) override;
 
 	/**
 	 * @brief Sets filter cutoff frequency
@@ -104,8 +105,6 @@ public:
 
 
 private:
-
-	SampleType sampleRate;
 
 	SampleType a0, a1, a2, b1, b2, c0, d0, r, C;
 

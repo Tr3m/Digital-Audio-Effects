@@ -46,15 +46,20 @@ void Delay<SampleType>::setMix(SampleType newMix)
 }
 
 template <typename SampleType>
+SampleType Delay<SampleType>::processSample(SampleType input)
+{
+    combFilter.setDelayMs(smoother.process(delayTime)); 
+    SampleType processed = combFilter.processSample(input);
+    SampleType output = (1.0 - mix)*input + mix*processed;
+    return output;
+}
+
+
+template <typename SampleType>
 void Delay<SampleType>::process(SampleType* channelData, int startSample, int endSample)
 {
     for(int sample = startSample; sample < endSample; ++sample)
-    {
-        combFilter.setDelayMs(smoother.process(delayTime));
-        SampleType processed = combFilter.processSample(channelData[sample]);
-        SampleType output = (1.0 - mix)*channelData[sample] + mix*processed;
-        channelData[sample] = output;
-    }
+        channelData[sample] = this->processSample(channelData[sample]);
 }
 
 

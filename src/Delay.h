@@ -1,4 +1,5 @@
 #pragma once
+#include <base/EffectProcessorBase.h>
 #include <utils/CombFilter.h>
 #include <utils/extras/FirstOrderSmoother.h>
 
@@ -7,7 +8,7 @@
  * Simple Delay Effect
  */
 template <typename SampleType>
-class Delay
+class Delay : public EffectProcessorBase<SampleType>
 {
 public:
     
@@ -28,7 +29,7 @@ public:
      * 
      * @param sampleRate Current sampling rate
      */
-    void prepare(SampleType sampleRate);
+    void prepare(SampleType sampleRate) override;
 
     /**
      * @brief Sets the delay time
@@ -54,17 +55,23 @@ public:
     void setMix(SampleType newMix);
 
     /**
+     * @brief Processes a single sample
+     * 
+     * @param input Input sample
+     */
+    SampleType processSample(SampleType input) override;
+
+    /**
      * @brief Processes a memory block that holds audio samples
      * 
      * @param channelData Memory block start pointer 
      * @param startSample Sample index to start processing from
      * @param endSample Number of samples to process
      */
-    void process(SampleType* channelData, int startSample, int endSample);
+    void process(SampleType* channelData, int startSample, int endSample) override;
 
 private:
-
-    SampleType sampleRate;
+ 
     CombFilter<SampleType> combFilter;
     double delayTime {500.0};
     double feedback {0.7};

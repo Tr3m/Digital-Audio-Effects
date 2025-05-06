@@ -1,12 +1,12 @@
 #pragma once
-#include <utils/EnvelopeDetector.h>
+#include <base/DynamicsProcessor.h>
 #include <utils/extras/GainUtilities.h>
 
 /**
  * Basic Compressor Effect
  */
 template <typename SampleType>
-class Compressor
+class Compressor : public DynamicsProcessor<SampleType>
 {
 public:
 
@@ -25,14 +25,14 @@ public:
      * 
      * @param sampleRate Current sampling rate
      */
-	void prepare(SampleType sampleRate);
+	void prepare(SampleType sampleRate) override;
 
 	/**
      * @brief Processes a single sample
      * 
      * @param input Input sample
      */
-	SampleType processSample(SampleType input);
+	SampleType processSample(SampleType input) override;
 
 	/**
      * @brief Processes a memory block that holds audio samples
@@ -41,14 +41,14 @@ public:
      * @param startSample Sample index to start processing from
      * @param endSample Number of samples to process
      */
-	void process(SampleType* data, int startSample, int endSample);
+	void process(SampleType* data, int startSample, int endSample) override;
 
 	/**
 	 * @brief Sets the compressor threshold
 	 * 
 	 * @param newThreshold New threshold value in decibels
 	 */
-	void setThreshold(SampleType newThreshold);
+	void setThreshold(SampleType newThreshold) override;
 
 	/**
 	 * @brief Sets the compression ratio
@@ -62,21 +62,21 @@ public:
 	 * 
 	 * @param newAttack New attack time value in milliseconds
 	 */
-	void setAttack(SampleType newAttack);
+	void setAttack(SampleType newAttack) override;
 
 	/**
 	 * @brief Sets the compressor release time
 	 * 
 	 * @param newRelease New release time value in milliseconds
 	 */
-	void setRelease(SampleType newRelease);
+	void setRelease(SampleType newRelease) override;
 
 	/**
 	 * @brief Sets the compressor make-up gain
 	 * 
 	 * @param newGain New gain value in decibels
 	 */
-	void setGain(SampleType newGain);
+	void setGain(SampleType newGain) override;
 
 	/**
 	 * @brief Sets one of the compressor's parameters
@@ -135,7 +135,6 @@ private:
 	//=============================================
 
 	SampleType kneeWidth{ 30.0 }; //in dB
-	EnvelopeDetector<SampleType> detector;
 
 	//============================================
 

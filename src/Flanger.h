@@ -1,13 +1,12 @@
 #pragma once
-#include <utils/LinearInterpolationCircularBuffer.h>
-#include <utils/LFO.h>
+#include <base/ModulationProcessor.h>
 
 /**
  * Basic Flanger Effect
  * 
  */
 template <typename SampleType>
-class Flanger
+class Flanger : public ModulationProcessor<SampleType>
 {
 public:
 
@@ -28,14 +27,14 @@ public:
 	 * 
 	 * @param sampleRate Current sampling rate
 	 */
-	void prepare(SampleType sampleRate);
+	void prepare(SampleType sampleRate) override;
 
 	/**
 	 * @brief Processes a single sample
 	 * 
 	 * @param input Input sample
 	 */
-	SampleType processSample(SampleType input);
+	SampleType processSample(SampleType input) override;
 
 	/**
 	 * @brief Processes a memory block that holds audio samples
@@ -44,20 +43,20 @@ public:
 	 * @param startSample Sample index to start processing from
 	 * @param endSample Number of samples to process
 	 */
-	void process(SampleType* data, int startSample, int endSample);
+	void process(SampleType* data, int startSample, int endSample) override;
 	/**
 	 * @brief Sets flanger modulation rate
 	 * 
 	 * @param newRate New rate value
 	 */
-	void setRate(SampleType newRate);
+	void setRate(SampleType newRate) override;
 
 	/**
 	 * @brief Sets flanger modulation depth
 	 * 
 	 * @param newDepth New depth value
 	 */
-	void setDepth(SampleType newDepth);
+	void setDepth(SampleType newDepth) override;
 
 	/**
 	 * @brief Sets flanger wet/dry mix
@@ -66,17 +65,9 @@ public:
 	 */
 	void setMix(SampleType newMix);
 
-private:
-
-	SampleType doUnipolarModulationFromMin(SampleType unipolarModulatorValue, SampleType minValue, SampleType maxValue);
-	SampleType bipolarToUnipolar(SampleType value);
 
 private:
 
-	SampleType sampleRate;
-
-	LinearInterpolationCircularBuffer<SampleType> delayLine;
-	LFO lfo;
 
 	// Min and Max delay times in samples
 	SampleType minDelay {1.0};

@@ -22,3 +22,6 @@ target_sources(${PROJECT_NAME}
 
 add_subdirectory(utils)
 include_directories(utils)
+
+add_subdirectory(base)
+include_directories(base)

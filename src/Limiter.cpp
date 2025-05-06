@@ -16,8 +16,8 @@ template <typename SampleType>
 void Limiter<SampleType>::prepare(SampleType sampleRate)
 {
 	this->sampleRate = sampleRate;
-	detector.prepare(sampleRate);
-	detector.setOutputIndB(true);
+	this->detector.prepare(sampleRate);
+	this->detector.setOutputIndB(true);
 }
 
 template <typename SampleType>
@@ -26,7 +26,7 @@ SampleType Limiter<SampleType>::processSample(SampleType sample)
 	SampleType xn = sample;
 	SampleType detect_input = 0.0;
 
-	detect_input = detector.processSample(xn);
+	detect_input = this->detector.processSample(xn);
 
 	//Gain Reduction Calculation
 	SampleType gainReduction = calaculateGain(detect_input);
@@ -67,7 +67,7 @@ void Limiter<SampleType>::setAttack(SampleType newAttack)
 	if (attack < 1.0)
 		attack = 1.0;
 	
-	detector.setAttackTime(attack);
+	this->detector.setAttackTime(attack);
 }
 
 template <typename SampleType>
@@ -81,7 +81,7 @@ void Limiter<SampleType>::setRelease(SampleType newRelease)
 	if (release < 10.0)
 		release = 10.0;
 
-	detector.setReleaseTime(release);
+	this->detector.setReleaseTime(release);
 }
 
 template <typename SampleType>
