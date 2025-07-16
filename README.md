@@ -41,9 +41,11 @@ The effects implemented are the following:
 
 ### Prerequisites
 
-Before building the plugins, the JUCE submodule included in this repo must be initialized by running:
+Clone the repo and initialize the submodules by running:
 
 ```bash
+git clone https://github.com/tr3m/digital-audio-effects
+cd digital-audio-effects
 git submodule update --init --recursive
 ```
 
@@ -54,6 +56,7 @@ The source code and `CMakeLists.txt` files for building each plugin can be found
 ### Building on Windows
 
 ```bash
+cd plugins/<plugin-to-build>
 cmake -B build
 cmake --build build --config Release
 ```
@@ -61,6 +64,7 @@ cmake --build build --config Release
 ### Building on MacOS/Linux
 
 ```bash
+cd plugins/<plugin-to-build>
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
