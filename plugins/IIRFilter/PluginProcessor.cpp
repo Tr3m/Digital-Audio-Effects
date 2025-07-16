@@ -160,7 +160,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout IirfilterPluginAudioProcesso
 {
   std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FREQUENCY_ID", "FREQUENCY", 20.0f, 20000.0, 500.0));
+  auto sliderFreqRange = NormalisableRange<float>(45.0f, 20000.0f, 1.0f, 0.2f);
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FREQUENCY_ID", "FREQUENCY", sliderFreqRange, 500.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN_ID", "GAIN", -20.0f, 20.0, 0.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -12.0f, 12.0, 0.0));
   parameters.push_back(std::make_unique<juce::AudioParameterInt>("FILTER_TYPE_ID", "FILTER_TYPE", 0, 2, 0));

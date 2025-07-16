@@ -152,9 +152,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout DistortionPluginAudioProcess
 {
   std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
+  auto sliderFreqRange = NormalisableRange<float>(2000.0f, 20000.0f, 1.0f, 0.2f);
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN_ID", "GAIN", -20.0f, 20.0, 0.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -20.0f, 20.0, 0.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_FREQ_ID", "FILTER_FREQ", 2000.0f, 20000.0, 20000.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_FREQ_ID", "FILTER_FREQ", sliderFreqRange, 20000.0));
 
   parameters.push_back(std::make_unique<juce::AudioParameterInt>("ALGORITHM_ID", "ALGORITHM", 1, NUM_MODULES, 1));
 

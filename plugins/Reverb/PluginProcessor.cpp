@@ -161,9 +161,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout ReverbPluginAudioProcessor::
 {
   std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
+  auto sliderFreqRange = NormalisableRange<float>(500.0f, 20000.0f, 1.0f, 0.2f);
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("ROOM_SIZE_ID", "ROOM_SIZE", 1.0f, 5.0, 1.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DECAY_ID", "DECAY", 0.0f, 100.0, 50.0));
-  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_ID", "FILTER", 500.0, 20000.0, 20000.0));
+  parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_ID", "FILTER", sliderFreqRange, 20000.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("MIX_ID", "MIX", 0.0f, 100.0, 40.0));
   parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LEVEL_ID", "LEVEL", -12.0f, 12.0, 0.0));
 
